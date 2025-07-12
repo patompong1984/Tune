@@ -4,91 +4,227 @@
   <meta charset="UTF-8">
   <title>WinOLS Tuning Simulator</title>
   <style>
-    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
-    .section { background: white; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
-    select, input[type=number] { margin: 10px; padding: 5px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #aaa; text-align: center; padding: 5px; }
-    .hex-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-top: 10px; }
-    input.hex { width: 40px; text-align: center; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #333; /* Dark background similar to WinOLS */
+      color: #eee; /* Light text for contrast */
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #00bfff; /* A bright blue for headings */
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section {
+      background: #444; /* Slightly lighter dark for sections */
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      width: 90%;
+      max-width: 800px;
+      border: 1px solid #555;
+    }
+
+    .section h3 {
+      color: #00bfff;
+      margin-top: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #555;
+      margin-bottom: 20px;
+    }
+
+    label {
+      margin-right: 10px;
+      color: #ccc;
+    }
+
+    select, input[type=number], input.hex, button {
+      background: #555;
+      color: #eee;
+      border: 1px solid #666;
+      padding: 8px;
+      margin: 5px 10px 5px 0;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+
+    select:focus, input:focus, button:focus {
+      outline: none;
+      border-color: #00bfff;
+      box-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #3a3a3a; /* Darker background for table */
+    }
+
+    th, td {
+      border: 1px solid #555;
+      text-align: center;
+      padding: 8px;
+      color: #eee;
+    }
+
+    th {
+      background: #4a4a4a;
+      color: #00bfff;
+    }
+
+    input[type=number] {
+      width: 80px; /* Adjust width for better number input visibility */
+      text-align: center;
+    }
+
+    .hex-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Responsive grid for hex values */
+      gap: 8px;
+      margin-top: 15px;
+      padding: 10px;
+      background: #3a3a3a;
+      border-radius: 4px;
+      border: 1px solid #555;
+    }
+
+    input.hex {
+      width: 100%; /* Make hex inputs fill their grid cell */
+      box-sizing: border-box; /* Include padding and border in the element's total width and height */
+      text-transform: uppercase; /* Ensure hex values are uppercase */
+      font-family: 'Consolas', 'Monaco', monospace; /* Monospace font for hex values */
+    }
+
+    button {
+      background: #00bfff; /* Bright blue for the button */
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: background 0.3s ease, transform 0.2s ease;
+      margin-top: 10px;
+      display: block; /* Make button full width in its container */
+      width: fit-content; /* Adjust to content width */
+      margin-left: auto; /* Center button */
+      margin-right: auto; /* Center button */
+    }
+
+    button:hover {
+      background: #009acd;
+      transform: translateY(-2px);
+    }
+
+    #resultArea {
+      margin-top: 20px;
+      padding: 15px;
+      background: #3a3a3a;
+      border: 1px solid #00bfff;
+      border-radius: 4px;
+      color: #aaffaa; /* Greenish color for success message */
+      text-align: center;
+      font-size: 1.1em;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🔧 จำลองการจูน ECU สไตล์ WinOLS</h1>
+  <h1>🔧 WinOLS ECU Tuning Simulator</h1>
 
-  <!-- รถและรุ่น -->
   <div class="section">
-    <label>ยี่ห้อ:</label>
-    <select>
-      <option>Mazda</option>
-      <option>Toyota</option>
-      <option>Honda</option>
-      <option>Isuzu</option>
-    </select>
+    <h3>⚙️ Vehicle & Model Selection</h3>
+    <div>
+      <label for="carBrand">Brand:</label>
+      <select id="carBrand">
+        <option>Mazda</option>
+        <option>Toyota</option>
+        <option>Honda</option>
+        <option>Isuzu</option>
+      </select>
 
-    <label>รุ่น:</label>
-    <select>
-      <option>Mazda 2 Skyactiv</option>
-      <option>Hilux Revo</option>
-      <option>Civic Turbo</option>
-      <option>D-Max Blue Power</option>
-    </select>
-  </div>
-
-  <!-- เลือก Map -->
-  <div class="section">
-    <label>เลือกแผนที่สำหรับปรับแต่ง:</label>
-    <select id="mapType">
-      <option>IQ Limit</option>
-      <option>Torque Map</option>
-      <option>Throttle Position (TPS)</option>
-      <option>Coolant Temp (ECT)</option>
-      <option>Charge Pressure (CRP)</option>
-      <option>EGR Control</option>
-      <option>DTC Switch</option>
-      <option>Injector Timing</option>
-      <option>Ignition Timing</option>
-    </select>
-
-    <label>รูปแบบการแสดงผล:</label>
-    <select id="viewMode">
-      <option>Text</option>
-      <option>2D</option>
-      <option>3D</option>
-    </select>
-  </div>
-
-  <!-- แผนที่จำลอง -->
-  <div class="section">
-    <h3>📊 พื้นที่ปรับแต่ง Map</h3>
-    <table>
-      <tr><th>RPM</th><th>Load</th><th>Value</th></tr>
-      <tr><td>1000</td><td>30%</td><td><input type="number" value="1.2"></td></tr>
-      <tr><td>2000</td><td>60%</td><td><input type="number" value="2.1"></td></tr>
-      <tr><td>3000</td><td>90%</td><td><input type="number" value="3.3"></td></tr>
-      <tr><td>4000</td><td>100%</td><td><input type="number" value="4.0"></td></tr>
-    </table>
-  </div>
-
-  <!-- HEX Viewer -->
-  <div class="section">
-    <h3>🔢 HEX Viewer</h3>
-    <div class="hex-grid">
-      <input class="hex" value="FF">
-      <input class="hex" value="0A">
-      <input class="hex" value="C3">
-      <input class="hex" value="7E">
-      <input class="hex" value="2F">
-      <input class="hex" value="88">
-      <input class="hex" value="09">
-      <input class="hex" value="3D">
+      <label for="carModel">Model:</label>
+      <select id="carModel">
+        <option>Mazda 2 Skyactiv</option>
+        <option>Hilux Revo</option>
+        <option>Civic Turbo</option>
+        <option>D-Max Blue Power</option>
+      </select>
     </div>
   </div>
 
-  <!-- ปุ่มยืนยัน -->
   <div class="section">
-    <button onclick="showResult()">✅ ยืนยันการจูน</button>
+    <h3>🗺️ Map Selection & View Mode</h3>
+    <div>
+      <label for="mapType">Select Map for Tuning:</label>
+      <select id="mapType">
+        <option>IQ Limit</option>
+        <option>Torque Map</option>
+        <option>Throttle Position (TPS)</option>
+        <option>Coolant Temp (ECT)</option>
+        <option>Charge Pressure (CRP)</option>
+        <option>EGR Control</option>
+        <option>DTC Switch</option>
+        <option>Injector Timing</option>
+        <option>Ignition Timing</option>
+      </select>
+    </div>
+    <div style="margin-top: 15px;">
+      <label for="viewMode">Display Mode:</label>
+      <select id="viewMode">
+        <option>Text</option>
+        <option>2D</option>
+        <option>3D</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>📈 Map Tuning Area</h3>
+    <table>
+      <thead>
+        <tr><th>RPM</th><th>Load (%)</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1000</td><td>30</td><td><input type="number" value="1.2"></td></tr>
+        <tr><td>2000</td><td>60</td><td><input type="number" value="2.1"></td></tr>
+        <tr><td>3000</td><td>90</td><td><input type="number" value="3.3"></td></tr>
+        <tr><td>4000</td><td>100</td><td><input type="number" value="4.0"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>🔢 HEX Viewer</h3>
+    <div class="hex-grid">
+      <input class="hex" value="FF" maxlength="2">
+      <input class="hex" value="0A" maxlength="2">
+      <input class="hex" value="C3" maxlength="2">
+      <input class="hex" value="7E" maxlength="2">
+      <input class="hex" value="2F" maxlength="2">
+      <input class="hex" value="88" maxlength="2">
+      <input class="hex" value="09" maxlength="2">
+      <input class="hex" value="3D" maxlength="2">
+      <input class="hex" value="A1" maxlength="2">
+      <input class="hex" value="B2" maxlength="2">
+      <input class="hex" value="C3" maxlength="2">
+      <input class="hex" value="D4" maxlength="2">
+      <input class="hex" value="E5" maxlength="2">
+      <input class="hex" value="F6" maxlength="2">
+      <input class="hex" value="17" maxlength="2">
+      <input class="hex" value="28" maxlength="2">
+    </div>
+  </div>
+
+  <div class="section">
+    <button onclick="showResult()">✅ Confirm Tuning</button>
     <div id="resultArea"></div>
   </div>
 
@@ -97,8 +233,8 @@
       const map = document.getElementById("mapType").value;
       const mode = document.getElementById("viewMode").value;
       document.getElementById("resultArea").innerHTML = `
-        <p>✅ การปรับแต่ง "${map}" ในมุมมอง "${mode}" เสร็จสมบูรณ์</p>
-        <p>ผลลัพธ์เบื้องต้น: แรงม้าเพิ่มขึ้น ~12HP, แรงบิด +15%, ความเร็วตอบสนองดีขึ้น</p>
+        <p>✅ Tuning of "${map}" in "${mode}" view mode completed!</p>
+        <p>Initial Results: Horsepower increase ~12HP, Torque +15%, Improved throttle response.</p>
       `;
     }
   </script>
