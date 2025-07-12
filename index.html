@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>WinOLS Tuning Simulator</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+    .section { background: white; padding: 20px; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+    select, input[type=number] { margin: 10px; padding: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #aaa; text-align: center; padding: 5px; }
+    .hex-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-top: 10px; }
+    input.hex { width: 40px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <h1>🔧 จำลองการจูน ECU สไตล์ WinOLS</h1>
+
+  <!-- รถและรุ่น -->
+  <div class="section">
+    <label>ยี่ห้อ:</label>
+    <select>
+      <option>Mazda</option>
+      <option>Toyota</option>
+      <option>Honda</option>
+      <option>Isuzu</option>
+    </select>
+
+    <label>รุ่น:</label>
+    <select>
+      <option>Mazda 2 Skyactiv</option>
+      <option>Hilux Revo</option>
+      <option>Civic Turbo</option>
+      <option>D-Max Blue Power</option>
+    </select>
+  </div>
+
+  <!-- เลือก Map -->
+  <div class="section">
+    <label>เลือกแผนที่สำหรับปรับแต่ง:</label>
+    <select id="mapType">
+      <option>IQ Limit</option>
+      <option>Torque Map</option>
+      <option>Throttle Position (TPS)</option>
+      <option>Coolant Temp (ECT)</option>
+      <option>Charge Pressure (CRP)</option>
+      <option>EGR Control</option>
+      <option>DTC Switch</option>
+      <option>Injector Timing</option>
+      <option>Ignition Timing</option>
+    </select>
+
+    <label>รูปแบบการแสดงผล:</label>
+    <select id="viewMode">
+      <option>Text</option>
+      <option>2D</option>
+      <option>3D</option>
+    </select>
+  </div>
+
+  <!-- แผนที่จำลอง -->
+  <div class="section">
+    <h3>📊 พื้นที่ปรับแต่ง Map</h3>
+    <table>
+      <tr><th>RPM</th><th>Load</th><th>Value</th></tr>
+      <tr><td>1000</td><td>30%</td><td><input type="number" value="1.2"></td></tr>
+      <tr><td>2000</td><td>60%</td><td><input type="number" value="2.1"></td></tr>
+      <tr><td>3000</td><td>90%</td><td><input type="number" value="3.3"></td></tr>
+      <tr><td>4000</td><td>100%</td><td><input type="number" value="4.0"></td></tr>
+    </table>
+  </div>
+
+  <!-- HEX Viewer -->
+  <div class="section">
+    <h3>🔢 HEX Viewer</h3>
+    <div class="hex-grid">
+      <input class="hex" value="FF">
+      <input class="hex" value="0A">
+      <input class="hex" value="C3">
+      <input class="hex" value="7E">
+      <input class="hex" value="2F">
+      <input class="hex" value="88">
+      <input class="hex" value="09">
+      <input class="hex" value="3D">
+    </div>
+  </div>
+
+  <!-- ปุ่มยืนยัน -->
+  <div class="section">
+    <button onclick="showResult()">✅ ยืนยันการจูน</button>
+    <div id="resultArea"></div>
+  </div>
+
+  <script>
+    function showResult() {
+      const map = document.getElementById("mapType").value;
+      const mode = document.getElementById("viewMode").value;
+      document.getElementById("resultArea").innerHTML = `
+        <p>✅ การปรับแต่ง "${map}" ในมุมมอง "${mode}" เสร็จสมบูรณ์</p>
+        <p>ผลลัพธ์เบื้องต้น: แรงม้าเพิ่มขึ้น ~12HP, แรงบิด +15%, ความเร็วตอบสนองดีขึ้น</p>
+      `;
+    }
+  </script>
+
+</body>
+</html>
