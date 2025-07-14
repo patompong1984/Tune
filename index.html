@@ -229,15 +229,17 @@
       margin-top: 25px;
     }
 
+    /* --- ปรับขนาด Canvas ให้เล็กลงตรงนี้ --- */
     #graphCanvas {
       width: 100%;
-      max-width: 900px;
-      height: 400px; /* กำหนดความสูงคงที่เพื่อให้ Chart.js รู้ขนาด */
+      max-width: 600px; /* ลดความกว้างสูงสุด */
+      height: 300px; /* ลดความสูง */
       background: rgba(30, 40, 50, 0.7);
       border: 1px solid #4a6380;
       border-radius: 8px;
       margin-top: 20px;
-      box-sizing: border-box; /* สำคัญเพื่อให้ padding/border ไม่ดันขนาดเกิน width */
+      box-sizing: border-box;
+      align-self: center; /* จัดให้อยู่กึ่งกลางใน Flex container */
     }
 
     .file-info {
@@ -290,7 +292,8 @@
       }
       /* ปรับขนาดกราฟสำหรับหน้าจอเล็ก */
       #graphCanvas {
-        height: 300px; /* ลดความสูงของกราฟบนมือถือ */
+        height: 250px; /* ลดความสูงของกราฟบนมือถือ */
+        max-width: 100%; /* ให้เต็มความกว้างของคอนเทนเนอร์บนมือถือ */
       }
     }
 
@@ -309,7 +312,7 @@
       }
       /* ปรับขนาดกราฟสำหรับหน้าจอเล็กสุด */
       #graphCanvas {
-        height: 250px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
+        height: 200px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
       }
     }
   </style>
@@ -1121,7 +1124,7 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false, // สำคัญ: ปล่อยให้ CSS จัดการความสูง/กว้าง
+                        maintainAspectRatio: true, /* เปลี่ยนเป็น true เพื่อรักษาอัตราส่วน */
                         scales: {
                             x: {
                                 title: {
