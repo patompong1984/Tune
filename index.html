@@ -6,237 +6,391 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #333; /* Dark background similar to WinOLS */
-      color: #eee; /* Light text for contrast */
+      background: linear-gradient(135deg, #1a2a3a, #2d3b4d); /* Enhanced dark gradient */
+      color: #eee;
       padding: 20px;
       margin: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      border: 1px solid #2a6496;
     }
 
     h1 {
-      color: #00bfff; /* A bright blue for headings */
-      text-align: center;
-      margin-bottom: 30px;
+      color: #00bfff;
+      margin: 0;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    h1 .icon {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: #7fdbff;
+      margin-top: 5px;
+      font-size: 1.1rem;
     }
 
     .section {
-      background: #444; /* Slightly lighter dark for sections */
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 6px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-      width: 90%;
-      max-width: 800px;
-      border: 1px solid #555;
+      background: rgba(30, 40, 50, 0.8);
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      border: 1px solid #3a506b;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
     }
 
     .section h3 {
       color: #00bfff;
       margin-top: 0;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #555;
-      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #3a506b;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+    }
+
+    .section h3 .icon {
+      font-size: 1.2rem;
     }
 
     label {
       margin-right: 10px;
-      color: #ccc;
-      white-space: nowrap; /* Prevent line breaks */
+      color: #aaccff;
+      white-space: nowrap;
+      font-weight: 500;
     }
 
     select, input[type=number], input.hex, button, input[type=file] {
-      background: #555;
+      background: rgba(50, 60, 80, 0.8);
       color: #eee;
-      border: 1px solid #666;
-      padding: 8px;
-      margin: 5px 10px 5px 0;
-      border-radius: 4px;
-      font-size: 1em;
+      border: 1px solid #4a6380;
+      padding: 10px 15px;
+      margin: 8px 15px 8px 0;
+      border-radius: 6px;
+      font-size: 1.05em;
+      transition: all 0.3s ease;
     }
 
     select:focus, input:focus, button:focus, input[type=file]:focus {
       outline: none;
       border-color: #00bfff;
-      box-shadow: 0 0 5px rgba(0, 191, 255, 0.5);
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.7);
+      background: rgba(60, 80, 100, 0.9);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-      background: #3a3a3a; /* Darker background for table */
+      margin-top: 20px;
+      background: rgba(40, 50, 65, 0.7);
+      border-radius: 6px;
+      overflow: hidden;
     }
 
     th, td {
-      border: 1px solid #555;
-      text-align: center;
-      padding: 8px;
+      border: 1px solid #4a6380;
+      padding: 12px;
       color: #eee;
+      text-align: center;
     }
 
     th {
-      background: #4a4a4a;
-      color: #00bfff;
+      background: rgba(30, 70, 100, 0.7);
+      color: #7fdbff;
+      font-weight: 600;
     }
 
-    input.map-value-input { /* Specific class for table inputs */
-      width: 80px; /* Adjust width for better number input visibility */
+    tr:nth-child(even) {
+      background: rgba(45, 55, 70, 0.5);
+    }
+
+    tr:hover {
+      background: rgba(60, 80, 110, 0.6);
+    }
+
+    input.map-value-input {
+      width: 100%;
+      max-width: 120px;
       text-align: center;
+      background: rgba(60, 70, 90, 0.8);
     }
 
     .hex-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Responsive grid for hex values */
-      gap: 8px;
-      margin-top: 15px;
-      padding: 10px;
-      background: #3a3a3a;
-      border-radius: 4px;
-      border: 1px solid #555;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(40, 50, 65, 0.7);
+      border-radius: 6px;
+      border: 1px solid #4a6380;
     }
 
     input.hex {
-      width: 100%; /* Make hex inputs fill their grid cell */
-      box-sizing: border-box; /* Include padding and border in the element's total width and height */
-      text-transform: uppercase; /* Ensure hex values are uppercase */
-      font-family: 'Consolas', 'Monaco', monospace; /* Monospace font for hex values */
+      width: 100%;
+      box-sizing: border-box;
+      text-transform: uppercase;
+      font-family: 'Consolas', 'Monaco', monospace;
+      text-align: center;
+      padding: 10px;
     }
 
     button {
-      background: #00bfff; /* Bright blue for the button */
-      color: #fff;
+      background: linear-gradient(to right, #0062cc, #00bfff);
+      color: white;
       border: none;
-      padding: 12px 25px;
+      padding: 14px 30px;
       cursor: pointer;
       font-size: 1.1em;
-      transition: background 0.3s ease, transform 0.2s ease;
-      margin-top: 10px;
-      display: block; /* Make button full width in its container */
-      width: fit-content; /* Adjust to content width */
-      margin-left: auto; /* Center button */
-      margin-right: auto; /* Center button */
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 110, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     button:hover {
-      background: #009acd;
-      transform: translateY(-2px);
+      background: linear-gradient(to right, #0050a0, #009acd);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 110, 255, 0.5);
+    }
+
+    button:active {
+      transform: translateY(1px);
     }
 
     #resultArea, #messageArea {
-      margin-top: 20px;
-      padding: 15px;
-      background: #3a3a3a;
-      border: 1px solid #00bfff;
-      border-radius: 4px;
-      color: #aaffaa; /* Greenish color for success message */
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(40, 50, 65, 0.8);
+      border-radius: 8px;
       text-align: center;
       font-size: 1.1em;
+      border: 1px solid #00bfff;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
     }
+    
+    #resultArea {
+      color: #aaffaa;
+    }
+    
+    #messageArea {
+      color: #aaccff;
+    }
+    
     #messageArea.error {
-        color: #ffaaaa;
-        border-color: #ff0000;
+      color: #ffaaaa;
+      border-color: #ff5555;
+      box-shadow: 0 0 15px rgba(255, 85, 85, 0.3);
     }
 
     .button-group {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 25px;
     }
 
     #graphCanvas {
-        width: 100%; /* Make canvas responsive to its container */
-        max-width: 700px; /* Limit max width */
-        height: 350px; /* Set a fixed height for consistency */
-        background: #2a2a2a;
-        border: 1px solid #555;
-        border-radius: 4px;
-        margin-top: 15px;
+      width: 100%;
+      max-width: 900px;
+      height: 400px;
+      background: rgba(30, 40, 50, 0.7);
+      border: 1px solid #4a6380;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(40, 60, 80, 0.6);
+      border-radius: 8px;
+      border: 1px solid #4a6380;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-active {
+      background: #00ff00;
+      box-shadow: 0 0 8px #00ff00;
+    }
+    
+    .status-inactive {
+      background: #ff5555;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .section {
+        padding: 20px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      button {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      select, input[type=number], input.hex, button, input[type=file] {
+        width: 100%;
+        margin: 8px 0;
+      }
+      
+      .hex-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <h1><span class="icon">🔧</span> WinOLS ECU Tuning Simulator (Advanced)</h1>
+      <div class="subtitle">Professional-grade ECU remapping simulation for performance tuning</div>
+    </header>
 
-  <h1>🔧 WinOLS ECU Tuning Simulator (Advanced)</h1>
-
-  <div class="section">
-    <h3>📂 File Operations</h3>
-    <div>
-      <label for="fileInput">Load ECU File (.bin/.hex):</label>
-      <input type="file" id="fileInput" accept=".bin, .hex">
-      <button onclick="simulateFileLoad()">Simulate Load</button>
-      <button onclick="simulateFileSave()">Simulate Save</button>
-    </div>
-    <div id="messageArea"></div>
-  </div>
-
-  <div class="section">
-    <h3>⚙️ Vehicle & Model Selection</h3>
-    <div>
-      <label for="carBrand">Brand:</label>
-      <select id="carBrand">
-        <option value="Mazda">Mazda</option>
-        <option value="Toyota">Toyota</option>
-        <option value="Honda">Honda</option>
-        <option value="Isuzu">Isuzu</option>
-        <option value="Ford">Ford</option>
-        <option value="Nissan">Nissan</option>
-        <option value="BMW">BMW</option>
-        <option value="Mercedes-Benz">Mercedes-Benz</option>
-      </select>
-
-      <label for="carModel">Model:</label>
-      <select id="carModel">
-        </select>
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>🗺️ Map Selection & View Mode</h3>
-    <div>
-      <label for="mapType">Select Map for Tuning:</label>
-      <select id="mapType">
-        </select>
-    </div>
-    <div style="margin-top: 15px;">
-      <label for="viewMode">Display Mode:</label>
-      <select id="viewMode">
-        <option value="text">Text</option>
-        <option value="2d">2D Graph</option>
-        <option value="3d">3D Graph (Simulated)</option>
-      </select>
-    </div>
-    <canvas id="graphCanvas" style="display: none;"></canvas>
-  </div>
-
-  <div class="section">
-    <h3>📈 Map Tuning Area</h3>
-    <table id="tuningTable">
-      <thead>
-        <tr><th>Axis X</th><th>Axis Y</th><th>Value</th></tr>
-      </thead>
-      <tbody>
-        </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <h3>🔢 HEX Viewer</h3>
-    <div class="hex-grid" id="hexGrid">
+    <div class="section">
+      <h3><span class="icon">📂</span> File Operations</h3>
+      <div>
+        <label for="fileInput">Load ECU File (.bin/.hex):</label>
+        <input type="file" id="fileInput" accept=".bin, .hex">
+        <button onclick="simulateFileLoad()">Simulate Load</button>
+        <button onclick="simulateFileSave()">Simulate Save</button>
       </div>
-  </div>
-
-  <div class="section">
-    <div class="button-group">
-        <button onclick="confirmTuning()">✅ Confirm Tuning</button>
-        <button onclick="compareMaps()">📊 Compare Maps</button>
-        <button onclick="calculateChecksum()">➕ Calc Checksum</button>
-        <button onclick="undoLastChange()">↩️ Undo</button>
+      <div id="messageArea"></div>
+      <div class="file-info">
+        <div><span class="status-indicator status-inactive"></span> ECU File: <span id="fileStatus">Not loaded</span></div>
+        <div><span class="status-indicator status-inactive"></span> Current Map: <span id="mapStatus">None selected</span></div>
+      </div>
     </div>
-    <div id="resultArea"></div>
+
+    <div class="section">
+      <h3><span class="icon">⚙️</span> Vehicle & Model Selection</h3>
+      <div>
+        <label for="carBrand">Brand:</label>
+        <select id="carBrand">
+          <option value="Mazda">Mazda</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Honda">Honda</option>
+          <option value="Isuzu">Isuzu</option>
+          <option value="Ford">Ford</option>
+          <option value="Nissan">Nissan</option>
+          <option value="BMW">BMW</option>
+          <option value="Mercedes-Benz">Mercedes-Benz</option>
+        </select>
+
+        <label for="carModel">Model:</label>
+        <select id="carModel"></select>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">🗺️</span> Map Selection & View Mode</h3>
+      <div>
+        <label for="mapType">Select Map for Tuning:</label>
+        <select id="mapType"></select>
+      </div>
+      <div style="margin-top: 20px;">
+        <label for="viewMode">Display Mode:</label>
+        <select id="viewMode">
+          <option value="text">Text</option>
+          <option value="2d">2D Graph</option>
+          <option value="3d">3D Graph (Simulated)</option>
+        </select>
+      </div>
+      <canvas id="graphCanvas" style="display: none;"></canvas>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">📈</span> Map Tuning Area</h3>
+      <div style="overflow-x: auto;">
+        <table id="tuningTable">
+          <thead>
+            <tr><th>Axis X</th><th>Axis Y</th><th>Value</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">🔢</span> HEX Viewer</h3>
+      <div class="hex-grid" id="hexGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="button-group">
+        <button onclick="confirmTuning()"><span>✅</span> Confirm Tuning</button>
+        <button onclick="compareMaps()"><span>📊</span> Compare Maps</button>
+        <button onclick="calculateChecksum()"><span>➕</span> Calc Checksum</button>
+        <button onclick="undoLastChange()"><span>↩️</span> Undo</button>
+        <button onclick="redoChange()"><span>↪️</span> Redo</button>
+      </div>
+      <div id="resultArea"></div>
+    </div>
   </div>
 
   <script>
@@ -247,10 +401,7 @@
     let history = [];
     let historyPointer = -1;
 
-    // --- Data Definitions (Expanded with more realistic and diverse maps) ---
-    // Note: 'defaultData' contains {axisX_value, axisY_value, hexValue} for 2D maps
-    // For 1D maps, axisY_value might be null or not present.
-    // For raw maps (like DTC), use {id, hexValue}.
+    // --- Data Definitions ---
     const ecuDefinitions = {
       "Mazda": {
         "Mazda 2 Skyactiv-D (Diesel)": {
@@ -311,50 +462,6 @@
               { rpm: 1500, load: 100, hexValue: "0A28" }, { rpm: 2000, load: 100, hexValue: "0A8C" }, { rpm: 2500, load: 100, hexValue: "0AF0" }, { rpm: 3000, load: 100, hexValue: "0B54" },
               { rpm: 3500, load: 100, hexValue: "0BB8" }, { rpm: 4000, load: 100, hexValue: "0C1C" }, { rpm: 4500, load: 100, hexValue: "0C80" }, { rpm: 5000, load: 100, hexValue: "0CE4" },
             ]
-          },
-          rail_pressure: {
-            name: "Rail Pressure (bar)",
-            address: 0x1300, type: "16-bit unsigned", factor: 0.1, offset: 0,
-            axes: { x: "RPM", y: "IQ (mg)" },
-            axisValues: { rpm: [800, 1500, 2000, 2500, 3000, 3500, 4000], iq: [10, 20, 30, 40, 50, 60] },
-            defaultData: [
-              { rpm: 800, iq: 10, hexValue: "09C4" }, { rpm: 1500, iq: 10, hexValue: "0A28" }, { rpm: 2000, iq: 10, hexValue: "0AE8" }, { rpm: 2500, iq: 10, hexValue: "0B4C" },
-              { rpm: 3000, iq: 10, hexValue: "0BB0" }, { rpm: 3500, iq: 10, hexValue: "0C14" }, { rpm: 4000, iq: 10, hexValue: "0C78" },
-              { rpm: 800, iq: 20, hexValue: "0B14" }, { rpm: 1500, iq: 20, hexValue: "0B78" }, { rpm: 2000, iq: 20, hexValue: "0BE0" }, { rpm: 2500, iq: 20, hexValue: "0C44" },
-              { rpm: 3000, iq: 20, hexValue: "0CA8" }, { rpm: 3500, iq: 20, hexValue: "0D0C" }, { rpm: 4000, iq: 20, hexValue: "0D70" },
-              { rpm: 800, iq: 30, hexValue: "0CED" }, { rpm: 1500, iq: 30, hexValue: "0D58" }, { rpm: 2000, iq: 30, hexValue: "0DC0" }, { rpm: 2500, iq: 30, hexValue: "0E24" },
-              { rpm: 3000, iq: 30, hexValue: "0E8C" }, { rpm: 3500, iq: 30, hexValue: "0EF0" }, { rpm: 4000, iq: 30, hexValue: "0F58" },
-              { rpm: 800, iq: 40, hexValue: "0E8C" }, { rpm: 1500, iq: 40, hexValue: "0EF0" }, { rpm: 2000, iq: 40, hexValue: "0F58" }, { rpm: 2500, iq: 40, hexValue: "0FBC" },
-              { rpm: 3000, iq: 40, hexValue: "1020" }, { rpm: 3500, iq: 40, hexValue: "1088" }, { rpm: 4000, iq: 40, hexValue: "10EC" },
-              { rpm: 800, iq: 50, hexValue: "0FBC" }, { rpm: 1500, iq: 50, hexValue: "1020" }, { rpm: 2000, iq: 50, hexValue: "1088" }, { rpm: 2500, iq: 50, hexValue: "10EC" },
-              { rpm: 3000, iq: 50, hexValue: "1154" }, { rpm: 3500, iq: 50, hexValue: "11B8" }, { rpm: 4000, iq: 50, hexValue: "1220" },
-              { rpm: 800, iq: 60, hexValue: "10EC" }, { rpm: 1500, iq: 60, hexValue: "1154" }, { rpm: 2000, iq: 60, hexValue: "11B8" }, { rpm: 2500, iq: 60, hexValue: "1220" },
-              { rpm: 3000, iq: 60, hexValue: "1284" }, { rpm: 3500, iq: 60, hexValue: "12EC" }, { rpm: 4000, iq: 60, hexValue: "1350" },
-            ]
-          },
-          dtc_switch: {
-            name: "DTC Switch",
-            address: 0x3000, type: "8-bit raw", factor: 1, offset: 0,
-            axes: { x: null, y: null },
-            defaultData: [
-                { id: "P0420 (CAT)", hexValue: "01" }, { id: "P0171 (Lean)", hexValue: "01" },
-                { id: "P0300 (Misfire)", hexValue: "00" }, { id: "P0440 (EVAP)", hexValue: "01" },
-                { id: "P0455 (EVAP Leak)", hexValue: "00" }, { id: "P0460 (Fuel Level)", hexValue: "01" },
-                { id: "P0470 (Exhaust Press)", hexValue: "01" }, { id: "P0480 (Fan Control)", hexValue: "00" },
-            ]
-          },
-          egr_map: {
-            name: "EGR Control (duty cycle)",
-            address: 0x1400, type: "8-bit unsigned", factor: 0.5, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500], load: [10, 20, 30, 40, 50] },
-            defaultData: [
-                { rpm: 800, load: 10, hexValue: "50" }, { rpm: 1000, load: 10, hexValue: "4A" }, { rpm: 1500, load: 10, hexValue: "40" }, { rpm: 2000, load: 10, hexValue: "30" }, { rpm: 2500, load: 10, hexValue: "20" },
-                { rpm: 800, load: 20, hexValue: "55" }, { rpm: 1000, load: 20, hexValue: "50" }, { rpm: 1500, load: 20, hexValue: "45" }, { rpm: 2000, load: 20, hexValue: "35" }, { rpm: 2500, load: 20, hexValue: "25" },
-                { rpm: 800, load: 30, hexValue: "60" }, { rpm: 1000, load: 30, hexValue: "55" }, { rpm: 1500, load: 30, hexValue: "50" }, { rpm: 2000, load: 30, hexValue: "40" }, { rpm: 2500, load: 30, hexValue: "30" },
-                { rpm: 800, load: 40, hexValue: "65" }, { rpm: 1000, load: 40, hexValue: "60" }, { rpm: 1500, load: 40, hexValue: "55" }, { rpm: 2000, load: 40, hexValue: "45" }, { rpm: 2500, load: 40, hexValue: "35" },
-                { rpm: 800, load: 50, hexValue: "6A" }, { rpm: 1000, load: 50, hexValue: "65" }, { rpm: 1500, load: 50, hexValue: "60" }, { rpm: 2000, load: 50, hexValue: "50" }, { rpm: 2500, load: 50, hexValue: "40" },
-            ]
           }
         },
         "Mazda 2 Skyactiv-G (Petrol)": {
@@ -377,284 +484,31 @@
               { rpm: 800, load: 100, hexValue: "08" }, { rpm: 1000, load: 100, hexValue: "0D" }, { rpm: 1500, load: 100, hexValue: "12" }, { rpm: 2000, load: 100, hexValue: "15" },
               { rpm: 2500, load: 100, hexValue: "18" }, { rpm: 3000, load: 100, hexValue: "1A" }, { rpm: 3500, load: 100, hexValue: "1C" }, { rpm: 4000, load: 100, hexValue: "1D" },
             ]
-          },
-          fuel_map: {
-            name: "Fuel Map (lambda)",
-            address: 0x1100, type: "8-bit unsigned", factor: 0.01, offset: 0.5,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [
-              { rpm: 800, load: 10, hexValue: "64" }, { rpm: 1000, load: 10, hexValue: "66" }, { rpm: 1500, load: 10, hexValue: "68" }, { rpm: 2000, load: 10, hexValue: "6A" },
-              { rpm: 2500, load: 10, hexValue: "6C" }, { rpm: 3000, load: 10, hexValue: "6E" }, { rpm: 3500, load: 10, hexValue: "70" }, { rpm: 4000, load: 10, hexValue: "71" },
-              { rpm: 800, load: 30, hexValue: "6E" }, { rpm: 1000, load: 30, hexValue: "70" }, { rpm: 1500, load: 30, hexValue: "72" }, { rpm: 2000, load: 30, hexValue: "74" },
-              { rpm: 2500, load: 30, hexValue: "76" }, { rpm: 3000, load: 30, hexValue: "78" }, { rpm: 3500, load: 30, hexValue: "7A" }, { rpm: 4000, load: 30, hexValue: "7B" },
-              { rpm: 800, load: 50, hexValue: "78" }, { rpm: 1000, load: 50, hexValue: "7A" }, { rpm: 1500, load: 50, hexValue: "7C" }, { rpm: 2000, load: 50, hexValue: "7E" },
-              { rpm: 2500, load: 50, hexValue: "80" }, { rpm: 3000, load: 50, hexValue: "82" }, { rpm: 3500, load: 50, hexValue: "84" }, { rpm: 4000, load: 50, hexValue: "85" },
-              { rpm: 800, load: 70, hexValue: "82" }, { rpm: 1000, load: 70, hexValue: "84" }, { rpm: 1500, load: 70, hexValue: "86" }, { rpm: 2000, load: 70, hexValue: "88" },
-              { rpm: 2500, load: 70, hexValue: "8A" }, { rpm: 3000, load: 70, hexValue: "8C" }, { rpm: 3500, load: 70, hexValue: "8E" }, { rpm: 4000, load: 70, hexValue: "8F" },
-              { rpm: 800, load: 90, hexValue: "8C" }, { rpm: 1000, load: 90, hexValue: "8E" }, { rpm: 1500, load: 90, hexValue: "90" }, { rpm: 2000, load: 90, hexValue: "92" },
-              { rpm: 2500, load: 90, hexValue: "94" }, { rpm: 3000, load: 90, hexValue: "96" }, { rpm: 3500, load: 90, hexValue: "98" }, { rpm: 4000, load: 90, hexValue: "99" },
-              { rpm: 800, load: 100, hexValue: "90" }, { rpm: 1000, load: 100, hexValue: "92" }, { rpm: 1500, load: 100, hexValue: "94" }, { rpm: 2000, load: 100, hexValue: "96" },
-              { rpm: 2500, load: 100, hexValue: "98" }, { rpm: 3000, load: 100, hexValue: "9A" }, { rpm: 3500, load: 100, hexValue: "9C" }, { rpm: 4000, load: 100, hexValue: "9D" },
-            ]
           }
-        },
-        "Mazda 3 Skyactiv-G (Petrol)": {
-            ignition_timing: {
-                name: "Ignition Timing (degrees BTDC)",
-                address: 0x1000, type: "8-bit signed", factor: 0.5, offset: -30,
-                axes: { x: "RPM", y: "Load" },
-                axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000], load: [10, 30, 50, 70, 90, 100] },
-                defaultData: [ /* ... (more data points) */ ]
-            },
-            fuel_map: { /* ... */ },
-            vvt_cam_angle: {
-                name: "VVT Cam Angle (degrees)",
-                address: 0x1200, type: "8-bit unsigned", factor: 0.1, offset: 0,
-                axes: { x: "RPM", y: "Load" },
-                axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000], load: [10, 30, 50, 70, 90, 100] },
-                defaultData: [ /* ... (more data points) */ ]
-            }
-        },
-        "Mazda BT-50 (Diesel)": {
-            iq_limit: { /* ... */ },
-            main_injection: { /* ... */ },
-            boost_pressure: { /* ... */ },
-            rail_pressure: { /* ... */ },
-            egr_map: { /* ... */ },
-            limiter_map: {
-                name: "Speed Limiter (km/h)",
-                address: 0x4000, type: "16-bit unsigned", factor: 1, offset: 0,
-                axes: { x: null, y: null },
-                defaultData: [ { id: "Speed Limit", hexValue: "00B4" } ] // 180 km/h
-            }
         }
       },
       "Toyota": {
         "Toyota Hilux Revo (Diesel)": {
-          iq_limit: { /* ... (similar to Mazda Diesel) */
+          iq_limit: {
             name: "IQ Limit (mg/stroke)",
             address: 0x1000, type: "8-bit unsigned", factor: 0.01, offset: 0,
             axes: { x: "RPM", y: "Load" },
             axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [ /* ... (more data points) */ ]
-          },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          dpf_regeneration: {
-            name: "DPF Regeneration Settings",
-            address: 0x3000, type: "8-bit raw", factor: 1, offset: 0,
-            axes: { x: null, y: null },
             defaultData: [
-                { id: "Min Temp for Regen (C)", hexValue: "C8" }, // 200C
-                { id: "Min Speed for Regen (km/h)", hexValue: "1E" }, // 30 km/h
-                { id: "Regen Duration (min)", hexValue: "0A" }, // 10 min
-                { id: "Soot Load Threshold (%)", hexValue: "32" }, // 50%
+              { rpm: 800, load: 10, hexValue: "20" }, { rpm: 1000, load: 10, hexValue: "25" }, { rpm: 1500, load: 10, hexValue: "2A" }, { rpm: 2000, load: 10, hexValue: "2D" },
+              { rpm: 2500, load: 10, hexValue: "30" }, { rpm: 3000, load: 10, hexValue: "32" }, { rpm: 3500, load: 10, hexValue: "34" }, { rpm: 4000, load: 10, hexValue: "35" },
+              { rpm: 800, load: 30, hexValue: "30" }, { rpm: 1000, load: 30, hexValue: "35" }, { rpm: 1500, load: 30, hexValue: "3A" }, { rpm: 2000, load: 30, hexValue: "3D" },
+              { rpm: 2500, load: 30, hexValue: "40" }, { rpm: 3000, load: 30, hexValue: "42" }, { rpm: 3500, load: 30, hexValue: "44" }, { rpm: 4000, load: 30, hexValue: "45" },
+              { rpm: 800, load: 50, hexValue: "40" }, { rpm: 1000, load: 50, hexValue: "45" }, { rpm: 1500, load: 50, hexValue: "4A" }, { rpm: 2000, load: 50, hexValue: "4D" },
+              { rpm: 2500, load: 50, hexValue: "50" }, { rpm: 3000, load: 50, hexValue: "52" }, { rpm: 3500, load: 50, hexValue: "54" }, { rpm: 4000, load: 50, hexValue: "55" },
+              { rpm: 800, load: 70, hexValue: "50" }, { rpm: 1000, load: 70, hexValue: "55" }, { rpm: 1500, load: 70, hexValue: "5A" }, { rpm: 2000, load: 70, hexValue: "5D" },
+              { rpm: 2500, load: 70, hexValue: "60" }, { rpm: 3000, load: 70, hexValue: "62" }, { rpm: 3500, load: 70, hexValue: "64" }, { rpm: 4000, load: 70, hexValue: "65" },
+              { rpm: 800, load: 90, hexValue: "60" }, { rpm: 1000, load: 90, hexValue: "65" }, { rpm: 1500, load: 90, hexValue: "6A" }, { rpm: 2000, load: 90, hexValue: "6D" },
+              { rpm: 2500, load: 90, hexValue: "70" }, { rpm: 3000, load: 90, hexValue: "72" }, { rpm: 3500, load: 90, hexValue: "74" }, { rpm: 4000, load: 90, hexValue: "75" },
+              { rpm: 800, load: 100, hexValue: "68" }, { rpm: 1000, load: 100, hexValue: "6D" }, { rpm: 1500, load: 100, hexValue: "72" }, { rpm: 2000, load: 100, hexValue: "75" },
+              { rpm: 2500, load: 100, hexValue: "78" }, { rpm: 3000, load: 100, hexValue: "7A" }, { rpm: 3500, load: 100, hexValue: "7C" }, { rpm: 4000, load: 100, hexValue: "7D" },
             ]
           }
-        },
-        "Toyota Fortuner (Diesel)": {
-            iq_limit: { /* ... */ },
-            main_injection: { /* ... */ },
-            boost_pressure: { /* ... */ },
-            rail_pressure: { /* ... */ },
-            egr_map: { /* ... */ }
-        },
-        "Toyota Corolla Altis (Petrol)": {
-            ignition_timing: { /* ... */ },
-            fuel_map: { /* ... */ },
-            throttle_response: {
-                name: "Throttle Response (multiplier)",
-                address: 0x1200, type: "8-bit unsigned", factor: 0.01, offset: 0.5,
-                axes: { x: "RPM", y: "TPS" },
-                axisValues: { rpm: [1000, 2000, 3000, 4000, 5000], tps: [10, 30, 50, 70, 90, 100] },
-                defaultData: [ /* ... */ ]
-            }
-        },
-        "Toyota Yaris (Petrol)": {
-            ignition_timing: { /* ... */ },
-            fuel_map: { /* ... */ },
-            dtc_switch: { /* ... */ }
-        }
-      },
-      "Honda": {
-        "Honda Civic Turbo (Petrol)": {
-          ignition_timing: { /* ... */
-            name: "Ignition Timing (degrees BTDC)",
-            address: 0x1000, type: "8-bit signed", factor: 0.5, offset: -30,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000, 7000], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [ /* ... (more data points) */ ]
-          },
-          fuel_map: { /* ... */ },
-          boost_control: {
-            name: "Boost Control (kPa)",
-            address: 0x1200, type: "16-bit unsigned", factor: 0.1, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000, 7000], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [ /* ... */ ]
-          },
-          vtec_control: {
-            name: "VTEC Engage RPM",
-            address: 0x1300, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: null, y: null },
-            defaultData: [ { id: "High Cam Engage RPM", hexValue: "0C80" } ] // 3200 RPM
-          }
-        },
-        "Honda CR-V (Diesel)": {
-            iq_limit: { /* ... */ },
-            main_injection: { /* ... */ },
-            boost_pressure: { /* ... */ },
-            dtc_switch: { /* ... */ }
-        },
-        "Honda Jazz (Petrol)": {
-            ignition_timing: { /* ... */ },
-            fuel_map: { /* ... */ },
-            gear_shift_light: {
-                name: "Gear Shift Light RPM",
-                address: 0x4000, type: "16-bit unsigned", factor: 1, offset: 0,
-                axes: { x: null, y: null },
-                defaultData: [ { id: "Shift Light RPM", hexValue: "1388" } ] // 5000 RPM
-            }
-        },
-        "Honda City (Petrol)": {
-            ignition_timing: { /* ... */ },
-            fuel_map: { /* ... */ },
-            throttle_response: { /* ... */ }
-        }
-      },
-      "Isuzu": {
-        "Isuzu D-Max Blue Power (Diesel)": {
-          iq_limit: { /* ... */
-            name: "IQ Limit (mg/stroke)",
-            address: 0x1000, type: "8-bit unsigned", factor: 0.01, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [ /* ... (more data points) */ ]
-          },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          dpf_regeneration: { /* ... */ },
-          gear_limiter: {
-            name: "Gear Torque Limiter",
-            address: 0x5000, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Gear", y: null }, // 1D map
-            axisValues: { gear: [1, 2, 3, 4, 5, 6] },
-            defaultData: [
-                { gear: 1, hexValue: "01F4" }, // 500 Nm
-                { gear: 2, hexValue: "0258" }, // 600 Nm
-                { gear: 3, hexValue: "02BC" }, // 700 Nm
-                { gear: 4, hexValue: "0320" }, // 800 Nm
-                { gear: 5, hexValue: "0384" }, // 900 Nm
-                { gear: 6, hexValue: "03E8" }, // 1000 Nm
-            ]
-          }
-        },
-        "Isuzu MU-X (Diesel)": {
-            iq_limit: { /* ... */ },
-            main_injection: { /* ... */ },
-            boost_pressure: { /* ... */ },
-            rail_pressure: { /* ... */ }
-        }
-      },
-      "Ford": {
-        "Ford Ranger (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          dtc_switch: { /* ... */ },
-          egr_map: { /* ... */ }
-        },
-        "Ford Everest (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          dpf_regeneration: { /* ... */ }
-        },
-        "Ford Focus (Petrol)": {
-          ignition_timing: { /* ... */ },
-          fuel_map: { /* ... */ },
-          throttle_response: { /* ... */ },
-          turbo_wastegate: {
-              name: "Turbo Wastegate Duty Cycle",
-              address: 0x1400, type: "8-bit unsigned", factor: 0.5, offset: 0,
-              axes: { x: "RPM", y: "Boost (kPa)" },
-              axisValues: { rpm: [1500, 2000, 2500, 3000, 3500], boost: [50, 100, 150, 200, 250] },
-              defaultData: [ /* ... */ ]
-          }
-        }
-      },
-      "Nissan": {
-        "Nissan Navara (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          egr_map: { /* ... */ }
-        },
-        "Nissan Almera (Petrol)": {
-          ignition_timing: { /* ... */ },
-          fuel_map: { /* ... */ },
-          idle_rpm: {
-            name: "Idle RPM",
-            address: 0x4000, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: null, y: null },
-            defaultData: [ { id: "Idle RPM", hexValue: "02BC" } ] // 700 RPM
-          }
-        },
-        "Nissan March (Petrol)": {
-          ignition_timing: { /* ... */ },
-          fuel_map: { /* ... */ }
-        }
-      },
-      "BMW": {
-        "BMW 320d (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          dtc_switch: { /* ... */ }
-        },
-        "BMW 320i (Petrol)": {
-          ignition_timing: { /* ... */ },
-          fuel_map: { /* ... */ },
-          vanos_control: {
-              name: "VANOS Cam Angle",
-              address: 0x1400, type: "8-bit unsigned", factor: 0.1, offset: 0,
-              axes: { x: "RPM", y: "Load" },
-              axisValues: { rpm: [1000, 2000, 3000, 4000, 5000], load: [10, 30, 50, 70, 90, 100] },
-              defaultData: [ /* ... */ ]
-          }
-        },
-        "BMW X5 (Diesel)": {
-            iq_limit: { /* ... */ },
-            main_injection: { /* ... */ },
-            boost_pressure: { /* ... */ },
-            rail_pressure: { /* ... */ }
-        }
-      },
-      "Mercedes-Benz": {
-        "Mercedes-Benz C220d (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ },
-          egr_map: { /* ... */ }
-        },
-        "Mercedes-Benz C200 (Petrol)": {
-          ignition_timing: { /* ... */ },
-          fuel_map: { /* ... */ },
-          throttle_response: { /* ... */ }
-        },
-        "Mercedes-Benz GLE (Diesel)": {
-          iq_limit: { /* ... */ },
-          main_injection: { /* ... */ },
-          boost_pressure: { /* ... */ },
-          rail_pressure: { /* ... */ }
         }
       }
     };
@@ -663,7 +517,6 @@
     const carBrandSelect = document.getElementById("carBrand");
     const carModelSelect = document.getElementById("carModel");
     const mapTypeSelect = document.getElementById("mapType");
-    const tuningTableHead = document.querySelector("#tuningTable thead tr"); // Added for dynamic headers
     const tuningTableBody = document.querySelector("#tuningTable tbody");
     const hexGrid = document.getElementById("hexGrid");
     const resultArea = document.getElementById("resultArea");
@@ -671,6 +524,8 @@
     const viewModeSelect = document.getElementById("viewMode");
     const graphCanvas = document.getElementById("graphCanvas");
     const graphCtx = graphCanvas.getContext('2d');
+    const fileStatus = document.getElementById("fileStatus");
+    const mapStatus = document.getElementById("mapStatus");
     let chartInstance;
 
     // --- Utility Functions ---
@@ -693,18 +548,26 @@
       }, 5000);
     }
 
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
     // --- Core Logic ---
 
     // Populates car models based on selected brand
     function populateCarModels() {
         const selectedBrand = carBrandSelect.value;
         const modelsForBrand = ecuDefinitions[selectedBrand];
-        carModelSelect.innerHTML = ''; // Clear existing options
+        carModelSelect.innerHTML = '';
 
         if (modelsForBrand) {
             for (const modelKey in modelsForBrand) {
                 const option = document.createElement("option");
-                // Use the readable modelKey as text and value
                 option.value = modelKey;
                 option.textContent = modelKey;
                 carModelSelect.appendChild(option);
@@ -715,26 +578,24 @@
             option.textContent = "No models available";
             carModelSelect.appendChild(option);
         }
-        // Always attempt to populate map options for the newly selected model
+        
         populateMapOptions();
     }
-
 
     // Populates map options based on selected car model
     function populateMapOptions() {
         const selectedBrand = carBrandSelect.value;
-        // Use the text content directly which matches the key in ecuDefinitions
-        const selectedModelText = carModelSelect.value; 
-        const mapsForModel = ecuDefinitions[selectedBrand]?.[selectedModelText]; // Use optional chaining for safety
+        const selectedModelText = carModelSelect.value;
+        const mapsForModel = ecuDefinitions[selectedBrand]?.[selectedModelText];
         
-        mapTypeSelect.innerHTML = ''; // Clear existing options
+        mapTypeSelect.innerHTML = '';
 
         let hasMaps = false;
         if (mapsForModel) {
             for (const mapKey in mapsForModel) {
                 const option = document.createElement("option");
-                option.value = mapKey; // Use mapKey (e.g., 'iq_limit')
-                option.textContent = mapsForModel[mapKey].name; // Use friendly name
+                option.value = mapKey;
+                option.textContent = mapsForModel[mapKey].name;
                 mapTypeSelect.appendChild(option);
                 hasMaps = true;
             }
@@ -747,31 +608,33 @@
             mapTypeSelect.appendChild(option);
         }
 
-        // If there are maps, try to load the first one, otherwise clear
         if (hasMaps && mapTypeSelect.value) {
             loadMapData();
         } else {
-            // Clear tuning area if no maps are available
             tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
-            renderGraph(); // Clear graph if no maps
+            renderGraph();
+            mapStatus.textContent = "None selected";
         }
     }
 
     // Loads and displays the selected map data
     function loadMapData() {
         const selectedBrand = carBrandSelect.value;
-        const selectedModelText = carModelSelect.value; // Correctly get the selected model text
+        const selectedModelText = carModelSelect.value;
         const selectedMapType = mapTypeSelect.value;
 
-        if (!selectedMapType || !ecuDefinitions[selectedBrand] || !ecuDefinitions[selectedBrand][selectedModelText] || !ecuDefinitions[selectedBrand][selectedModelText][selectedMapType]) {
+        if (!selectedMapType || !ecuDefinitions[selectedBrand] || 
+            !ecuDefinitions[selectedBrand][selectedModelText] || 
+            !ecuDefinitions[selectedBrand][selectedModelText][selectedMapType]) {
             tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
             renderGraph();
+            mapStatus.textContent = "None selected";
             return;
         }
 
@@ -782,50 +645,22 @@
         renderHexGrid();
         renderGraph();
         addToHistory();
+        
+        mapStatus.textContent = currentMapDefinition.name;
     }
 
     // Renders the table view of the map
     function renderTuningTable() {
       tuningTableBody.innerHTML = '';
 
-      // Dynamically update table headers
-      tuningTableHead.innerHTML = '';
-      let headerX = 'Axis X';
-      let headerY = 'Axis Y';
-
-      if (currentMapDefinition && currentMapDefinition.axes) {
-        if (currentMapDefinition.axes.x) {
-            headerX = currentMapDefinition.axes.x;
-        }
-        if (currentMapDefinition.axes.y) {
-            headerY = currentMapDefinition.axes.y;
-        }
-      } 
-      // Special case for DTC switch
-      if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) {
-        headerX = "DTC ID";
-        headerY = "Status"; // Or remove Y-axis if it's truly 1D
-      } else if (!currentMapDefinition?.axes?.y) { // If it's a 1D map with only X axis
-          headerY = ''; // Clear Y-axis header for 1D maps
-      }
-
-      tuningTableHead.innerHTML = `<th>${headerX}</th>`;
-      if (headerY) { // Only add Y-axis header if it's defined
-        tuningTableHead.innerHTML += `<th>${headerY}</th>`;
-      }
-      tuningTableHead.innerHTML += `<th>Value</th>`;
-
-
       if (!currentMapData || currentMapData.length === 0) {
-          tuningTableBody.innerHTML = '<tr><td colspan="'+ (headerY ? '3' : '2') +'">No map data to display.</td></tr>';
+          tuningTableBody.innerHTML = '<tr><td colspan="3">No map data to display.</td></tr>';
           return;
       }
 
-      const isDTC = currentMapDefinition && currentMapDefinition.name.includes("DTC Switch");
-
       currentMapData.forEach((row, index) => {
         let displayValue;
-        if (isDTC) {
+        if (currentMapDefinition.name.includes("DTC Switch")) {
             displayValue = row.hexValue === "01" ? "Enabled" : "Disabled";
         } else {
             if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
@@ -836,25 +671,25 @@
         }
 
         const tr = document.createElement("tr");
-        const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase() || (isDTC ? 'id' : (currentMapDefinition?.axes?.y?.toLowerCase())); // Fallback for 1D map X or DTC ID
+        const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase() || 'id';
         const axisYKey = currentMapDefinition?.axes?.y?.toLowerCase();
 
         const axisXValue = axisXKey ? (row[axisXKey] || '-') : '-';
         const axisYValue = axisYKey ? (row[axisYKey] || '-') : '-';
 
         let rowHtml = `<td>${axisXValue}</td>`;
-        if (headerY) { // Only add Y-axis cell if it's defined
+        if (axisYKey) {
             rowHtml += `<td>${axisYValue}</td>`;
         }
         
         rowHtml += `<td>
-            ${isDTC ? `
+            ${currentMapDefinition.name.includes("DTC Switch") ? `
                 <select class="map-value-input" data-index="${index}">
                     <option value="01" ${row.hexValue === "01" ? 'selected' : ''}>Enabled</option>
                     <option value="00" ${row.hexValue === "00" ? 'selected' : ''}>Disabled</option>
                 </select>
             ` : `
-                <input type="number" class="map-value-input" data-index="${index}" value="${displayValue}">
+                <input type="number" class="map-value-input" data-index="${index}" value="${displayValue}" step="${currentMapDefinition.factor < 1 ? '0.01' : '1'}">
             `}
           </td>`;
         tr.innerHTML = rowHtml;
@@ -899,7 +734,7 @@
       addToHistory();
 
       let hexEquivalent;
-      if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) {
+      if (currentMapDefinition.name.includes("DTC Switch")) {
           hexEquivalent = newValue;
       } else {
           newValue = parseFloat(newValue);
@@ -912,20 +747,14 @@
               if (currentMapDefinition.type === "8-bit unsigned") {
                   hexEquivalent = Math.max(0, Math.min(hexEquivalent, 255));
               } else if (currentMapDefinition.type === "8-bit signed") {
-                  // For signed 8-bit, values usually range from -128 to 127
-                  // Hex 00-FF corresponds to 0-255 (unsigned)
-                  // For signed, 00-7F is 0-127, 80-FF is -128 to -1
-                  // This conversion is simplified.
                   hexEquivalent = Math.max(-128, Math.min(hexEquivalent, 127));
-                  // Convert to unsigned for hex representation
                   if (hexEquivalent < 0) hexEquivalent = 256 + hexEquivalent;
               }
               else if (currentMapDefinition.type === "16-bit unsigned") {
                   hexEquivalent = Math.max(0, Math.min(hexEquivalent, 65535));
               } else if (currentMapDefinition.type === "16-bit signed") {
-                   // Similar signed conversion for 16-bit
-                   hexEquivalent = Math.max(-32768, Math.min(hexEquivalent, 32767));
-                   if (hexEquivalent < 0) hexEquivalent = 65536 + hexEquivalent;
+                  hexEquivalent = Math.max(-32768, Math.min(hexEquivalent, 32767));
+                  if (hexEquivalent < 0) hexEquivalent = 65536 + hexEquivalent;
               }
           } else {
               hexEquivalent = Math.round(newValue);
@@ -958,14 +787,11 @@
         return;
       }
 
-      // Pad with leading zeros if too short
       if (is8Bit && newHexValue.length === 1) newHexValue = '0' + newHexValue;
       if (is16Bit && newHexValue.length < 4) newHexValue = newHexValue.padStart(4, '0');
       
-      // Ensure the HEX value corresponds to the correct bit-length (for display)
       if (is8Bit && newHexValue.length > 2) newHexValue = newHexValue.substring(newHexValue.length - 2);
       if (is16Bit && newHexValue.length > 4) newHexValue = newHexValue.substring(newHexValue.length - 4);
-
 
       addToHistory();
 
@@ -973,8 +799,8 @@
 
       const mapInput = tuningTableBody.querySelector(`[data-index="${index}"]`);
       if (mapInput) {
-          if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) {
-              mapInput.value = newHexValue; // "00" or "01"
+          if (currentMapDefinition.name.includes("DTC Switch")) {
+              mapInput.value = newHexValue;
           } else {
               let actualValueDec = hexToDec(newHexValue);
               if (currentMapDefinition.type === "8-bit signed" && actualValueDec >= 128) actualValueDec -= 256;
@@ -1000,24 +826,18 @@
             chartInstance.destroy();
         }
 
-        const xAxisLabel = currentMapDefinition?.axes?.x;
-        const yAxisLabel = currentMapDefinition?.axes?.y;
-
-        // Check if map is suitable for 2D graph
-        const isGraphable = currentMapDefinition && currentMapData && 
-                             !currentMapDefinition.name.includes("DTC Switch") &&
-                             (xAxisLabel || yAxisLabel); // Ensure at least one axis is defined
-
-        if (viewMode === '2d' && isGraphable) {
+        if (viewMode === '2d' && currentMapDefinition && currentMapData && 
+            !currentMapDefinition.name.includes("DTC Switch")) {
             graphCanvas.style.display = 'block';
+            
+            const xAxisLabel = currentMapDefinition?.axes?.x;
+            const yAxisLabel = currentMapDefinition?.axes?.y;
             
             let labels = [];
             let datasets = [];
-
-            // Group data by one of the axis values if both X and Y are present
+            
             if (xAxisLabel && yAxisLabel) {
                 const uniqueYValues = [...new Set(currentMapData.map(d => d[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
-                
                 labels = [...new Set(currentMapData.map(d => d[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
 
                 uniqueYValues.forEach(yVal => {
@@ -1034,27 +854,26 @@
                             }
                             dataForY.push(value);
                         } else {
-                            dataForY.push(null); // Or 0, depending on desired graph behavior for missing points
+                            dataForY.push(null);
                         }
                     });
 
                     datasets.push({
                         label: `${yAxisLabel}: ${yVal}`,
                         data: dataForY,
-                        borderColor: getRandomColor(), // Assign different colors
-                        backgroundColor: 'rgba(0, 191, 255, 0.2)', // Default fill
+                        borderColor: getRandomColor(),
+                        backgroundColor: 'rgba(0, 191, 255, 0.2)',
                         borderWidth: 2,
-                        fill: false, // Don't fill between lines for multiple datasets
+                        fill: false,
                         tension: 0.3
                     });
                 });
-
-            } else { // 1D map (only X or Y axis or just a list of values)
+            } else {
                 labels = currentMapData.map(d => {
                     if (xAxisLabel) return d[xAxisLabel.toLowerCase()] || 'N/A';
                     if (yAxisLabel) return d[yAxisLabel.toLowerCase()] || 'N/A';
-                    if (d.id) return d.id; // For raw maps with IDs
-                    return `Point ${currentMapData.indexOf(d) + 1}`; // Generic fallback
+                    if (d.id) return d.id;
+                    return `Point ${currentMapData.indexOf(d) + 1}`;
                 });
                 
                 const dataValues = currentMapData.map(d => {
@@ -1089,7 +908,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: xAxisLabel || (yAxisLabel ? yAxisLabel : 'Index'), // Dynamic X-axis title
+                                text: xAxisLabel || 'Index',
                                 color: '#ccc'
                             },
                             ticks: { color: '#eee' },
@@ -1098,7 +917,7 @@
                         y: {
                             title: {
                                 display: true,
-                                text: currentMapDefinition.name, // Y-axis title is always the Map Name
+                                text: currentMapDefinition.name,
                                 color: '#ccc'
                             },
                             ticks: { color: '#eee' },
@@ -1117,36 +936,17 @@
         } else {
             graphCanvas.style.display = 'none';
             if (viewMode === '3d') {
-                showMessage("3D Graph visualization is highly complex and requires advanced libraries (e.g., Three.js) and data structures.", false);
-            } else if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) {
-                showMessage("2D Graph is not applicable for DTC Switch map.", false);
-            } else if (currentMapDefinition && (!xAxisLabel && !yAxisLabel)) {
-                 showMessage("This map does not have defined axes for 2D graph visualization.", false);
-            } else if (!currentMapDefinition || !currentMapData) {
-                showMessage("Please select a map to view its graph.", false);
+                showMessage("3D Graph visualization requires advanced libraries.", false);
             }
         }
     }
-    
-    function getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
 
     // --- File Operations Simulation ---
     function simulateFileLoad() {
         showMessage("Simulating ECU file load...", false);
 
-        currentECUFile = Array(0x4000).fill('00'); // Simulate a 16KB ECU file filled with '00'
+        currentECUFile = Array(0x4000).fill('00');
         
-        // This part populates the simulated ECU file with *some* default data
-        // from our predefined 'ecuDefinitions'. This is simplified.
-        // In a real app, this would be actual parsing of the loaded binary file.
         for (const brandKey in ecuDefinitions) {
             for (const modelKey in ecuDefinitions[brandKey]) {
                 for (const mapKey in ecuDefinitions[brandKey][modelKey]) {
@@ -1167,12 +967,13 @@
             }
         }
 
-        // Initialize history with the default loaded state
         history = [];
         historyPointer = -1;
 
-        populateCarModels(); // Start by populating models for the default brand and then maps for the selected model
-        showMessage("ECU file simulated load complete. Default map data loaded.", false);
+        populateCarModels();
+        showMessage("ECU file simulated load complete.", false);
+        fileStatus.textContent = "Loaded (simulated)";
+        document.querySelectorAll('.status-indicator')[0].className = 'status-indicator status-active';
     }
 
     function simulateFileSave() {
@@ -1180,7 +981,7 @@
             showMessage("No ECU file loaded to save.", true);
             return;
         }
-        showMessage("Simulating saving of modified ECU file. This is where the file would be compiled and downloaded.");
+        showMessage("Simulating saving of modified ECU file.");
     }
 
     // --- Tuning Functions ---
@@ -1197,12 +998,9 @@
       let modifiedTotalValue = 0;
 
       if (!currentMapDefinition.name.includes("DTC Switch")) {
-          // Find the original definition based on current selections
           const originalMapDataDef = ecuDefinitions[carBrandSelect.value]
-                                      ? ecuDefinitions[carBrandSelect.value][carModelSelect.value]
-                                          ? ecuDefinitions[carBrandSelect.value][carModelSelect.value][mapTypeSelect.value]
-                                          : null
-                                      : null;
+                                      ?.[carModelSelect.value]
+                                      ?.[mapTypeSelect.value];
 
           if (originalMapDataDef && originalMapDataDef.defaultData) {
               originalMapDataDef.defaultData.forEach(item => {
@@ -1220,35 +1018,24 @@
 
       const diffRatio = (originalTotalValue !== 0) ? (modifiedTotalValue - originalTotalValue) / originalTotalValue : 0;
 
-      // More specific tuning responses based on map type
       if (mapTypeSelect.value.includes("iq_limit") || mapTypeSelect.value.includes("main_injection")) {
         hpChange = (diffRatio * 30).toFixed(1);
         torqueChange = (diffRatio * 40).toFixed(1);
-        response = diffRatio > 0 ? "Significantly improved throttle response and power delivery. Expect more aggressive acceleration." : "Smoother power delivery for economy and comfort.";
+        response = diffRatio > 0 ? "Improved throttle response and power delivery." : "Smoother power delivery for economy.";
       } else if (mapTypeSelect.value.includes("boost_pressure")) {
         hpChange = (diffRatio * 25).toFixed(1);
         torqueChange = (diffRatio * 35).toFixed(1);
-        response = diffRatio > 0 ? "Stronger pull throughout the RPM range, especially in mid-range." : "Reduced turbo lag for better drivability.";
-      } else if (mapTypeSelect.value.includes("rail_pressure")) {
-        hpChange = (diffRatio * 20).toFixed(1);
-        torqueChange = (diffRatio * 30).toFixed(1);
-        response = diffRatio > 0 ? "Improved fuel atomization for more efficient combustion and power." : "Enhanced fuel economy and reduced emissions.";
+        response = diffRatio > 0 ? "Stronger pull throughout the RPM range." : "Reduced turbo lag for better drivability.";
       } else if (mapTypeSelect.value.includes("ignition_timing")) {
         hpChange = (diffRatio * 20).toFixed(1);
         torqueChange = (diffRatio * 25).toFixed(1);
-        response = diffRatio > 0 ? "Optimized combustion for increased power and efficiency." : "Safer operation with reduced risk of knocking.";
-      } else if (mapTypeSelect.value.includes("fuel_map")) {
-        hpChange = (diffRatio * 15).toFixed(1);
-        torqueChange = (diffRatio * 15).toFixed(1);
-        response = diffRatio < 0 ? "Richer mixture for safety and power. Fuel economy may decrease." : "Leaner mixture for better fuel economy. Monitor engine health!";
-      } else if (mapTypeSelect.value.includes("dtc_switch")) {
+        response = diffRatio > 0 ? "Optimized combustion for increased power." : "Safer operation with reduced risk.";
+      } else if (currentMapDefinition.name.includes("DTC Switch")) {
           const disabledDTCs = currentMapData.filter(d => d.hexValue === "00");
           if (disabledDTCs.length > 0) {
-              response = `Warning: ${disabledDTCs.length} DTCs (${disabledDTCs.map(d => d.id).join(', ')}) are currently disabled. Use with caution! This is for off-road use only.`;
-              resultArea.style.color = '#ffaa00';
+              response = `Warning: ${disabledDTCs.length} DTCs are currently disabled.`;
           } else {
-              response = "All DTCs are enabled as per standard. No issues detected.";
-              resultArea.style.color = '#aaffaa';
+              response = "All DTCs are enabled as per standard.";
           }
           hpChange = "N/A";
           torqueChange = "N/A";
@@ -1259,11 +1046,10 @@
       }
 
       resultArea.innerHTML = `
-        <p>✅ Tuning of "${map}" in "${mode}" view mode completed!</p>
-        <p>Initial Results: Horsepower change ~${hpChange} HP, Torque change ~${torqueChange} %, ${response}</p>
-        <p><em>(ผลลัพธ์จำลองนี้ไม่ได้อิงจากหลักการจูนจริง แต่แสดงให้เห็นถึงการเปลี่ยนแปลง)</em></p>
+        <p>✅ Tuning of "${map}" completed!</p>
+        <p>Initial Results: Horsepower change ~${hpChange} HP, Torque change ~${torqueChange} %</p>
+        <p>${response}</p>
       `;
-      resultArea.style.color = '#aaffaa';
     }
 
     function compareMaps() {
@@ -1286,7 +1072,7 @@
                 let label = '';
                 if (axisXKey && modifiedItem[axisXKey] !== undefined) label += `${axisXKey.toUpperCase()}: ${modifiedItem[axisXKey]} `;
                 if (axisYKey && modifiedItem[axisYKey] !== undefined) label += `${axisYKey.toUpperCase()}: ${modifiedItem[axisYKey]} `;
-                if (modifiedItem.id) label = `ID: ${modifiedItem.id}`; // For DTC or other ID-based maps
+                if (modifiedItem.id) label = `ID: ${modifiedItem.id}`;
 
                 comparisonDetails += `Row ${index + 1} (${label.trim() || 'N/A'}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
             }
@@ -1299,13 +1085,12 @@
                 <p>📊 Map Comparison Complete: Found ${changes} differences.</p>
                 <p>${comparisonDetails}</p>
             `;
-            resultArea.style.color = '#ffffaa';
         }
     }
 
     function calculateChecksum() {
         if (!currentECUFile) {
-            showMessage("No ECU file loaded to calculate checksum. Load a file first.", true);
+            showMessage("No ECU file loaded to calculate checksum.", true);
             return;
         }
 
@@ -1319,24 +1104,20 @@
         resultArea.innerHTML = `
             <p>➕ Simulated Checksum Calculation Complete.</p>
             <p>Calculated Checksum: <strong>0x${simulatedChecksum}</strong></p>
-            <p><em>(หมายเหตุ: การคำนวณ Checksum จริงมีความซับซ้อนและเฉพาะเจาะจงกับ ECU แต่ละประเภท)</em></p>
         `;
-        resultArea.style.color = '#aaffaa';
     }
 
     // --- Undo/Redo Functionality ---
     function addToHistory() {
         if (!currentMapData || !currentMapDefinition) return;
 
-        // Ensure we don't store duplicate states if nothing changed
         const currentState = JSON.stringify({
             currentMapData: currentMapData,
             currentMapDefinition: currentMapDefinition
         });
         if (historyPointer >= 0 && JSON.stringify(history[historyPointer]) === currentState) {
-            return; // State hasn't changed, no need to add to history
+            return;
         }
-
 
         if (historyPointer < history.length - 1) {
             history = history.slice(0, historyPointer + 1);
@@ -1355,19 +1136,6 @@
             currentMapData = JSON.parse(JSON.stringify(prevState.currentMapData));
             currentMapDefinition = JSON.parse(JSON.stringify(prevState.currentMapDefinition));
             
-            // Re-select map type in dropdown to match history state
-            if (prevState.currentMapDefinition && mapTypeSelect.value !== prevState.currentMapDefinition.mapKey) { 
-                // We need to find the option by its text content as that's what's used in the definition key
-                const options = Array.from(mapTypeSelect.options);
-                const matchingOption = options.find(opt => opt.textContent === prevState.currentMapDefinition.name);
-                if (matchingOption) {
-                    mapTypeSelect.value = matchingOption.value;
-                } else {
-                    // Fallback if not found by name, try direct mapKey
-                    mapTypeSelect.value = prevState.currentMapDefinition.mapKey;
-                }
-            }
-
             renderTuningTable();
             renderHexGrid();
             renderGraph();
@@ -1376,20 +1144,33 @@
             showMessage("No more changes to undo.", true);
         }
     }
+    
+    function redoChange() {
+        if (historyPointer < history.length - 1) {
+            historyPointer++;
+            const nextState = history[historyPointer];
+            currentMapData = JSON.parse(JSON.stringify(nextState.currentMapData));
+            currentMapDefinition = JSON.parse(JSON.stringify(nextState.currentMapDefinition));
+            
+            renderTuningTable();
+            renderHexGrid();
+            renderGraph();
+            showMessage("Redo successful.", false);
+        } else {
+            showMessage("No more changes to redo.", true);
+        }
+    }
 
     // --- Event Listeners and Initial Load ---
     document.addEventListener("DOMContentLoaded", () => {
       carBrandSelect.addEventListener("change", populateCarModels);
-      carModelSelect.addEventListener("change", populateMapOptions); // Populate maps when model changes
+      carModelSelect.addEventListener("change", populateMapOptions);
       mapTypeSelect.addEventListener("change", loadMapData);
       viewModeSelect.addEventListener("change", renderGraph);
       
-      simulateFileLoad(); // Initial load when the page is ready
+      // Initialize models
+      populateCarModels();
     });
-
-    // Initial population for models and maps based on default selected brand/model
-    // This will be called by simulateFileLoad() on DOMContentLoaded
   </script>
-
 </body>
 </html>
