@@ -751,11 +751,12 @@
         if (hasMaps && mapTypeSelect.value) {
             loadMapData();
         } else {
+            // Clear tuning area if no maps are available
             tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
-            renderGraph();
+            renderGraph(); // Clear graph if no maps
         }
     }
 
@@ -1121,6 +1122,8 @@
                 showMessage("2D Graph is not applicable for DTC Switch map.", false);
             } else if (currentMapDefinition && (!xAxisLabel && !yAxisLabel)) {
                  showMessage("This map does not have defined axes for 2D graph visualization.", false);
+            } else if (!currentMapDefinition || !currentMapData) {
+                showMessage("Please select a map to view its graph.", false);
             }
         }
     }
