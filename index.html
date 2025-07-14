@@ -229,11 +229,11 @@
       margin-top: 25px;
     }
 
-    /* --- ปรับขนาด Canvas ให้เล็กลงตรงนี้ --- */
+    /* --- ปรับขนาด Canvas ให้เล็กลงและมองง่ายขึ้นตรงนี้ --- */
     #graphCanvas {
       width: 100%;
-      max-width: 600px; /* ลดความกว้างสูงสุด */
-      height: 300px; /* ลดความสูง */
+      max-width: 500px; /* ลดความกว้างสูงสุดอีก */
+      height: 250px;    /* ลดความสูงอีก */
       background: rgba(30, 40, 50, 0.7);
       border: 1px solid #4a6380;
       border-radius: 8px;
@@ -292,7 +292,7 @@
       }
       /* ปรับขนาดกราฟสำหรับหน้าจอเล็ก */
       #graphCanvas {
-        height: 250px; /* ลดความสูงของกราฟบนมือถือ */
+        height: 200px; /* ลดความสูงของกราฟบนมือถือ */
         max-width: 100%; /* ให้เต็มความกว้างของคอนเทนเนอร์บนมือถือ */
       }
     }
@@ -312,7 +312,7 @@
       }
       /* ปรับขนาดกราฟสำหรับหน้าจอเล็กสุด */
       #graphCanvas {
-        height: 200px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
+        height: 150px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
       }
     }
   </style>
@@ -1052,18 +1052,18 @@
                 // ตรวจสอบว่ามีแกน X และ Y ที่กำหนดไว้ใน Map Definition และมีค่าสำหรับแกน Y เพื่อแยก series
                 if (xAxisLabel && yAxisLabel && currentMapDefinition.axisValues) {
                     // ดึงค่าแกน Y ที่ไม่ซ้ำกันทั้งหมดเพื่อสร้างหลาย series (เส้นกราฟ)
-                    const uniqueYValues = [...new Set(currentMapData.map(d => d[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+                    const uniqueYValues = [...new Set(currentMapData.map(d => d?.[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
                     
                     // ดึงค่าแกน X ทั้งหมดเพื่อใช้เป็น labels ของกราฟ
-                    labels = [...new Set(currentMapData.map(d => d[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+                    labels = [...new Set(currentMapData.map(d => d?.[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
 
                     uniqueYValues.forEach(yVal => {
                         const dataForY = [];
-                        labels.forEach(xVal => {
+                        labels.forEach((xVal, index) => {
                             // ค้นหาข้อมูลที่ตรงกับทั้งค่าแกน X และแกน Y
                             const item = currentMapData.find(d => 
-                                d[xAxisLabel.toLowerCase()] === xVal && 
-                                d[yAxisLabel.toLowerCase()] === yVal
+                                d?.[xAxisLabel.toLowerCase()] === xVal && 
+                                d?.[yAxisLabel.toLowerCase()] === yVal
                             );
                             if (item) {
                                 let value = hexToDec(item.hexValue);
@@ -1071,9 +1071,9 @@
                                 if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
                                     value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
                                 }
-                                dataForY.push(value);
+                                // ทดลอง: แสดงผลข้อมูลแบบสลับจุด เพื่อให้กราฟดูโปร่งขึ้น (ลดจำนวนจุด)
+                                dataForY.push((index % 2 === 0) ? value : null); 
                             } else {
-                                // หากไม่มีข้อมูลสำหรับจุดนั้น ให้ใส่ null เพื่อให้เส้นกราฟไม่เชื่อมต่อกัน
                                 dataForY.push(null); 
                             }
                         });
@@ -1084,7 +1084,8 @@
                             data: dataForY,
                             borderColor: getRandomColor(), // ให้สีแบบสุ่ม
                             backgroundColor: 'rgba(0, 191, 255, 0.1)', // สีพื้นหลัง (จางๆ)
-                            borderWidth: 2,
+                            borderWidth: 1, // ลดความหนาของเส้น
+                            pointRadius: 1, // ลดขนาดจุด
                             fill: false, // ไม่เติมสีใต้เส้นกราฟ
                             tension: 0.3 // ความโค้งของเส้น
                         });
@@ -1092,16 +1093,17 @@
                 } else { 
                     // กรณีเป็นกราฟ 1 มิติ หรือไม่มีแกน Y ที่ชัดเจน
                     labels = currentMapData.map((d, i) => {
-                        if (xAxisLabel) return d[xAxisLabel.toLowerCase()] || `Point ${i + 1}`;
+                        if (xAxisLabel) return d?.[xAxisLabel.toLowerCase()] || `Point ${i + 1}`;
                         return `Point ${i + 1}`;
                     });
                     
-                    const dataValues = currentMapData.map(d => {
+                    const dataValues = currentMapData.map((d, index) => {
                         let value = hexToDec(d.hexValue);
                         if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
                             value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
                         }
-                        return value;
+                        // ทดลอง: แสดงผลข้อมูลแบบสลับจุด เพื่อให้กราฟดูโปร่งขึ้น (ลดจำนวนจุด)
+                        return (index % 2 === 0) ? value : null; 
                     });
 
                     datasets.push({
@@ -1109,7 +1111,8 @@
                         data: dataValues,
                         borderColor: '#00bfff',
                         backgroundColor: 'rgba(0, 191, 255, 0.2)',
-                        borderWidth: 2,
+                        borderWidth: 1,
+                        pointRadius: 1,
                         fill: true,
                         tension: 0.3
                     });
@@ -1124,40 +1127,56 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true, /* เปลี่ยนเป็น true เพื่อรักษาอัตราส่วน */
+                        maintainAspectRatio: true, /* เป็น true เพื่อรักษาอัตราส่วน */
                         scales: {
                             x: {
                                 title: {
                                     display: true,
                                     text: xAxisLabel || 'Index', // ใช้ 'Index' หากไม่มีชื่อแกน X
-                                    color: '#ccc'
+                                    color: '#ccc',
+                                    font: { size: 10 } // ลดขนาด font
                                 },
-                                ticks: { color: '#eee' },
+                                ticks: { 
+                                    color: '#eee', 
+                                    maxRotation: 90, 
+                                    minRotation: 0, 
+                                    autoSkip: true, 
+                                    maxTicksLimit: 10, // จำกัดจำนวน tick labels
+                                    font: { size: 8 } // ลดขนาด font ของ tick
+                                },
                                 grid: { color: '#555' }
                             },
                             y: {
                                 title: {
                                     display: true,
                                     text: currentMapDefinition.name, // ชื่อกราฟบนแกน Y
-                                    color: '#ccc'
+                                    color: '#ccc',
+                                    font: { size: 10 } // ลดขนาด font
                                 },
-                                ticks: { color: '#eee' },
+                                ticks: { color: '#eee', font: { size: 8 } }, // ลดขนาด font ของ tick
                                 grid: { color: '#555' }
                             }
                         },
                         plugins: {
                             legend: {
                                 labels: {
-                                    color: '#eee'
-                                }
+                                    color: '#eee',
+                                    font: { size: 10 } // ลดขนาด font
+                                },
+                                position: 'bottom' // ย้าย legend ไปด้านล่าง
                             },
                             title: { // เพิ่ม title ให้กับกราฟ
                                 display: true,
                                 text: `กราฟ ${currentMapDefinition.name} (2D View)`,
                                 color: '#00bfff',
                                 font: {
-                                    size: 16
+                                    size: 12 // ลดขนาด title
                                 }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.4 // เพิ่มความโค้งเล็กน้อย
                             }
                         }
                     }
@@ -1421,8 +1440,7 @@
         currentMapDefinition = JSON.parse(JSON.stringify(state.currentMapDefinition));
         
         // Re-render UI based on the restored state
-        renderTuningTable();
-        renderHexGrid();
+        populateMapOptions(); // Call this to ensure map data is re-evaluated and table is rebuilt correctly
         renderGraph();
     }
 
