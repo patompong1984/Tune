@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>WinOLS ECU Tuning Simulator (Advanced)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>WinOLS ECU Tuning Simulator (Advanced)</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -231,11 +231,12 @@
     #graphCanvas {
       width: 100%;
       max-width: 900px;
-      height: 400px;
+      height: 400px; /* กำหนดความสูงคงที่เพื่อให้ Chart.js รู้ขนาด */
       background: rgba(30, 40, 50, 0.7);
       border: 1px solid #4a6380;
       border-radius: 8px;
       margin-top: 20px;
+      box-sizing: border-box; /* สำคัญเพื่อให้ padding/border ไม่ดันขนาดเกิน width */
     }
 
     .file-info {
@@ -286,6 +287,10 @@
         flex-direction: column;
         align-items: flex-start;
       }
+      /* ปรับขนาดกราฟสำหรับหน้าจอเล็ก */
+      #graphCanvas {
+        height: 300px; /* ลดความสูงของกราฟบนมือถือ */
+      }
     }
 
     @media (max-width: 480px) {
@@ -300,6 +305,10 @@
       
       .hex-grid {
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
+      /* ปรับขนาดกราฟสำหรับหน้าจอเล็กสุด */
+      #graphCanvas {
+        height: 250px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
       }
     }
   </style>
@@ -316,7 +325,7 @@
       <h3><span class="icon">📂</span> File Operations</h3>
       <div>
         <label for="fileInput">Load ECU File (.bin/.hex):</label>
-        <input type="file" id="fileInput" accept=".bin, .hex">
+        <input type="file" id="fileInput" accept=".bin, .hex" disabled>
         <button onclick="simulateFileLoad()">Simulate Load</button>
         <button onclick="simulateFileSave()">Simulate Save</button>
       </div>
@@ -462,6 +471,19 @@
               { rpm: 1500, load: 100, hexValue: "0A28" }, { rpm: 2000, load: 100, hexValue: "0A8C" }, { rpm: 2500, load: 100, hexValue: "0AF0" }, { rpm: 3000, load: 100, hexValue: "0B54" },
               { rpm: 3500, load: 100, hexValue: "0BB8" }, { rpm: 4000, load: 100, hexValue: "0C1C" }, { rpm: 4500, load: 100, hexValue: "0C80" }, { rpm: 5000, load: 100, hexValue: "0CE4" },
             ]
+          },
+          dtc_switch: {
+            name: "DTC Switch (Diagnostic Trouble Code)",
+            address: 0x2000, type: "8-bit unsigned", factor: 1, offset: 0, // Special handling for display
+            axes: { x: "DTC Code", y: "Status" }, // Dummy axes for display
+            axisValues: { dtc_code: ["P0001", "P0002", "P0003", "P0004", "P0005"], status: ["Enabled/Disabled"] },
+            defaultData: [
+                { dtc_code: "P0001", hexValue: "01" }, // Enabled
+                { dtc_code: "P0002", hexValue: "01" }, // Enabled
+                { dtc_code: "P0003", hexValue: "00" }, // Disabled
+                { dtc_code: "P0004", hexValue: "01" }, // Enabled
+                { dtc_code: "P0005", hexValue: "00" }  // Disabled
+            ]
           }
         },
         "Mazda 2 Skyactiv-G (Petrol)": {
@@ -509,6 +531,124 @@
               { rpm: 2500, load: 100, hexValue: "78" }, { rpm: 3000, load: 100, hexValue: "7A" }, { rpm: 3500, load: 100, hexValue: "7C" }, { rpm: 4000, load: 100, hexValue: "7D" },
             ]
           }
+        },
+        "Toyota Corolla Altis (Petrol)": {
+            ignition_timing: {
+                name: "Ignition Timing (degrees BTDC)",
+                address: 0x1000, type: "8-bit signed", factor: 0.5, offset: -30,
+                axes: { x: "RPM", y: "Load" },
+                axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
+                defaultData: [
+                  { rpm: 800, load: 10, hexValue: "30" }, { rpm: 1000, load: 10, hexValue: "35" }, { rpm: 1500, load: 10, hexValue: "3A" }, { rpm: 2000, load: 10, hexValue: "3D" },
+                  { rpm: 2500, load: 10, hexValue: "40" }, { rpm: 3000, load: 10, hexValue: "42" }, { rpm: 3500, load: 10, hexValue: "44" }, { rpm: 4000, load: 10, hexValue: "45" },
+                  { rpm: 800, load: 30, hexValue: "2A" }, { rpm: 1000, load: 30, hexValue: "2F" }, { rpm: 1500, load: 30, hexValue: "34" }, { rpm: 2000, load: 30, hexValue: "37" },
+                  { rpm: 2500, load: 30, hexValue: "3A" }, { rpm: 3000, load: 30, hexValue: "3C" }, { rpm: 3500, load: 30, hexValue: "3E" }, { rpm: 4000, load: 30, hexValue: "3F" },
+                  { rpm: 800, load: 50, hexValue: "20" }, { rpm: 1000, load: 50, hexValue: "25" }, { rpm: 1500, load: 50, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2D" },
+                  { rpm: 2500, load: 50, hexValue: "30" }, { rpm: 3000, load: 50, hexValue: "32" }, { rpm: 3500, load: 50, hexValue: "34" }, { rpm: 4000, load: 50, hexValue: "35" },
+                  { rpm: 800, load: 70, hexValue: "18" }, { rpm: 1000, load: 70, hexValue: "1D" }, { rpm: 1500, load: 70, hexValue: "22" }, { rpm: 2000, load: 70, hexValue: "25" },
+                  { rpm: 2500, load: 70, hexValue: "28" }, { rpm: 3000, load: 70, hexValue: "2A" }, { rpm: 3500, load: 70, hexValue: "2C" }, { rpm: 4000, load: 70, hexValue: "2D" },
+                  { rpm: 800, load: 90, hexValue: "10" }, { rpm: 1000, load: 90, hexValue: "15" }, { rpm: 1500, load: 90, hexValue: "1A" }, { rpm: 2000, load: 90, hexValue: "1D" },
+                  { rpm: 2500, load: 90, hexValue: "20" }, { rpm: 3000, load: 90, hexValue: "22" }, { rpm: 3500, load: 90, hexValue: "24" }, { rpm: 4000, load: 90, hexValue: "25" },
+                  { rpm: 800, load: 100, hexValue: "08" }, { rpm: 1000, load: 100, hexValue: "0D" }, { rpm: 1500, load: 100, hexValue: "12" }, { rpm: 2000, load: 100, hexValue: "15" },
+                  { rpm: 2500, load: 100, hexValue: "18" }, { rpm: 3000, load: 100, hexValue: "1A" }, { rpm: 3500, load: 100, hexValue: "1C" }, { rpm: 4000, load: 100, hexValue: "1D" },
+                ]
+            }
+        }
+      },
+      "Honda": {
+        "Honda Civic FC (Petrol)": {
+          vtec_engagement: {
+            name: "VTEC Engagement RPM",
+            address: 0x1000, type: "16-bit unsigned", factor: 1, offset: 0,
+            axes: { x: "RPM", y: "Load" },
+            axisValues: { rpm: [1000, 2000, 3000, 4000], load: [20, 50, 80, 100] },
+            defaultData: [
+              { rpm: 1000, load: 20, hexValue: "0BB8" }, { rpm: 2000, load: 20, hexValue: "0BB8" }, { rpm: 3000, load: 20, hexValue: "0C80" }, { rpm: 4000, load: 20, hexValue: "0D48" },
+              { rpm: 1000, load: 50, hexValue: "0D48" }, { rpm: 2000, load: 50, hexValue: "0E10" }, { rpm: 3000, load: 50, hexValue: "0ED8" }, { rpm: 4000, load: 50, hexValue: "0FA0" },
+              { rpm: 1000, load: 80, hexValue: "0FA0" }, { rpm: 2000, load: 80, hexValue: "1068" }, { rpm: 3000, load: 80, hexValue: "1130" }, { rpm: 4000, load: 80, hexValue: "11F8" },
+              { rpm: 1000, load: 100, hexValue: "11F8" }, { rpm: 2000, load: 100, hexValue: "12C0" }, { rpm: 3000, load: 100, hexValue: "1388" }, { rpm: 4000, load: 100, hexValue: "1450" },
+            ]
+          }
+        }
+      },
+      "Isuzu": {
+        "Isuzu D-Max (Diesel)": {
+          fuel_pressure_limit: {
+            name: "Fuel Pressure Limit (bar)",
+            address: 0x1000, type: "16-bit unsigned", factor: 0.1, offset: 0,
+            axes: { x: "RPM", y: "Load" },
+            axisValues: { rpm: [800, 1500, 2500, 3500], load: [30, 60, 90] },
+            defaultData: [
+              { rpm: 800, load: 30, hexValue: "2EE0" }, { rpm: 1500, load: 30, hexValue: "3A98" }, { rpm: 2500, load: 30, hexValue: "4650" }, { rpm: 3500, load: 30, hexValue: "5208" },
+              { rpm: 800, load: 60, hexValue: "3A98" }, { rpm: 1500, load: 60, hexValue: "4650" }, { rpm: 2500, load: 60, hexValue: "5208" }, { rpm: 3500, load: 60, hexValue: "5DC0" },
+              { rpm: 800, load: 90, hexValue: "5208" }, { rpm: 1500, load: 90, hexValue: "5DC0" }, { rpm: 2500, load: 90, hexValue: "6978" }, { rpm: 3500, load: 90, hexValue: "7530" },
+            ]
+          }
+        }
+      },
+      "Ford": {
+        "Ford Ranger (Diesel)": {
+          egr_duty_cycle: {
+            name: "EGR Duty Cycle (%)",
+            address: 0x1000, type: "8-bit unsigned", factor: 0.39, offset: 0, // Roughly 100 / 255
+            axes: { x: "RPM", y: "Coolant Temp" },
+            axisValues: { rpm: [800, 1500, 2500, 3500], coolant_temp: [60, 80, 95] },
+            defaultData: [
+              { rpm: 800, coolant_temp: 60, hexValue: "40" }, { rpm: 1500, coolant_temp: 60, hexValue: "30" }, { rpm: 2500, coolant_temp: 60, hexValue: "20" }, { rpm: 3500, coolant_temp: 60, hexValue: "10" },
+              { rpm: 800, coolant_temp: 80, hexValue: "30" }, { rpm: 1500, coolant_temp: 80, hexValue: "20" }, { rpm: 2500, coolant_temp: 80, hexValue: "10" }, { rpm: 3500, coolant_temp: 80, hexValue: "05" },
+              { rpm: 800, coolant_temp: 95, hexValue: "20" }, { rpm: 1500, coolant_temp: 95, hexValue: "10" }, { rpm: 2500, coolant_temp: 95, hexValue: "05" }, { rpm: 3500, coolant_temp: 95, hexValue: "00" },
+            ]
+          }
+        }
+      },
+      "Nissan": {
+        "Nissan Navara NP300 (Diesel)": {
+          rail_pressure: {
+            name: "Rail Pressure (MPa)",
+            address: 0x1000, type: "16-bit unsigned", factor: 0.1, offset: 0,
+            axes: { x: "RPM", y: "IQ" },
+            axisValues: { rpm: [1000, 2000, 3000, 4000], iq: [20, 40, 60, 80] },
+            defaultData: [
+              { rpm: 1000, iq: 20, hexValue: "0DAC" }, { rpm: 2000, iq: 20, hexValue: "0E10" }, { rpm: 3000, iq: 20, hexValue: "0ED8" }, { rpm: 4000, iq: 20, hexValue: "0FA0" },
+              { rpm: 1000, iq: 40, hexValue: "0FA0" }, { rpm: 2000, iq: 40, hexValue: "1068" }, { rpm: 3000, iq: 40, hexValue: "1130" }, { rpm: 4000, iq: 40, hexValue: "11F8" },
+              { rpm: 1000, iq: 60, hexValue: "11F8" }, { rpm: 2000, iq: 60, hexValue: "12C0" }, { rpm: 3000, iq: 60, hexValue: "1388" }, { rpm: 4000, iq: 60, hexValue: "1450" },
+              { rpm: 1000, iq: 80, hexValue: "1450" }, { rpm: 2000, iq: 80, hexValue: "1518" }, { rpm: 3000, iq: 80, hexValue: "15E0" }, { rpm: 4000, iq: 80, hexValue: "16A8" },
+            ]
+          }
+        }
+      },
+      "BMW": {
+        "BMW 320d (F30)": {
+          torque_limiter: {
+            name: "Torque Limiter (Nm)",
+            address: 0x1000, type: "16-bit unsigned", factor: 0.5, offset: 0,
+            axes: { x: "RPM", y: "Gear" },
+            axisValues: { rpm: [1500, 2500, 3500, 4500], gear: [1, 2, 3, 4, 5, 6] },
+            defaultData: [
+              { rpm: 1500, gear: 1, hexValue: "02BC" }, { rpm: 2500, gear: 1, hexValue: "0320" }, { rpm: 3500, gear: 1, hexValue: "0384" }, { rpm: 4500, gear: 1, hexValue: "03E8" },
+              { rpm: 1500, gear: 2, hexValue: "0320" }, { rpm: 2500, gear: 2, hexValue: "0384" }, { rpm: 3500, gear: 2, hexValue: "03E8" }, { rpm: 4500, gear: 2, hexValue: "044C" },
+              { rpm: 1500, gear: 3, hexValue: "03E8" }, { rpm: 2500, gear: 3, hexValue: "044C" }, { rpm: 3500, gear: 3, hexValue: "04B0" }, { rpm: 4500, gear: 3, hexValue: "0514" },
+              { rpm: 1500, gear: 4, hexValue: "04B0" }, { rpm: 2500, gear: 4, hexValue: "0514" }, { rpm: 3500, gear: 4, hexValue: "0578" }, { rpm: 4500, gear: 4, hexValue: "05DC" },
+              { rpm: 1500, gear: 5, hexValue: "0514" }, { rpm: 2500, gear: 5, hexValue: "0578" }, { rpm: 3500, gear: 5, hexValue: "05DC" }, { rpm: 4500, gear: 5, hexValue: "0640" },
+              { rpm: 1500, gear: 6, hexValue: "0578" }, { rpm: 2500, gear: 6, hexValue: "05DC" }, { rpm: 3500, gear: 6, hexValue: "0640" }, { rpm: 4500, gear: 6, hexValue: "06A4" },
+            ]
+          }
+        }
+      },
+      "Mercedes-Benz": {
+        "Mercedes-Benz C220d (W205)": {
+          exhaust_temp_limit: {
+            name: "Exhaust Gas Temp Limit (°C)",
+            address: 0x1000, type: "16-bit unsigned", factor: 0.1, offset: 0,
+            axes: { x: "RPM", y: "IQ" },
+            axisValues: { rpm: [1000, 2000, 3000, 4000], iq: [20, 40, 60, 80] },
+            defaultData: [
+              { rpm: 1000, iq: 20, hexValue: "07D0" }, { rpm: 2000, iq: 20, hexValue: "0834" }, { rpm: 3000, iq: 20, hexValue: "0898" }, { rpm: 4000, iq: 20, hexValue: "08FC" },
+              { rpm: 1000, iq: 40, hexValue: "08FC" }, { rpm: 2000, iq: 40, hexValue: "0960" }, { rpm: 3000, iq: 40, hexValue: "09C4" }, { rpm: 4000, iq: 40, hexValue: "0A28" },
+              { rpm: 1000, iq: 60, hexValue: "0A28" }, { rpm: 2000, iq: 60, hexValue: "0A8C" }, { rpm: 3000, iq: 60, hexValue: "0AF0" }, { rpm: 4000, iq: 60, hexValue: "0B54" },
+              { rpm: 1000, iq: 80, hexValue: "0B54" }, { rpm: 2000, iq: 80, hexValue: "0BB8" }, { rpm: 3000, iq: 80, hexValue: "0C1C" }, { rpm: 4000, iq: 80, hexValue: "0C80" },
+            ]
+          }
         }
       }
     };
@@ -535,7 +675,20 @@
     }
 
     function hexToDec(h) {
-      return parseInt(h, 16);
+        if (!h || !/^[0-9A-Fa-f]+$/.test(h)) { // Basic validation
+            // console.warn("Invalid HEX input for hexToDec:", h);
+            return 0; // Return 0 or handle error appropriately
+        }
+        let dec = parseInt(h, 16);
+        if (currentMapDefinition && (currentMapDefinition.type === "8-bit signed" || currentMapDefinition.type === "16-bit signed")) {
+            const bitLength = currentMapDefinition.type.includes("8-bit") ? 8 : 16;
+            const maxVal = Math.pow(2, bitLength);
+            const halfMaxVal = maxVal / 2;
+            if (dec >= halfMaxVal) {
+                dec -= maxVal;
+            }
+        }
+        return dec;
     }
 
     function showMessage(msg, isError = false) {
@@ -608,15 +761,16 @@
             mapTypeSelect.appendChild(option);
         }
 
-        if (hasMaps && mapTypeSelect.value) {
+        if (hasMaps && mapTypeSelect.value && currentECUFile) { // Only load map data if ECU file is loaded
             loadMapData();
         } else {
-            tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
+            tuningTableBody.innerHTML = '<tr><td colspan="3">Please load ECU file and select a map.</td></tr>';
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
             renderGraph();
             mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
         }
     }
 
@@ -625,6 +779,13 @@
         const selectedBrand = carBrandSelect.value;
         const selectedModelText = carModelSelect.value;
         const selectedMapType = mapTypeSelect.value;
+
+        if (!currentECUFile) {
+            showMessage("Please simulate loading an ECU file first.", true);
+            mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
+            return;
+        }
 
         if (!selectedMapType || !ecuDefinitions[selectedBrand] || 
             !ecuDefinitions[selectedBrand][selectedModelText] || 
@@ -635,10 +796,12 @@
             currentMapDefinition = null;
             renderGraph();
             mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
             return;
         }
 
         currentMapDefinition = ecuDefinitions[selectedBrand][selectedModelText][selectedMapType];
+        // Deep copy defaultData to currentMapData for modification
         currentMapData = JSON.parse(JSON.stringify(currentMapDefinition.defaultData));
 
         renderTuningTable();
@@ -647,6 +810,7 @@
         addToHistory();
         
         mapStatus.textContent = currentMapDefinition.name;
+        document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-active';
     }
 
     // Renders the table view of the map
@@ -658,28 +822,56 @@
           return;
       }
 
+      // Create header row for axes
+      const headerRow = document.createElement("tr");
+      const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase();
+      const axisYKey = currentMapDefinition?.axes?.y?.toLowerCase();
+
+      if (axisXKey) {
+          const thX = document.createElement("th");
+          thX.textContent = currentMapDefinition.axes.x;
+          headerRow.appendChild(thX);
+      } else {
+          const thIndex = document.createElement("th");
+          thIndex.textContent = "Index";
+          headerRow.appendChild(thIndex);
+      }
+      
+      if (axisYKey) {
+          const thY = document.createElement("th");
+          thY.textContent = currentMapDefinition.axes.y;
+          headerRow.appendChild(thY);
+      }
+      const thValue = document.createElement("th");
+      thValue.textContent = "Value";
+      headerRow.appendChild(thValue);
+      
+      tuningTableBody.parentNode.querySelector('thead').innerHTML = ''; // Clear existing header
+      tuningTableBody.parentNode.querySelector('thead').appendChild(headerRow);
+
+
       currentMapData.forEach((row, index) => {
         let displayValue;
         if (currentMapDefinition.name.includes("DTC Switch")) {
             displayValue = row.hexValue === "01" ? "Enabled" : "Disabled";
         } else {
+            let actualValueDec = hexToDec(row.hexValue);
+            // Conversion for signed values happens in hexToDec now
+            
             if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
-                displayValue = (hexToDec(row.hexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+                displayValue = (actualValueDec * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
             } else {
-                displayValue = hexToDec(row.hexValue);
+                displayValue = actualValueDec;
             }
         }
 
         const tr = document.createElement("tr");
-        const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase() || 'id';
-        const axisYKey = currentMapDefinition?.axes?.y?.toLowerCase();
+        const xVal = currentMapDefinition?.axes?.x ? (row[currentMapDefinition.axes.x.toLowerCase()] || '-') : index; // Use index if no x-axis defined
+        const yVal = currentMapDefinition?.axes?.y ? (row[currentMapDefinition.axes.y.toLowerCase()] || '-') : '-';
 
-        const axisXValue = axisXKey ? (row[axisXKey] || '-') : '-';
-        const axisYValue = axisYKey ? (row[axisYKey] || '-') : '-';
-
-        let rowHtml = `<td>${axisXValue}</td>`;
-        if (axisYKey) {
-            rowHtml += `<td>${axisYValue}</td>`;
+        let rowHtml = `<td>${xVal}</td>`;
+        if (currentMapDefinition?.axes?.y) { // Only add Y axis column if Y axis is defined
+            rowHtml += `<td>${yVal}</td>`;
         }
         
         rowHtml += `<td>
@@ -709,7 +901,7 @@
           return;
       }
 
-      let maxLength = 2;
+      let maxLength = 2; // Default for 8-bit
       if (currentMapDefinition && currentMapDefinition.type && currentMapDefinition.type.includes("16-bit")) {
           maxLength = 4;
       }
@@ -735,29 +927,35 @@
 
       let hexEquivalent;
       if (currentMapDefinition.name.includes("DTC Switch")) {
-          hexEquivalent = newValue;
+          hexEquivalent = newValue; // "00" or "01"
       } else {
           newValue = parseFloat(newValue);
           if (isNaN(newValue)) {
              showMessage("Invalid number input.", true);
+             // Revert to original value if invalid input
+             event.target.value = (hexToDec(currentMapData[index].hexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
              return;
           }
+          
           if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
-              hexEquivalent = Math.round((newValue - currentMapDefinition.offset) / currentMapDefinition.factor);
+              let calculatedRawValue = Math.round((newValue - currentMapDefinition.offset) / currentMapDefinition.factor);
+              
               if (currentMapDefinition.type === "8-bit unsigned") {
-                  hexEquivalent = Math.max(0, Math.min(hexEquivalent, 255));
+                  hexEquivalent = Math.max(0, Math.min(calculatedRawValue, 255));
               } else if (currentMapDefinition.type === "8-bit signed") {
-                  hexEquivalent = Math.max(-128, Math.min(hexEquivalent, 127));
-                  if (hexEquivalent < 0) hexEquivalent = 256 + hexEquivalent;
-              }
-              else if (currentMapDefinition.type === "16-bit unsigned") {
-                  hexEquivalent = Math.max(0, Math.min(hexEquivalent, 65535));
+                  hexEquivalent = Math.max(-128, Math.min(calculatedRawValue, 127));
+                  if (hexEquivalent < 0) hexEquivalent = 256 + hexEquivalent; // Convert to 8-bit unsigned representation for hex
+              } else if (currentMapDefinition.type === "16-bit unsigned") {
+                  hexEquivalent = Math.max(0, Math.min(calculatedRawValue, 65535));
               } else if (currentMapDefinition.type === "16-bit signed") {
-                  hexEquivalent = Math.max(-32768, Math.min(hexEquivalent, 32767));
-                  if (hexEquivalent < 0) hexEquivalent = 65536 + hexEquivalent;
+                  hexEquivalent = Math.max(-32768, Math.min(calculatedRawValue, 32767));
+                  if (hexEquivalent < 0) hexEquivalent = 65536 + hexEquivalent; // Convert to 16-bit unsigned representation for hex
+              } else {
+                  hexEquivalent = Math.round(newValue); // Fallback if type not specified or handled
               }
-          } else {
-              hexEquivalent = Math.round(newValue);
+          }
+          else {
+              hexEquivalent = Math.round(newValue); // Fallback if factor/offset not defined
           }
       }
 
@@ -778,34 +976,36 @@
       const index = parseInt(event.target.dataset.index);
       let newHexValue = event.target.value.toUpperCase();
 
-      const is8Bit = currentMapDefinition && (currentMapDefinition.type === "8-bit unsigned" || currentMapDefinition.type === "8-bit signed");
-      const is16Bit = currentMapDefinition && (currentMapDefinition.type === "16-bit unsigned" || currentMapDefinition.type === "16-bit signed");
+      const is8Bit = currentMapDefinition && (currentMapDefinition.type.includes("8-bit"));
+      const is16Bit = currentMapDefinition && (currentMapDefinition.type.includes("16-bit"));
+      const targetLength = is16Bit ? 4 : 2;
 
-      if (!/^[0-9A-F]*$/.test(newHexValue) || (is8Bit && newHexValue.length > 2) || (is16Bit && newHexValue.length > 4)) {
-        event.target.value = currentMapData[index].hexValue;
+      // Basic validation for HEX format and length
+      if (!/^[0-9A-F]*$/.test(newHexValue) || newHexValue.length > targetLength) {
+        event.target.value = currentMapData[index].hexValue; // Revert if invalid
         showMessage("Invalid HEX input.", true);
         return;
       }
 
-      if (is8Bit && newHexValue.length === 1) newHexValue = '0' + newHexValue;
-      if (is16Bit && newHexValue.length < 4) newHexValue = newHexValue.padStart(4, '0');
+      // Pad with leading zeros if necessary
+      if (newHexValue.length < targetLength) {
+          // Do not pad until user finishes typing if they're still inputting
+          // This allows for typing "F" then "F" for "FF" instead of "0F" then "FF"
+          // We'll update the data only when a valid, full-length hex is entered or when value is already there
+          // For immediate feedback, we can update, but revert if partial/invalid
+      } else {
+          addToHistory(); // Add to history only when a valid, complete change occurs
+      }
       
-      if (is8Bit && newHexValue.length > 2) newHexValue = newHexValue.substring(newHexValue.length - 2);
-      if (is16Bit && newHexValue.length > 4) newHexValue = newHexValue.substring(newHexValue.length - 4);
-
-      addToHistory();
-
-      currentMapData[index].hexValue = newHexValue;
+      currentMapData[index].hexValue = newHexValue; // Temporarily update for display
 
       const mapInput = tuningTableBody.querySelector(`[data-index="${index}"]`);
       if (mapInput) {
           if (currentMapDefinition.name.includes("DTC Switch")) {
-              mapInput.value = newHexValue;
+              mapInput.value = newHexValue; // "00" or "01"
           } else {
-              let actualValueDec = hexToDec(newHexValue);
-              if (currentMapDefinition.type === "8-bit signed" && actualValueDec >= 128) actualValueDec -= 256;
-              if (currentMapDefinition.type === "16-bit signed" && actualValueDec >= 32768) actualValueDec -= 65536;
-
+              let actualValueDec = hexToDec(newHexValue); // hexToDec now handles signed conversion
+              
               if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
                   const actualValue = (actualValueDec * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
                   mapInput.value = actualValue;
@@ -821,123 +1021,136 @@
 
     // --- Graphing (2D Simulation with Chart.js) ---
     function renderGraph() {
-        const viewMode = viewModeSelect.value;
-        if (chartInstance) {
-            chartInstance.destroy();
-        }
+        try {
+            const viewMode = viewModeSelect.value;
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
 
-        if (viewMode === '2d' && currentMapDefinition && currentMapData && 
-            !currentMapDefinition.name.includes("DTC Switch")) {
-            graphCanvas.style.display = 'block';
-            
-            const xAxisLabel = currentMapDefinition?.axes?.x;
-            const yAxisLabel = currentMapDefinition?.axes?.y;
-            
-            let labels = [];
-            let datasets = [];
-            
-            if (xAxisLabel && yAxisLabel) {
-                const uniqueYValues = [...new Set(currentMapData.map(d => d[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
-                labels = [...new Set(currentMapData.map(d => d[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+            if (viewMode === '2d' && currentMapDefinition && currentMapData && 
+                !currentMapDefinition.name.includes("DTC Switch")) { // DTC Switch maps don't graph well
+                graphCanvas.style.display = 'block';
+                
+                // Ensure canvas size is appropriate before rendering
+                // You already have max-width: 900px and height: 400px in CSS
+                // For responsive charts, it's generally best to let Chart.js handle it with CSS
+                // and potentially set a fixed aspect ratio or height here if issues persist.
+                // Forcing specific dimensions via JS can sometimes cause issues with responsiveness.
+                // graphCanvas.width = graphCanvas.offsetWidth; // This might be too large on mobile
+                // graphCanvas.height = graphCanvas.offsetHeight; // This might be too large on mobile
 
-                uniqueYValues.forEach(yVal => {
-                    const dataForY = [];
-                    labels.forEach(xVal => {
-                        const item = currentMapData.find(d => 
-                            d[xAxisLabel.toLowerCase()] === xVal && 
-                            d[yAxisLabel.toLowerCase()] === yVal
-                        );
-                        if (item) {
-                            let value = hexToDec(item.hexValue);
-                            if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
-                                value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
+                const xAxisLabel = currentMapDefinition?.axes?.x;
+                const yAxisLabel = currentMapDefinition?.axes?.y;
+                
+                let labels = [];
+                let datasets = [];
+                
+                if (xAxisLabel && yAxisLabel && currentMapDefinition.axisValues) {
+                    // Determine if we have multiple series based on Y-axis values
+                    const uniqueYValues = [...new Set(currentMapData.map(d => d[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+                    labels = [...new Set(currentMapData.map(d => d[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+
+                    uniqueYValues.forEach(yVal => {
+                        const dataForY = [];
+                        labels.forEach(xVal => {
+                            const item = currentMapData.find(d => 
+                                d[xAxisLabel.toLowerCase()] === xVal && 
+                                d[yAxisLabel.toLowerCase()] === yVal
+                            );
+                            if (item) {
+                                let value = hexToDec(item.hexValue);
+                                if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                                    value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
+                                }
+                                dataForY.push(value);
+                            } else {
+                                dataForY.push(null); // Add null for missing points to break line
                             }
-                            dataForY.push(value);
-                        } else {
-                            dataForY.push(null);
+                        });
+
+                        datasets.push({
+                            label: `${yAxisLabel}: ${yVal}`,
+                            data: dataForY,
+                            borderColor: getRandomColor(),
+                            backgroundColor: 'rgba(0, 191, 255, 0.2)', // Example background
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3 // Smooth lines
+                        });
+                    });
+                } else { // Single dimension map or fallback
+                    labels = currentMapData.map((d, i) => {
+                        if (xAxisLabel) return d[xAxisLabel.toLowerCase()] || `Point ${i + 1}`;
+                        return `Point ${i + 1}`;
+                    });
+                    
+                    const dataValues = currentMapData.map(d => {
+                        let value = hexToDec(d.hexValue);
+                        if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                            value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
                         }
+                        return value;
                     });
 
                     datasets.push({
-                        label: `${yAxisLabel}: ${yVal}`,
-                        data: dataForY,
-                        borderColor: getRandomColor(),
+                        label: `${currentMapDefinition.name} Values`,
+                        data: dataValues,
+                        borderColor: '#00bfff',
                         backgroundColor: 'rgba(0, 191, 255, 0.2)',
                         borderWidth: 2,
-                        fill: false,
+                        fill: true,
                         tension: 0.3
                     });
-                });
-            } else {
-                labels = currentMapData.map(d => {
-                    if (xAxisLabel) return d[xAxisLabel.toLowerCase()] || 'N/A';
-                    if (yAxisLabel) return d[yAxisLabel.toLowerCase()] || 'N/A';
-                    if (d.id) return d.id;
-                    return `Point ${currentMapData.indexOf(d) + 1}`;
-                });
-                
-                const dataValues = currentMapData.map(d => {
-                    let value = hexToDec(d.hexValue);
-                    if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
-                        value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
-                    }
-                    return value;
-                });
+                }
 
-                datasets.push({
-                    label: `${currentMapDefinition.name} Values`,
-                    data: dataValues,
-                    borderColor: '#00bfff',
-                    backgroundColor: 'rgba(0, 191, 255, 0.2)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3
-                });
-            }
-
-            chartInstance = new Chart(graphCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: xAxisLabel || 'Index',
-                                color: '#ccc'
-                            },
-                            ticks: { color: '#eee' },
-                            grid: { color: '#555' }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: currentMapDefinition.name,
-                                color: '#ccc'
-                            },
-                            ticks: { color: '#eee' },
-                            grid: { color: '#555' }
-                        }
+                chartInstance = new Chart(graphCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
                     },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#eee'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Keep this for flexible height/width control via CSS
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: xAxisLabel || 'Index',
+                                    color: '#ccc'
+                                },
+                                ticks: { color: '#eee' },
+                                grid: { color: '#555' }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: currentMapDefinition.name,
+                                    color: '#ccc'
+                                },
+                                ticks: { color: '#eee' },
+                                grid: { color: '#555' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#eee'
+                                }
                             }
                         }
                     }
+                });
+            } else {
+                graphCanvas.style.display = 'none';
+                if (viewMode === '3d') {
+                    showMessage("3D Graph visualization requires advanced libraries. This is a simulated view.", false);
                 }
-            });
-        } else {
-            graphCanvas.style.display = 'none';
-            if (viewMode === '3d') {
-                showMessage("3D Graph visualization requires advanced libraries.", false);
             }
+        } catch (error) {
+            console.error("Error rendering graph:", error);
+            showMessage("Error displaying graph: " + error.message, true);
+            graphCanvas.style.display = 'none'; // Hide canvas if error occurs
         }
     }
 
@@ -945,8 +1158,10 @@
     function simulateFileLoad() {
         showMessage("Simulating ECU file load...", false);
 
-        currentECUFile = Array(0x4000).fill('00');
+        // Simulate a larger ECU file memory (e.g., 64KB = 0x10000 bytes)
+        currentECUFile = Array(0x10000).fill('00');
         
+        // Populate currentECUFile with default data from all defined maps
         for (const brandKey in ecuDefinitions) {
             for (const modelKey in ecuDefinitions[brandKey]) {
                 for (const mapKey in ecuDefinitions[brandKey][modelKey]) {
@@ -954,12 +1169,17 @@
                     let currentAddress = mapDef.address;
                     mapDef.defaultData.forEach(item => {
                         let hexBytes = item.hexValue;
-                        const byteLength = mapDef.type.includes("16-bit") ? 4 : 2;
+                        const byteLength = mapDef.type.includes("16-bit") ? 4 : 2; // 2 chars per byte, so 4 for 16-bit
+                        
+                        // Ensure hexBytes has correct length (e.g., "A" becomes "0A", "1B" becomes "01B")
                         hexBytes = hexBytes.padStart(byteLength, '0');
 
                         for (let i = 0; i < hexBytes.length; i += 2) {
                             if (currentAddress < currentECUFile.length) {
                                  currentECUFile[currentAddress++] = hexBytes.substring(i, i + 2);
+                            } else {
+                                console.warn(`Address 0x${(currentAddress-1).toString(16)} out of simulated ECU file bounds for map ${mapDef.name}`);
+                                break;
                             }
                         }
                     });
@@ -970,7 +1190,7 @@
         history = [];
         historyPointer = -1;
 
-        populateCarModels();
+        populateCarModels(); // This will also call populateMapOptions and loadMapData
         showMessage("ECU file simulated load complete.", false);
         fileStatus.textContent = "Loaded (simulated)";
         document.querySelectorAll('.status-indicator')[0].className = 'status-indicator status-active';
@@ -981,7 +1201,8 @@
             showMessage("No ECU file loaded to save.", true);
             return;
         }
-        showMessage("Simulating saving of modified ECU file.");
+        // In a real scenario, this would trigger a download of the modified currentECUFile
+        showMessage("Simulating saving of modified ECU file. (No actual file download in simulator)");
     }
 
     // --- Tuning Functions ---
@@ -991,99 +1212,137 @@
           resultArea.innerHTML = "<p style='color: #ffaaaa;'>Please load a map first.</p>";
           return;
       }
+      if (!currentECUFile) {
+          resultArea.innerHTML = "<p style='color: #ffaaaa;'>Please simulate loading an ECU file first.</p>";
+          return;
+      }
+
       const map = mapTypeSelect.options[mapTypeSelect.selectedIndex].text;
-      const mode = viewModeSelect.value;
 
-      let originalTotalValue = 0;
-      let modifiedTotalValue = 0;
+      let originalTotalRawValue = 0;
+      let modifiedTotalRawValue = 0;
 
-      if (!currentMapDefinition.name.includes("DTC Switch")) {
-          const originalMapDataDef = ecuDefinitions[carBrandSelect.value]
-                                      ?.[carModelSelect.value]
-                                      ?.[mapTypeSelect.value];
+      // Get original map data from the definition, not history[0] because history[0] might not be the original "stock" map
+      const originalMapDataDef = ecuDefinitions[carBrandSelect.value]
+                                  ?.[carModelSelect.value]
+                                  ?.[mapTypeSelect.value];
 
-          if (originalMapDataDef && originalMapDataDef.defaultData) {
-              originalMapDataDef.defaultData.forEach(item => {
-                  originalTotalValue += hexToDec(item.hexValue);
-              });
-          }
-          currentMapData.forEach(item => {
-              modifiedTotalValue += hexToDec(item.hexValue);
+      if (originalMapDataDef && originalMapDataDef.defaultData) {
+          originalMapDataDef.defaultData.forEach(item => {
+              originalTotalRawValue += hexToDec(item.hexValue); // Sum raw hex values
           });
       }
+      currentMapData.forEach(item => {
+          modifiedTotalRawValue += hexToDec(item.hexValue); // Sum raw hex values
+      });
 
       let hpChange = 0;
       let torqueChange = 0;
-      let response = "Standard response.";
+      let response = "";
 
-      const diffRatio = (originalTotalValue !== 0) ? (modifiedTotalValue - originalTotalValue) / originalTotalValue : 0;
+      // Only calculate difference for numerical maps
+      if (!currentMapDefinition.name.includes("DTC Switch")) {
+          const diffRatio = (originalTotalRawValue !== 0) ? (modifiedTotalRawValue - originalTotalRawValue) / originalTotalRawValue : 0;
 
-      if (mapTypeSelect.value.includes("iq_limit") || mapTypeSelect.value.includes("main_injection")) {
-        hpChange = (diffRatio * 30).toFixed(1);
-        torqueChange = (diffRatio * 40).toFixed(1);
-        response = diffRatio > 0 ? "Improved throttle response and power delivery." : "Smoother power delivery for economy.";
-      } else if (mapTypeSelect.value.includes("boost_pressure")) {
-        hpChange = (diffRatio * 25).toFixed(1);
-        torqueChange = (diffRatio * 35).toFixed(1);
-        response = diffRatio > 0 ? "Stronger pull throughout the RPM range." : "Reduced turbo lag for better drivability.";
-      } else if (mapTypeSelect.value.includes("ignition_timing")) {
-        hpChange = (diffRatio * 20).toFixed(1);
-        torqueChange = (diffRatio * 25).toFixed(1);
-        response = diffRatio > 0 ? "Optimized combustion for increased power." : "Safer operation with reduced risk.";
-      } else if (currentMapDefinition.name.includes("DTC Switch")) {
+          if (mapTypeSelect.value.includes("iq_limit") || mapTypeSelect.value.includes("main_injection")) {
+            hpChange = (diffRatio * 30).toFixed(1);
+            torqueChange = (diffRatio * 40).toFixed(1);
+            response = diffRatio > 0 ? "Improved throttle response and power delivery. Expect more aggressive acceleration." : "Smoother power delivery, potentially better fuel economy.";
+          } else if (mapTypeSelect.value.includes("boost_pressure")) {
+            hpChange = (diffRatio * 25).toFixed(1);
+            torqueChange = (diffRatio * 35).toFixed(1);
+            response = diffRatio > 0 ? "Stronger pull throughout the RPM range due to increased boost." : "Reduced turbo lag for better drivability, potentially at lower boost levels.";
+          } else if (mapTypeSelect.value.includes("ignition_timing")) {
+            hpChange = (diffRatio * 20).toFixed(1);
+            torqueChange = (diffRatio * 25).toFixed(1);
+            response = diffRatio > 0 ? "Optimized combustion for increased power and efficiency. Ensure fuel quality." : "Safer operation with reduced risk of knocking, slight power reduction.";
+          } else if (mapTypeSelect.value.includes("vtec_engagement")) {
+              hpChange = (diffRatio * 15).toFixed(1); // Small impact, more about character
+              torqueChange = (diffRatio * 10).toFixed(1);
+              response = diffRatio < 0 ? "Earlier VTEC engagement for a sportier feel and quicker power band access." : "Later VTEC engagement for smoother power transition at higher RPMs.";
+          } else if (mapTypeSelect.value.includes("fuel_pressure_limit") || mapTypeSelect.value.includes("rail_pressure")) {
+              hpChange = (diffRatio * 25).toFixed(1);
+              torqueChange = (diffRatio * 30).toFixed(1);
+              response = diffRatio > 0 ? "Higher fuel pressure for more precise and powerful injection." : "Adjusted fuel pressure for efficiency or engine protection.";
+          } else if (mapTypeSelect.value.includes("egr_duty_cycle")) {
+              hpChange = (diffRatio * -5).toFixed(1); // Lower EGR duty cycle usually means more power, so inverse
+              torqueChange = (diffRatio * -5).toFixed(1);
+              response = diffRatio < 0 ? "Reduced EGR for cleaner combustion and more power. May affect emissions." : "Increased EGR for better emissions control.";
+          } else if (mapTypeSelect.value.includes("torque_limiter")) {
+              hpChange = (diffRatio * 20).toFixed(1); // Direct increase in torque limit implies more power
+              torqueChange = (diffRatio * 30).toFixed(1);
+              response = diffRatio > 0 ? "Increased torque limits allowing the engine to produce more power." : "Reduced torque limits for engine protection or smoother delivery.";
+          } else if (mapTypeSelect.value.includes("exhaust_temp_limit")) {
+              hpChange = (diffRatio * -10).toFixed(1); // Higher temp limit allows more aggressive tune, so inverse diff
+              torqueChange = (diffRatio * -10).toFixed(1);
+              response = diffRatio > 0 ? "Increased exhaust gas temperature limits, allowing for more aggressive tuning. Monitor EGTs!" : "Reduced exhaust gas temperature limits for engine and turbo longevity.";
+          }
+          else {
+              hpChange = (diffRatio * 10).toFixed(1);
+              torqueChange = (diffRatio * 10).toFixed(1);
+              response = "General performance adjustment based on raw value change.";
+          }
+      } else { // DTC Switch map
           const disabledDTCs = currentMapData.filter(d => d.hexValue === "00");
           if (disabledDTCs.length > 0) {
-              response = `Warning: ${disabledDTCs.length} DTCs are currently disabled.`;
+              response = `<span style="color: #ffcc00;">Warning: ${disabledDTCs.length} Diagnostic Trouble Codes (DTCs) are currently disabled.</span> This may prevent error detection.`;
           } else {
-              response = "All DTCs are enabled as per standard.";
+              response = "All Diagnostic Trouble Codes (DTCs) are enabled as per standard operation. No DTCs have been removed.";
           }
           hpChange = "N/A";
           torqueChange = "N/A";
-      } else {
-          hpChange = (diffRatio * 10).toFixed(1);
-          torqueChange = (diffRatio * 10).toFixed(1);
-          response = "General performance adjustment.";
       }
 
       resultArea.innerHTML = `
-        <p>✅ Tuning of "${map}" completed!</p>
-        <p>Initial Results: Horsepower change ~${hpChange} HP, Torque change ~${torqueChange} %</p>
+        <p>✅ Tuning of "<strong>${map}</strong>" confirmed!</p>
+        <p>Simulated Performance Impact: Horsepower Change: <strong>~${hpChange} HP</strong>, Torque Change: <strong>~${torqueChange}%</strong></p>
         <p>${response}</p>
       `;
     }
 
     function compareMaps() {
-        if (!currentMapData || history.length < 2 || !currentMapDefinition) {
-            showMessage("Load a map and make changes to compare.", true);
+        if (!currentMapData || history.length < 1 || !currentMapDefinition || !currentECUFile) {
+            showMessage("Please load an ECU file and make changes to compare.", true);
             return;
         }
 
+        // The "original" map data is always the first state in history (after initial load)
         const originalMapState = history[0];
         let changes = 0;
-        let comparisonDetails = 'Changes detected:<br>';
+        let comparisonDetails = '<p>Differences Found:</p><ul>';
 
         currentMapData.forEach((modifiedItem, index) => {
             const originalItem = originalMapState.currentMapData[index];
             if (originalItem && modifiedItem.hexValue !== originalItem.hexValue) {
                 changes++;
-                const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase();
-                const axisYKey = currentMapDefinition?.axes?.y?.toLowerCase();
                 
-                let label = '';
-                if (axisXKey && modifiedItem[axisXKey] !== undefined) label += `${axisXKey.toUpperCase()}: ${modifiedItem[axisXKey]} `;
-                if (axisYKey && modifiedItem[axisYKey] !== undefined) label += `${axisYKey.toUpperCase()}: ${modifiedItem[axisYKey]} `;
-                if (modifiedItem.id) label = `ID: ${modifiedItem.id}`;
+                // Get axis labels for better readability
+                const xLabel = currentMapDefinition?.axes?.x?.toLowerCase();
+                const yLabel = currentMapDefinition?.axes?.y?.toLowerCase();
+                
+                let locationString = '';
+                if (xLabel && modifiedItem[xLabel] !== undefined) {
+                    locationString += `${currentMapDefinition.axes.x}: ${modifiedItem[xLabel]}`;
+                }
+                if (yLabel && modifiedItem[yLabel] !== undefined) {
+                    locationString += (locationString ? ', ' : '') + `${currentMapDefinition.axes.y}: ${modifiedItem[yLabel]}`;
+                }
+                if (!locationString) {
+                    locationString = `Index: ${index}`;
+                }
 
-                comparisonDetails += `Row ${index + 1} (${label.trim() || 'N/A'}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
+                comparisonDetails += `<li><strong>${locationString}</strong>: Original HEX: <code>${originalItem.hexValue}</code>, Modified HEX: <code>${modifiedItem.hexValue}</code></li>`;
             }
         });
+        comparisonDetails += '</ul>';
 
         if (changes === 0) {
-            showMessage("No changes detected between current map and original state.", false);
+            showMessage("No changes detected between current map and the initial loaded state.", false);
+            resultArea.innerHTML = '';
         } else {
             resultArea.innerHTML = `
-                <p>📊 Map Comparison Complete: Found ${changes} differences.</p>
-                <p>${comparisonDetails}</p>
+                <p>📊 Map Comparison Complete: Found <strong>${changes}</strong> differences in "${currentMapDefinition.name}".</p>
+                ${comparisonDetails}
             `;
         }
     }
@@ -1096,14 +1355,17 @@
 
         let sum = 0;
         currentECUFile.forEach(hexByte => {
-            sum += hexToDec(hexByte);
+            sum += parseInt(hexByte, 16); // Parse hex string to integer
         });
 
-        const simulatedChecksum = decToHex(sum % 65536, 4);
+        // Common checksum calculations involve summing bytes and then often taking modulo of a specific value
+        // For simplicity, let's use a 16-bit checksum (sum modulo 65536)
+        const simulatedChecksum = decToHex(sum % 65536, 4); // Pad to 4 hex characters for 16-bit
 
         resultArea.innerHTML = `
             <p>➕ Simulated Checksum Calculation Complete.</p>
             <p>Calculated Checksum: <strong>0x${simulatedChecksum}</strong></p>
+            <p style="font-size: 0.9em; color: #88bbff;">(This is a simple sum-based simulation. Real checksum algorithms are more complex.)</p>
         `;
     }
 
@@ -1111,34 +1373,41 @@
     function addToHistory() {
         if (!currentMapData || !currentMapDefinition) return;
 
-        const currentState = JSON.stringify({
-            currentMapData: currentMapData,
-            currentMapDefinition: currentMapDefinition
-        });
-        if (historyPointer >= 0 && JSON.stringify(history[historyPointer]) === currentState) {
+        // Create a deep copy of the current map data and definition
+        const currentState = {
+            currentMapData: JSON.parse(JSON.stringify(currentMapData)),
+            currentMapDefinition: JSON.parse(JSON.stringify(currentMapDefinition))
+        };
+        
+        // Prevent adding identical consecutive states
+        if (historyPointer >= 0 && JSON.stringify(history[historyPointer]) === JSON.stringify(currentState)) {
             return;
         }
 
+        // If we are not at the end of history (i.e., we've undone some changes),
+        // any new change should truncate the redo history.
         if (historyPointer < history.length - 1) {
             history = history.slice(0, historyPointer + 1);
         }
-        history.push({
-            currentMapData: JSON.parse(JSON.stringify(currentMapData)),
-            currentMapDefinition: JSON.parse(JSON.stringify(currentMapDefinition))
-        });
+        history.push(currentState);
         historyPointer++;
+    }
+
+    function applyHistoryState(state) {
+        currentMapData = JSON.parse(JSON.stringify(state.currentMapData));
+        currentMapDefinition = JSON.parse(JSON.stringify(state.currentMapDefinition));
+        
+        // Re-render UI based on the restored state
+        renderTuningTable();
+        renderHexGrid();
+        renderGraph();
     }
 
     function undoLastChange() {
         if (historyPointer > 0) {
             historyPointer--;
             const prevState = history[historyPointer];
-            currentMapData = JSON.parse(JSON.stringify(prevState.currentMapData));
-            currentMapDefinition = JSON.parse(JSON.stringify(prevState.currentMapDefinition));
-            
-            renderTuningTable();
-            renderHexGrid();
-            renderGraph();
+            applyHistoryState(prevState);
             showMessage("Undo successful.", false);
         } else {
             showMessage("No more changes to undo.", true);
@@ -1149,12 +1418,7 @@
         if (historyPointer < history.length - 1) {
             historyPointer++;
             const nextState = history[historyPointer];
-            currentMapData = JSON.parse(JSON.stringify(nextState.currentMapData));
-            currentMapDefinition = JSON.parse(JSON.stringify(nextState.currentMapDefinition));
-            
-            renderTuningTable();
-            renderHexGrid();
-            renderGraph();
+            applyHistoryState(nextState);
             showMessage("Redo successful.", false);
         } else {
             showMessage("No more changes to redo.", true);
@@ -1170,6 +1434,7 @@
       
       // Initialize models
       populateCarModels();
+      showMessage("Welcome to WinOLS Simulator. Please 'Simulate Load' an ECU file to begin.", false);
     });
   </script>
 </body>
