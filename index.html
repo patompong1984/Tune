@@ -261,8 +261,8 @@
           defaultData: [
             { rpm: 1000, load: 30, hexValue: "78" }, // 120 * 0.01 = 1.2 mg
             { rpm: 2000, load: 60, hexValue: "D2" }, // 210 * 0.01 = 2.1 mg
-            { rpm: 3000, load: 90, hexValue: "14A" }, // 330 * 0.01 = 3.3 mg (should be 2 bytes for this value)
-            { rpm: 4000, load: 100, hexValue: "190" }  // 400 * 0.01 = 4.0 mg (should be 2 bytes for this value)
+            { rpm: 3000, load: 90, hexValue: "14A" }, // 330 * 0.01 = 3.3 mg (should be 2 bytes for this value in real scenario)
+            { rpm: 4000, load: 100, hexValue: "190" }  // 400 * 0.01 = 4.0 mg (should be 2 bytes for this value in real scenario)
           ]
         },
         torque_map: {
@@ -285,7 +285,7 @@
             size: 8, // 8 bytes (simulated)
             type: "8-bit raw",
             factor: 1, offset: 0,
-            axes: { x: null, y: null },
+            axes: { x: null, y: null }, // No axes for DTC switch, won't show graph
             defaultData: [
                 { id: "P0420", hexValue: "01" }, // On/Off switch
                 { id: "P0171", hexValue: "01" },
@@ -301,6 +301,12 @@
       },
       hilux: {
           // Placeholder for Hilux maps
+      },
+      civic: {
+          // Placeholder for Civic maps
+      },
+      dmax: {
+          // Placeholder for D-Max maps
       }
     };
 
@@ -348,22 +354,34 @@
         const mapsForModel = ecuDefinitions[selectedModel];
         mapTypeSelect.innerHTML = ''; // Clear existing options
 
+        let hasMaps = false;
         if (mapsForModel) {
             for (const mapKey in mapsForModel) {
                 const option = document.createElement("option");
                 option.value = mapKey;
                 option.textContent = mapsForModel[mapKey].name;
                 mapTypeSelect.appendChild(option);
+                hasMaps = true;
             }
-        } else {
+        } 
+        
+        if (!hasMaps) { // If no maps are found for the model
             const option = document.createElement("option");
             option.value = "";
             option.textContent = "No maps available";
             mapTypeSelect.appendChild(option);
         }
-        // Always attempt to load map data after populating options
-        // This ensures the first map in the new list is loaded.
-        loadMapData();
+
+        // Now, after populating, ensure a map is actually selected and loaded
+        if (hasMaps && mapTypeSelect.value) { // Check if there are maps AND if a value is selected (first one by default)
+            loadMapData();
+        } else { // No maps or no map selected, clear everything
+            tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
+            hexGrid.innerHTML = '';
+            currentMapData = null;
+            currentMapDefinition = null;
+            renderGraph(); // Clear graph
+        }
     }
 
     // Loads and displays the selected map data
@@ -398,14 +416,20 @@
           return;
       }
 
-      const isDTC = currentMapDefinition.name.includes("DTC Switch");
+      // Check if currentMapDefinition is valid before accessing its properties
+      const isDTC = currentMapDefinition && currentMapDefinition.name.includes("DTC Switch");
 
       currentMapData.forEach((row, index) => {
         let displayValue;
         if (isDTC) {
             displayValue = row.hexValue === "01" ? "Enabled" : "Disabled";
         } else {
-            displayValue = (hexToDec(row.hexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+            // Ensure currentMapDefinition and its properties exist before using them
+            if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                displayValue = (hexToDec(row.hexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+            } else {
+                displayValue = hexToDec(row.hexValue); // Fallback to raw decimal if no factor/offset
+            }
         }
 
         const tr = document.createElement("tr");
@@ -440,7 +464,7 @@
       }
 
       let maxLength = 2; // Default for 8-bit
-      if (currentMapDefinition.type === "16-bit unsigned") {
+      if (currentMapDefinition && currentMapDefinition.type === "16-bit unsigned") { // Ensure currentMapDefinition exists
           maxLength = 4;
       }
 
@@ -464,21 +488,26 @@
       addToHistory(); // Save current state before modification
 
       let hexEquivalent;
-      if (currentMapDefinition.name.includes("DTC Switch")) {
+      if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) { // Ensure currentMapDefinition exists
           hexEquivalent = newValue; // '01' or '00' directly
       } else {
           newValue = parseFloat(newValue);
           if (isNaN(newValue)) return;
-          hexEquivalent = Math.round((newValue - currentMapDefinition.offset) / currentMapDefinition.factor);
-          // Clamp values to prevent overflow for 8-bit or 16-bit
-          if (currentMapDefinition.type === "8-bit unsigned") {
-              hexEquivalent = Math.max(0, Math.min(hexEquivalent, 255));
-          } else if (currentMapDefinition.type === "16-bit unsigned") {
-              hexEquivalent = Math.max(0, Math.min(hexEquivalent, 65535));
+          // Ensure currentMapDefinition and its properties exist before using them
+          if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+              hexEquivalent = Math.round((newValue - currentMapDefinition.offset) / currentMapDefinition.factor);
+              // Clamp values to prevent overflow for 8-bit or 16-bit
+              if (currentMapDefinition.type === "8-bit unsigned") {
+                  hexEquivalent = Math.max(0, Math.min(hexEquivalent, 255));
+              } else if (currentMapDefinition.type === "16-bit unsigned") {
+                  hexEquivalent = Math.max(0, Math.min(hexEquivalent, 65535));
+              }
+          } else {
+              hexEquivalent = Math.round(newValue); // Fallback if no factor/offset
           }
       }
 
-      const hexString = decToHex(hexEquivalent, currentMapDefinition.type === "16-bit unsigned" ? 4 : 2);
+      const hexString = decToHex(hexEquivalent, currentMapDefinition && currentMapDefinition.type === "16-bit unsigned" ? 4 : 2);
       currentMapData[index].hexValue = hexString;
 
       const hexInput = hexGrid.querySelector(`input[data-index="${index}"]`);
@@ -494,15 +523,19 @@
       const index = parseInt(event.target.dataset.index);
       let newHexValue = event.target.value.toUpperCase();
 
-      if (!/^[0-9A-F]*$/.test(newHexValue) || (currentMapDefinition.type === "8-bit unsigned" && newHexValue.length > 2) || (currentMapDefinition.type === "16-bit unsigned" && newHexValue.length > 4)) {
+      // Ensure currentMapDefinition exists before checking its type
+      const is8Bit = currentMapDefinition && currentMapDefinition.type === "8-bit unsigned";
+      const is16Bit = currentMapDefinition && currentMapDefinition.type === "16-bit unsigned";
+
+      if (!/^[0-9A-F]*$/.test(newHexValue) || (is8Bit && newHexValue.length > 2) || (is16Bit && newHexValue.length > 4)) {
         event.target.value = currentMapData[index].hexValue; // Revert if invalid
         showMessage("Invalid HEX input.", true);
         return;
       }
 
       // Pad with leading zeros if not full length
-      if (currentMapDefinition.type === "8-bit unsigned" && newHexValue.length === 1) newHexValue = '0' + newHexValue;
-      if (currentMapDefinition.type === "16-bit unsigned" && newHexValue.length < 4) newHexValue = newHexValue.padStart(4, '0');
+      if (is8Bit && newHexValue.length === 1) newHexValue = '0' + newHexValue;
+      if (is16Bit && newHexValue.length < 4) newHexValue = newHexValue.padStart(4, '0');
 
       addToHistory(); // Save current state before modification
 
@@ -510,11 +543,16 @@
 
       const mapInput = tuningTableBody.querySelector(`[data-index="${index}"]`);
       if (mapInput) {
-          if (currentMapDefinition.name.includes("DTC Switch")) {
+          if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) { // Ensure currentMapDefinition exists
               mapInput.value = newHexValue; // '01' or '00'
           } else {
-              const actualValue = (hexToDec(newHexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
-              mapInput.value = actualValue;
+              // Ensure currentMapDefinition and its properties exist before using them
+              if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                  const actualValue = (hexToDec(newHexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+                  mapInput.value = actualValue;
+              } else {
+                  mapInput.value = hexToDec(newHexValue); // Fallback to raw decimal
+              }
           }
       }
       renderGraph(); // Update graph after change
@@ -530,7 +568,11 @@
 
         // Only show graph if viewMode is '2d', currentMapData exists,
         // and it's not a DTC Switch map (as DTC doesn't have numerical axes for graphing)
-        if (viewMode === '2d' && currentMapData && currentMapDefinition && !currentMapDefinition.name.includes("DTC Switch")) {
+        // Also check if currentMapDefinition.axes.x or .y is actually set (not null)
+        if (viewMode === '2d' && currentMapData && currentMapDefinition && 
+            !currentMapDefinition.name.includes("DTC Switch") &&
+            (currentMapDefinition.axes.x || currentMapDefinition.axes.y)) { // <-- ADDED THIS CHECK
+            
             graphCanvas.style.display = 'block';
             
             let labels = [];
@@ -538,9 +580,10 @@
 
             // Determine which axis to use for labels (RPM, Load, or TPS)
             if (currentMapDefinition.axes && currentMapDefinition.axes.x) {
-                labels = currentMapData.map(d => d[currentMapDefinition.axes.x.toLowerCase()]);
+                // Safely access properties: check if the key exists in data row
+                labels = currentMapData.map(d => d[currentMapDefinition.axes.x.toLowerCase()] || 'N/A'); 
             } else if (currentMapDefinition.axes && currentMapDefinition.axes.y) {
-                labels = currentMapData.map(d => d[currentMapDefinition.axes.y.toLowerCase()]);
+                labels = currentMapData.map(d => d[currentMapDefinition.axes.y.toLowerCase()] || 'N/A');
             } else {
                 labels = currentMapData.map((_, i) => `Point ${i + 1}`); // Fallback
             }
@@ -599,21 +642,25 @@
                 showMessage("3D Graph visualization is highly complex and requires advanced libraries (e.g., Three.js) and data structures.", false);
             } else if (currentMapDefinition && currentMapDefinition.name.includes("DTC Switch")) {
                 showMessage("2D Graph is not applicable for DTC Switch map.", false);
+            } else if (currentMapDefinition && (!currentMapDefinition.axes.x && !currentMapDefinition.axes.y)) { // Case where axes are null/undefined
+                 showMessage("This map does not have defined axes for 2D graph visualization.", false);
             }
         }
     }
 
     // --- File Operations Simulation ---
     function simulateFileLoad() {
-        const fileInput = document.getElementById("fileInput");
-        if (fileInput.files.length === 0) {
-            showMessage("Please select a file to simulate loading.", true);
-            return;
-        }
-
-        const file = fileInput.files[0];
-        showMessage(`Simulating loading of "${file.name}"... This is where the actual binary parsing would happen.`);
+        // We're skipping the actual file input selection for now, just simulating the load
+        // const fileInput = document.getElementById("fileInput");
+        // if (fileInput.files.length === 0) {
+        //     showMessage("Please select a file to simulate loading.", true);
+        //     return;
+        // }
+        // const file = fileInput.files[0];
+        // showMessage(`Simulating loading of "${file.name}"... This is where the actual binary parsing would happen.`);
         
+        showMessage("Simulating ECU file load...", false); // Just show a general message
+
         currentECUFile = Array(0x4000).fill('00'); // Simulate a 16KB ECU file filled with '00'
         
         // This part remains a simplification: it populates the ECU file with default data
@@ -629,7 +676,7 @@
                     const byteLength = mapDef.type === "16-bit unsigned" ? 4 : 2; // 2 or 4 chars = 1 or 2 bytes
                     hexBytes = hexBytes.padStart(byteLength, '0');
 
-                    for (let i = 0; i < hexBytes.length; i += 2) {
+                    for (let i = 0; i < hexBytes.length; i += 2) { // iterate by 2 characters (1 byte)
                         if (currentAddress < currentECUFile.length) {
                              currentECUFile[currentAddress++] = hexBytes.substring(i, i + 2);
                         }
@@ -638,9 +685,13 @@
             }
         }
 
-        // *** Crucial Fix: Call populateMapOptions() AFTER the file is "loaded" ***
-        // This will refresh the map dropdown and then load the first map for the current model.
+        // *** CRITICAL FIXES FOR INITIAL LOAD ORDER ***
+        // 1. Populate map options for the currently selected car model
         populateMapOptions(); 
+        // populateMapOptions already calls loadMapData() for the first map in the list.
+        // So we don't need to call loadMapData() explicitly here again.
+
+        showMessage("ECU file simulated load complete. Map data loaded.", false);
     }
 
     function simulateFileSave() {
@@ -654,7 +705,7 @@
     // --- Tuning Functions ---
 
     function confirmTuning() {
-      if (!currentMapData) {
+      if (!currentMapData || !currentMapDefinition) { // Added check for currentMapDefinition
           resultArea.innerHTML = "<p style='color: #ffaaaa;'>Please load a map first.</p>";
           return;
       }
@@ -680,7 +731,6 @@
       let torqueChange = 0;
       let response = "Standard response.";
 
-      // Handle division by zero for originalTotalValue if it's 0 or no original data
       const diffRatio = (originalTotalValue !== 0) ? (modifiedTotalValue - originalTotalValue) / originalTotalValue : 0;
 
 
@@ -718,7 +768,7 @@
     }
 
     function compareMaps() {
-        if (!currentMapData || history.length < 2) {
+        if (!currentMapData || history.length < 2 || !currentMapDefinition) { // Added check for currentMapDefinition
             showMessage("Load a map and make changes to compare.", true);
             return;
         }
@@ -731,7 +781,9 @@
             const originalItem = originalMapState.currentMapData[index];
             if (originalItem && modifiedItem.hexValue !== originalItem.hexValue) {
                 changes++;
-                comparisonDetails += `Row ${index + 1} (${modifiedItem.rpm || modifiedItem.id || 'N/A'}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
+                // Safely access properties for display
+                const label = modifiedItem.rpm || modifiedItem.id || modifiedItem.load || modifiedItem.tps || `Row ${index + 1}`;
+                comparisonDetails += `Row ${index + 1} (${label}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
             }
         });
 
@@ -769,6 +821,9 @@
 
     // --- Undo/Redo Functionality ---
     function addToHistory() {
+        // Only add to history if currentMapData and currentMapDefinition are valid
+        if (!currentMapData || !currentMapDefinition) return;
+
         if (historyPointer < history.length - 1) {
             history = history.slice(0, historyPointer + 1);
         }
@@ -785,12 +840,23 @@
             const prevState = history[historyPointer];
             currentMapData = JSON.parse(JSON.stringify(prevState.currentMapData));
             currentMapDefinition = JSON.parse(JSON.stringify(prevState.currentMapDefinition));
-            // Important: Re-render table, hex grid, and graph based on the restored state
+            
+            // Important: Set the selected map type in the dropdown to match the undo state
+            // This ensures the correct map definition is selected for rendering
+            if (currentMapDefinition && mapTypeSelect.value !== prevState.currentMapDefinition.name.toLowerCase().replace(/ /g, '_').replace(/[\(\)]/g, '')) {
+                // Find the option by text content, as value might be different if map name has spaces/special chars
+                for (let i = 0; i < mapTypeSelect.options.length; i++) {
+                    if (mapTypeSelect.options[i].textContent === prevState.currentMapDefinition.name) {
+                        mapTypeSelect.value = mapTypeSelect.options[i].value;
+                        break;
+                    }
+                }
+            }
+
+
             renderTuningTable();
             renderHexGrid();
             renderGraph();
-            // Also ensure the mapTypeSelect and carModelSelect reflect the history state if needed
-            // (For this specific issue, it's about the map data, so re-rendering is enough)
             showMessage("Undo successful.", false);
         } else {
             showMessage("No more changes to undo.", true);
