@@ -419,7 +419,7 @@
 // --- Data Definitions ---
     const ecuDefinitions = {
       "Mazda": {
-        "Mazda 2 Skyactiv-D (Diesel)": {
+       "Mazda 2 Skyactiv-D (Diesel)": {
           iq_limit: {
             name: "IQ Limit (mg/stroke)",
             address: 0x1000, type: "8-bit unsigned", factor: 0.01, offset: 0,
@@ -440,58 +440,277 @@
               { rpm: 2500, load: 100, hexValue: "78" }, { rpm: 3000, load: 100, hexValue: "7A" }, { rpm: 3500, load: 100, hexValue: "7C" }, { rpm: 4000, load: 100, hexValue: "7D" },
             ]
           },
-          main_injection: {
-            name: "Main Injection Quantity (mg/stroke)",
-            address: 0x1100, type: "8-bit unsigned", factor: 0.02, offset: 0,
+          // --- เพิ่ม Injection Timing Map สำหรับดีเซล ---
+          injection_timing: {
+            name: "Injection Timing (degrees ATDC)", // สำหรับดีเซลมักใช้ ATDC (After TDC) หรือ BTDC (Before TDC) ที่มีค่าติดลบ
+            address: 0x1100, type: "16-bit signed", factor: 0.01, offset: 0, // ค่า factor/offset สมมติ
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
+            axisValues: { rpm: [800, 1200, 1800, 2500, 3000, 3500, 4000, 4500], load: [10, 20, 40, 60, 80, 100] },
             defaultData: [
-              { rpm: 800, load: 10, hexValue: "1A" }, { rpm: 1000, load: 10, hexValue: "1C" }, { rpm: 1500, load: 10, hexValue: "1E" }, { rpm: 2000, load: 10, hexValue: "20" },
-              { rpm: 2500, load: 10, hexValue: "22" }, { rpm: 3000, load: 10, hexValue: "24" }, { rpm: 3500, load: 10, hexValue: "26" }, { rpm: 4000, load: 10, hexValue: "27" },
-              { rpm: 800, load: 30, hexValue: "25" }, { rpm: 1000, load: 30, hexValue: "28" }, { rpm: 1500, load: 30, hexValue: "2B" }, { rpm: 2000, load: 30, hexValue: "2E" },
-              { rpm: 2500, load: 30, hexValue: "30" }, { rpm: 3000, load: 30, hexValue: "32" }, { rpm: 3500, load: 30, hexValue: "34" }, { rpm: 4000, load: 30, hexValue: "35" },
-              { rpm: 800, load: 50, hexValue: "30" }, { rpm: 1000, load: 50, hexValue: "33" }, { rpm: 1500, load: 50, hexValue: "36" }, { rpm: 2000, load: 50, hexValue: "39" },
-              { rpm: 2500, load: 50, hexValue: "3B" }, { rpm: 3000, load: 50, hexValue: "3D" }, { rpm: 3500, load: 50, hexValue: "3F" }, { rpm: 4000, load: 50, hexValue: "40" },
-              { rpm: 800, load: 70, hexValue: "3B" }, { rpm: 1000, load: 70, hexValue: "3E" }, { rpm: 1500, load: 70, hexValue: "41" }, { rpm: 2000, load: 70, hexValue: "44" },
-              { rpm: 2500, load: 70, hexValue: "46" }, { rpm: 3000, load: 70, hexValue: "48" }, { rpm: 3500, load: 70, hexValue: "4A" }, { rpm: 4000, load: 70, hexValue: "4B" },
-              { rpm: 800, load: 90, hexValue: "48" }, { rpm: 1000, load: 90, hexValue: "4B" }, { rpm: 1500, load: 90, hexValue: "4E" }, { rpm: 2000, load: 90, hexValue: "51" },
-              { rpm: 2500, load: 90, hexValue: "53" }, { rpm: 3000, load: 90, hexValue: "55" }, { rpm: 3500, load: 90, hexValue: "57" }, { rpm: 4000, load: 90, hexValue: "58" },
-              { rpm: 800, load: 100, hexValue: "50" }, { rpm: 1000, load: 100, hexValue: "53" }, { rpm: 1500, load: 100, hexValue: "56" }, { rpm: 2000, load: 100, hexValue: "59" },
-              { rpm: 2500, load: 100, hexValue: "5B" }, { rpm: 3000, load: 100, hexValue: "5D" }, { rpm: 3500, load: 100, hexValue: "5F" }, { rpm: 4000, load: 100, hexValue: "60" },
+              // ข้อมูลจำลองสำหรับ Injection Timing (องศา ATDC, ค่าบวกคือหลังจาก TDC, ค่าลบคือก่อน TDC)
+              // เช่น 100 = 1.00 องศา, -200 = -2.00 องศา
+              // RPM 800
+              { rpm: 800, load: 10, hexValue: "FFEA" }, // -2.20 deg (Retarded for idle stability) -> FFEE
+              { rpm: 800, load: 20, hexValue: "FFF5" }, // -1.00 deg
+              { rpm: 800, load: 40, hexValue: "0005" }, // 0.05 deg
+              { rpm: 800, load: 60, hexValue: "0010" }, // 0.16 deg
+              { rpm: 800, load: 80, hexValue: "0020" }, // 0.32 deg
+              { rpm: 800, load: 100, hexValue: "0030" }, // 0.48 deg (Full Load - Retarded for smoke/NVH)
+
+              // RPM 1200
+              { rpm: 1200, load: 10, hexValue: "FFD8" }, // -4.00 deg
+              { rpm: 1200, load: 20, hexValue: "FFE8" }, // -2.00 deg
+              { rpm: 1200, load: 40, hexValue: "0000" }, // 0.00 deg
+              { rpm: 1200, load: 60, hexValue: "0018" }, // 0.24 deg
+              { rpm: 1200, load: 80, hexValue: "0028" }, // 0.40 deg
+              { rpm: 1200, load: 100, hexValue: "0040" }, // 0.64 deg
+
+              // RPM 1800
+              { rpm: 1800, load: 10, hexValue: "FFCC" }, // -5.00 deg
+              { rpm: 1800, load: 20, hexValue: "FFDC" }, // -3.00 deg
+              { rpm: 1800, load: 40, hexValue: "FFE8" }, // -2.00 deg
+              { rpm: 1800, load: 60, hexValue: "0000" }, // 0.00 deg
+              { rpm: 1800, load: 80, hexValue: "0010" }, // 0.16 deg
+              { rpm: 1800, load: 100, hexValue: "0020" }, // 0.32 deg
+
+              // RPM 2500
+              { rpm: 2500, load: 10, hexValue: "FFC0" }, // -6.40 deg
+              { rpm: 2500, load: 20, hexValue: "FFD0" }, // -4.80 deg
+              { rpm: 2500, load: 40, hexValue: "FFE0" }, // -3.20 deg
+              { rpm: 2500, load: 60, hexValue: "FFF0" }, // -1.60 deg
+              { rpm: 2500, load: 80, hexValue: "0000" }, // 0.00 deg
+              { rpm: 2500, load: 100, hexValue: "0010" }, // 0.16 deg
+
+              // RPM 3000
+              { rpm: 3000, load: 10, hexValue: "FFB0" }, // -8.00 deg
+              { rpm: 3000, load: 20, hexValue: "FFC0" }, // -6.40 deg
+              { rpm: 3000, load: 40, hexValue: "FFD0" }, // -4.80 deg
+              { rpm: 3000, load: 60, hexValue: "FFE0" }, // -3.20 deg
+              { rpm: 3000, load: 80, hexValue: "FFF0" }, // -1.60 deg
+              { rpm: 3000, load: 100, hexValue: "0000" }, // 0.00 deg
+
+              // RPM 3500
+              { rpm: 3500, load: 10, hexValue: "FFA0" }, // -9.60 deg
+              { rpm: 3500, load: 20, hexValue: "FFB0" }, // -8.00 deg
+              { rpm: 3500, load: 40, hexValue: "FFC0" }, // -6.40 deg
+              { rpm: 3500, load: 60, hexValue: "FFD0" }, // -4.80 deg
+              { rpm: 3500, load: 80, hexValue: "FFE0" }, // -3.20 deg
+              { rpm: 3500, load: 100, hexValue: "FFF0" }, // -1.60 deg
+
+              // RPM 4000
+              { rpm: 4000, load: 10, hexValue: "FF90" }, // -11.20 deg
+              { rpm: 4000, load: 20, hexValue: "FFA0" }, // -9.60 deg
+              { rpm: 4000, load: 40, hexValue: "FFB0" }, // -8.00 deg
+              { rpm: 4000, load: 60, hexValue: "FFC0" }, // -6.40 deg
+              { rpm: 4000, load: 80, hexValue: "FFD0" }, // -4.80 deg
+              { rpm: 4000, load: 100, hexValue: "FFE0" }, // -3.20 deg
+
+              // RPM 4500
+              { rpm: 4500, load: 10, hexValue: "FF80" }, // -12.80 deg
+              { rpm: 4500, load: 20, hexValue: "FF90" }, // -11.20 deg
+              { rpm: 4500, load: 40, hexValue: "FFA0" }, // -9.60 deg
+              { rpm: 4500, load: 60, hexValue: "FFB0" }, // -8.00 deg
+              { rpm: 4500, load: 80, hexValue: "FFC0" }, // -6.40 deg
+              { rpm: 4500, load: 100, hexValue: "FFD0" }, // -4.80 deg
             ]
           },
+          // --- เพิ่ม Rail Pressure Map ---
+          rail_pressure: {
+            name: "Rail Pressure (bar)",
+            address: 0x1200, type: "16-bit unsigned", factor: 0.1, offset: 0, // ค่า factor/offset สมมติ
+            axes: { x: "RPM", y: "IQ (mg/stroke)" },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500], iq: [10, 30, 50, 70] },
+            defaultData: [
+              // ค่า Rail Pressure (bar * 10)
+              // RPM 800
+              { rpm: 800, iq: 10, hexValue: "1F40" }, // 800 bar
+              { rpm: 800, iq: 30, hexValue: "2EE0" }, // 1200 bar
+              { rpm: 800, iq: 50, hexValue: "3A98" }, // 1500 bar
+              { rpm: 800, iq: 70, hexValue: "44C0" }, // 1760 bar
+
+              // RPM 1500
+              { rpm: 1500, iq: 10, hexValue: "2710" }, // 1000 bar
+              { rpm: 1500, iq: 30, hexValue: "36B0" }, // 1400 bar
+              { rpm: 1500, iq: 50, hexValue: "4268" }, // 1680 bar
+              { rpm: 1500, iq: 70, hexValue: "4E20" }, // 1920 bar
+
+              // RPM 2500
+              { rpm: 2500, iq: 10, hexValue: "32C8" }, // 1300 bar
+              { rpm: 2500, iq: 30, hexValue: "40D0" }, // 1660 bar
+              { rpm: 2500, iq: 50, hexValue: "4C88" }, // 1960 bar
+              { rpm: 2500, iq: 70, hexValue: "5840" }, // 2260 bar
+
+              // RPM 3500
+              { rpm: 3500, iq: 10, hexValue: "3E80" }, // 1600 bar
+              { rpm: 3500, iq: 30, hexValue: "4A38" }, // 1890 bar
+              { rpm: 3500, iq: 50, hexValue: "55F0" }, // 2180 bar
+              { rpm: 3500, iq: 70, hexValue: "61A8" }, // 2470 bar
+
+              // RPM 4500
+              { rpm: 4500, iq: 10, hexValue: "4A38" }, // 1890 bar
+              { rpm: 4500, iq: 30, hexValue: "55F0" }, // 2180 bar
+              { rpm: 4500, iq: 50, hexValue: "61A8" }, // 2470 bar
+              { rpm: 4500, iq: 70, hexValue: "6D60" }, // 2750 bar
+            ]
+          },
+          // --- เพิ่ม Torque Limiter Map ---
+          torque_limiter: {
+            name: "Torque Limiter (Nm)",
+            address: 0x1300, type: "16-bit unsigned", factor: 1, offset: 0, // ค่า factor/offset สมมติ
+            axes: { x: "RPM", y: "Load" }, // หรืออาจจะเป็น "Gear" หรือ "Driver Demand"
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500], load: [20, 40, 60, 80, 100] }, // สมมติ Load เป็น Driver Demand %
+            defaultData: [
+              // Torque Values (Nm)
+              // RPM 800
+              { rpm: 800, load: 20, hexValue: "00C8" }, // 200 Nm
+              { rpm: 800, load: 40, hexValue: "012C" }, // 300 Nm
+              { rpm: 800, load: 60, hexValue: "0190" }, // 400 Nm
+              { rpm: 800, load: 80, hexValue: "01F4" }, // 500 Nm
+              { rpm: 800, load: 100, hexValue: "0258" }, // 600 Nm
+
+              // RPM 1500
+              { rpm: 1500, load: 20, hexValue: "012C" }, // 300 Nm
+              { rpm: 1500, load: 40, hexValue: "0190" }, // 400 Nm
+              { rpm: 1500, load: 60, hexValue: "01F4" }, // 500 Nm
+              { rpm: 1500, load: 80, hexValue: "0258" }, // 600 Nm
+              { rpm: 1500, load: 100, hexValue: "02BC" }, // 700 Nm
+
+              // RPM 2500
+              { rpm: 2500, load: 20, hexValue: "0190" }, // 400 Nm
+              { rpm: 2500, load: 40, hexValue: "01F4" }, // 500 Nm
+              { rpm: 2500, load: 60, hexValue: "0258" }, // 600 Nm
+              { rpm: 2500, load: 80, hexValue: "02BC" }, // 700 Nm
+              { rpm: 2500, load: 100, hexValue: "0320" }, // 800 Nm
+
+              // RPM 3500
+              { rpm: 3500, load: 20, hexValue: "01F4" }, // 500 Nm
+              { rpm: 3500, load: 40, hexValue: "0258" }, // 600 Nm
+              { rpm: 3500, load: 60, hexValue: "02BC" }, // 700 Nm
+              { rpm: 3500, load: 80, hexValue: "0320" }, // 800 Nm
+              { rpm: 3500, load: 100, hexValue: "0384" }, // 900 Nm
+
+              // RPM 4500
+              { rpm: 4500, load: 20, hexValue: "0258" }, // 600 Nm
+              { rpm: 4500, load: 40, hexValue: "02BC" }, // 700 Nm
+              { rpm: 4500, load: 60, hexValue: "0320" }, // 800 Nm
+              { rpm: 4500, load: 80, hexValue: "0384" }, // 900 Nm
+              { rpm: 4500, load: 100, hexValue: "03E8" }, // 1000 Nm
+            ]
+          },
+          // --- เพิ่ม RPM Limiter (Single value หรือ Simple Map) ---
+          rpm_limiter: {
+            name: "RPM Limiter (RPM)",
+            address: 0x1400, type: "16-bit unsigned", factor: 1, offset: 0,
+            axes: { x: "Value", y: "" }, // เป็น Single Value หรือ 1D Map
+            axisValues: { value: [""], "": [""] }, // Dummy for single value
+            defaultData: [
+              { value: "", hexValue: "18F0" } // 6384 RPM (สมมติ)
+            ]
+          },
+          // --- เพิ่ม EGR Map ---
+          egr_map: {
+            name: "EGR Map (Valve Position %)",
+            address: 0x1500, type: "8-bit unsigned", factor: 0.392, offset: 0, // 255 -> 100%
+            axes: { x: "RPM", y: "Load" },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500], load: [10, 20, 30, 40, 50] }, // EGR มักจะทำงานที่ Load ต่ำ-ปานกลาง
+            defaultData: [
+              // EGR Valve Opening (0-255 -> 0-100%)
+              // RPM 800
+              { rpm: 800, load: 10, hexValue: "FF" }, // 100% Open (idle)
+              { rpm: 800, load: 20, hexValue: "E0" }, // ~88%
+              { rpm: 800, load: 30, hexValue: "C0" }, // ~75%
+              { rpm: 800, load: 40, hexValue: "80" }, // ~50%
+              { rpm: 800, load: 50, hexValue: "40" }, // ~25%
+
+              // RPM 1500
+              { rpm: 1500, load: 10, hexValue: "F0" }, // ~94%
+              { rpm: 1500, load: 20, hexValue: "D0" }, // ~82%
+              { rpm: 1500, load: 30, hexValue: "A0" }, // ~63%
+              { rpm: 1500, load: 40, hexValue: "60" }, // ~37%
+              { rpm: 1500, load: 50, hexValue: "20" }, // ~12%
+
+              // RPM 2500
+              { rpm: 2500, load: 10, hexValue: "C0" }, // ~75%
+              { rpm: 2500, load: 20, hexValue: "90" }, // ~56%
+              { rpm: 2500, load: 30, hexValue: "60" }, // ~37%
+              { rpm: 2500, load: 40, hexValue: "30" }, // ~18%
+              { rpm: 2500, load: 50, hexValue: "00" }, // 0% (Closed at higher load/RPM)
+
+              // RPM 3500
+              { rpm: 3500, load: 10, hexValue: "80" }, // ~50%
+              { rpm: 3500, load: 20, hexValue: "40" }, // ~25%
+              { rpm: 3500, load: 30, hexValue: "20" }, // ~12%
+              { rpm: 3500, load: 40, hexValue: "00" }, // 0%
+              { rpm: 3500, load: 50, hexValue: "00" }, // 0%
+
+              // RPM 4500
+              { rpm: 4500, load: 10, hexValue: "40" }, // ~25%
+              { rpm: 4500, load: 20, hexValue: "20" }, // ~12%
+              { rpm: 4500, load: 30, hexValue: "00" }, // 0%
+              { rpm: 4500, load: 40, hexValue: "00" }, // 0%
+              { rpm: 4500, load: 50, hexValue: "00" }, // 0%
+            ]
+          },
+          // --- เพิ่ม Boost Pressure Map ---
           boost_pressure: {
             name: "Boost Pressure (mbar)",
-            address: 0x1200, type: "16-bit unsigned", factor: 0.01, offset: 950,
+            address: 0x1600, type: "16-bit unsigned", factor: 1, offset: 0, // ค่า factor/offset สมมติ, เช่น 1000 = 1000 mbar (1 bar)
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000], load: [30, 50, 70, 90, 100] },
+            axisValues: { rpm: [1500, 2000, 2500, 3000, 3500, 4000, 4500], load: [20, 40, 60, 80, 100] },
             defaultData: [
-              { rpm: 1500, load: 30, hexValue: "05DC" }, { rpm: 2000, load: 30, hexValue: "0640" }, { rpm: 2500, load: 30, hexValue: "06A4" }, { rpm: 3000, load: 30, hexValue: "0708" },
-              { rpm: 3500, load: 30, hexValue: "076C" }, { rpm: 4000, load: 30, hexValue: "07D0" }, { rpm: 4500, load: 30, hexValue: "0834" }, { rpm: 5000, load: 30, hexValue: "0898" },
-              { rpm: 1500, load: 50, hexValue: "06A4" }, { rpm: 2000, load: 50, hexValue: "0708" }, { rpm: 2500, load: 50, hexValue: "076C" }, { rpm: 3000, load: 50, hexValue: "07D0" },
-              { rpm: 3500, load: 50, hexValue: "0834" }, { rpm: 4000, load: 50, hexValue: "0898" }, { rpm: 4500, load: 50, hexValue: "08FC" }, { rpm: 5000, load: 50, hexValue: "0960" },
-              { rpm: 1500, load: 70, hexValue: "07D0" }, { rpm: 2000, load: 70, hexValue: "0834" }, { rpm: 2500, load: 70, hexValue: "0898" }, { rpm: 3000, load: 70, hexValue: "08FC" },
-              { rpm: 3500, load: 70, hexValue: "0960" }, { rpm: 4000, load: 70, hexValue: "09C4" }, { rpm: 4500, load: 70, hexValue: "0A28" }, { rpm: 5000, load: 70, hexValue: "0A8C" },
-              { rpm: 1500, load: 90, hexValue: "08FC" }, { rpm: 2000, load: 90, hexValue: "0960" }, { rpm: 2500, load: 90, hexValue: "09C4" }, { rpm: 3000, load: 90, hexValue: "0A28" },
-              { rpm: 3500, load: 90, hexValue: "0A8C" }, { rpm: 4000, load: 90, hexValue: "0AF0" }, { rpm: 4500, load: 90, hexValue: "0B54" }, { rpm: 5000, load: 90, hexValue: "0BB8" },
-              { rpm: 1500, load: 100, hexValue: "0A28" }, { rpm: 2000, load: 100, hexValue: "0A8C" }, { rpm: 2500, load: 100, hexValue: "0AF0" }, { rpm: 3000, load: 100, hexValue: "0B54" },
-              { rpm: 3500, load: 100, hexValue: "0BB8" }, { rpm: 4000, load: 100, hexValue: "0C1C" }, { rpm: 4500, load: 100, hexValue: "0C80" }, { rpm: 5000, load: 100, hexValue: "0CE4" },
+              // ค่า Boost Pressure (mbar)
+              // RPM 1500
+              { rpm: 1500, load: 20, hexValue: "05DC" }, // 1500 mbar
+              { rpm: 1500, load: 40, hexValue: "06A4" }, // 1700 mbar
+              { rpm: 1500, load: 60, hexValue: "07D0" }, // 2000 mbar
+              { rpm: 1500, load: 80, hexValue: "08FC" }, // 2300 mbar
+              { rpm: 1500, load: 100, hexValue: "0A28" }, // 2600 mbar
+
+              // RPM 2000
+              { rpm: 2000, load: 20, hexValue: "06A4" }, // 1700 mbar
+              { rpm: 2000, load: 40, hexValue: "07D0" }, // 2000 mbar
+              { rpm: 2000, load: 60, hexValue: "08FC" }, // 2300 mbar
+              { rpm: 2000, load: 80, hexValue: "0A28" }, // 2600 mbar
+              { rpm: 2000, load: 100, hexValue: "0BB8" }, // 3000 mbar
+
+              // RPM 2500
+              { rpm: 2500, load: 20, hexValue: "07D0" }, // 2000 mbar
+              { rpm: 2500, load: 40, hexValue: "08FC" }, // 2300 mbar
+              { rpm: 2500, load: 60, hexValue: "0A28" }, // 2600 mbar
+              { rpm: 2500, load: 80, hexValue: "0BB8" }, // 3000 mbar
+              { rpm: 2500, load: 100, hexValue: "0E10" }, // 3600 mbar
+
+              // RPM 3000
+              { rpm: 3000, load: 20, hexValue: "08FC" }, // 2300 mbar
+              { rpm: 3000, load: 40, hexValue: "0A28" }, // 2600 mbar
+              { rpm: 3000, load: 60, hexValue: "0BB8" }, // 3000 mbar
+              { rpm: 3000, load: 80, hexValue: "0E10" }, // 3600 mbar
+              { rpm: 3000, load: 100, hexValue: "1004" }, // 4100 mbar
+
+              // RPM 3500
+              { rpm: 3500, load: 20, hexValue: "0A28" }, // 2600 mbar
+              { rpm: 3500, load: 40, hexValue: "0BB8" }, // 3000 mbar
+              { rpm: 3500, load: 60, hexValue: "0E10" }, // 3600 mbar
+              { rpm: 3500, load: 80, hexValue: "1004" }, // 4100 mbar
+              { rpm: 3500, load: 100, hexValue: "11F8" }, // 4600 mbar
+
+              // RPM 4000
+              { rpm: 4000, load: 20, hexValue: "0BB8" }, // 3000 mbar
+              { rpm: 4000, load: 40, hexValue: "0E10" }, // 3600 mbar
+              { rpm: 4000, load: 60, hexValue: "1004" }, // 4100 mbar
+              { rpm: 4000, load: 80, hexValue: "11F8" }, // 4600 mbar
+              { rpm: 4000, load: 100, hexValue: "13EC" }, // 5100 mbar
+
+              // RPM 4500
+              { rpm: 4500, load: 20, hexValue: "0E10" }, // 3600 mbar
+              { rpm: 4500, load: 40, hexValue: "1004" }, // 4100 mbar
+              { rpm: 4500, load: 60, hexValue: "11F8" }, // 4600 mbar
+              { rpm: 4500, load: 80, hexValue: "13EC" }, // 5100 mbar
+              { rpm: 4500, load: 100, hexValue: "15E0" }, // 5600 mbar
             ]
           },
-          dtc_switch: {
-            name: "DTC Switch (Diagnostic Trouble Code)",
-            address: 0x2000, type: "8-bit unsigned", factor: 1, offset: 0, // Special handling for display
-            axes: { x: "DTC Code", y: "Status" }, // Dummy axes for display
-            axisValues: { dtc_code: ["P0001", "P0002", "P0003", "P0004", "P0005"], status: ["Enabled/Disabled"] },
-            defaultData: [
-                { dtc_code: "P0001", hexValue: "01" }, // Enabled
-                { dtc_code: "P0002", hexValue: "01" }, // Enabled
-                { dtc_code: "P0003", hexValue: "00" }, // Disabled
-                { dtc_code: "P0004", hexValue: "01" }, // Enabled
-                { dtc_code: "P0005", hexValue: "00" }  // Disabled
-            ]
-          }
         },
+
         "Mazda 2 Skyactiv-G (Petrol)": {
           ignition_timing: {
             name: "Ignition Timing (degrees BTDC)",
