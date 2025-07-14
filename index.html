@@ -416,7 +416,7 @@
     let history = [];
     let historyPointer = -1;
 
-  // --- Data Definitions ---
+// --- Data Definitions ---
     const ecuDefinitions = {
       "Mazda": {
         "Mazda 2 Skyactiv-D (Diesel)": {
@@ -497,321 +497,801 @@
             name: "Ignition Timing (degrees BTDC)",
             address: 0x1000, type: "8-bit signed", factor: 0.5, offset: -30,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
+            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500], load: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] },
             defaultData: [
-              { rpm: 800, load: 10, hexValue: "30" }, { rpm: 1000, load: 10, hexValue: "35" }, { rpm: 1500, load: 10, hexValue: "3A" }, { rpm: 2000, load: 10, hexValue: "3D" },
-              { rpm: 2500, load: 10, hexValue: "40" }, { rpm: 3000, load: 10, hexValue: "42" }, { rpm: 3500, load: 10, hexValue: "44" }, { rpm: 4000, load: 10, hexValue: "45" },
-              { rpm: 800, load: 30, hexValue: "2A" }, { rpm: 1000, load: 30, hexValue: "2F" }, { rpm: 1500, load: 30, hexValue: "34" }, { rpm: 2000, load: 30, hexValue: "37" },
-              { rpm: 2500, load: 30, hexValue: "3A" }, { rpm: 3000, load: 30, hexValue: "3C" }, { rpm: 3500, load: 30, hexValue: "3E" }, { rpm: 4000, load: 30, hexValue: "3F" },
-              { rpm: 800, load: 50, hexValue: "20" }, { rpm: 1000, load: 50, hexValue: "25" }, { rpm: 1500, load: 50, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2D" },
-              { rpm: 2500, load: 50, hexValue: "30" }, { rpm: 3000, load: 50, hexValue: "32" }, { rpm: 3500, load: 50, hexValue: "34" }, { rpm: 4000, load: 50, hexValue: "35" },
-              { rpm: 800, load: 70, hexValue: "18" }, { rpm: 1000, load: 70, hexValue: "1D" }, { rpm: 1500, load: 70, hexValue: "22" }, { rpm: 2000, load: 70, hexValue: "25" },
-              { rpm: 2500, load: 70, hexValue: "28" }, { rpm: 3000, load: 70, hexValue: "2A" }, { rpm: 3500, load: 70, hexValue: "2C" }, { rpm: 4000, load: 70, hexValue: "2D" },
-              { rpm: 800, load: 90, hexValue: "10" }, { rpm: 1000, load: 90, hexValue: "15" }, { rpm: 1500, load: 90, hexValue: "1A" }, { rpm: 2000, load: 90, hexValue: "1D" },
-              { rpm: 2500, load: 90, hexValue: "20" }, { rpm: 3000, load: 90, hexValue: "22" }, { rpm: 3500, load: 90, hexValue: "24" }, { rpm: 4000, load: 90, hexValue: "25" },
-              { rpm: 800, load: 100, hexValue: "08" }, { rpm: 1000, load: 100, hexValue: "0D" }, { rpm: 1500, load: 100, hexValue: "12" }, { rpm: 2000, load: 100, hexValue: "15" },
-              { rpm: 2500, load: 100, hexValue: "18" }, { rpm: 3000, load: 100, hexValue: "1A" }, { rpm: 3500, load: 100, hexValue: "1C" }, { rpm: 4000, load: 100, hexValue: "1D" },
+              // RPM 800
+              { rpm: 800, load: 10, hexValue: "50" }, // ~5 deg BTDC (Idle)
+              { rpm: 800, load: 20, hexValue: "58" }, // ~9 deg BTDC
+              { rpm: 800, load: 30, hexValue: "40" }, // ~ -10 deg BTDC (Low load, maybe for warm up)
+              { rpm: 800, load: 40, hexValue: "38" },
+              { rpm: 800, load: 50, hexValue: "30" },
+              { rpm: 800, load: 60, hexValue: "28" },
+              { rpm: 800, load: 70, hexValue: "20" },
+              { rpm: 800, load: 80, hexValue: "18" },
+              { rpm: 800, load: 90, hexValue: "10" },
+              { rpm: 800, load: 100, hexValue: "08" }, // ~-26 deg BTDC (full load, very retarded for torque/cat protection)
+
+              // RPM 1000
+              { rpm: 1000, load: 10, hexValue: "54" }, // ~7 deg BTDC
+              { rpm: 1000, load: 20, hexValue: "5C" }, // ~11 deg BTDC
+              { rpm: 1000, load: 30, hexValue: "44" },
+              { rpm: 1000, load: 40, hexValue: "3C" },
+              { rpm: 1000, load: 50, hexValue: "34" },
+              { rpm: 1000, load: 60, hexValue: "2C" },
+              { rpm: 1000, load: 70, hexValue: "24" },
+              { rpm: 1000, load: 80, hexValue: "1C" },
+              { rpm: 1000, load: 90, hexValue: "14" },
+              { rpm: 1000, load: 100, hexValue: "0C" },
+
+              // RPM 1500
+              { rpm: 1500, load: 10, hexValue: "60" }, // ~15 deg BTDC
+              { rpm: 1500, load: 20, hexValue: "68" }, // ~19 deg BTDC
+              { rpm: 1500, load: 30, hexValue: "50" },
+              { rpm: 1500, load: 40, hexValue: "48" },
+              { rpm: 1500, load: 50, hexValue: "40" },
+              { rpm: 1500, load: 60, hexValue: "38" },
+              { rpm: 1500, load: 70, hexValue: "30" },
+              { rpm: 1500, load: 80, hexValue: "28" },
+              { rpm: 1500, load: 90, hexValue: "20" },
+              { rpm: 1500, load: 100, hexValue: "18" },
+
+              // RPM 2000
+              { rpm: 2000, load: 10, hexValue: "6A" }, // ~20 deg BTDC (Changed from 0.50 for realism)
+              { rpm: 2000, load: 20, hexValue: "70" }, // ~25 deg BTDC
+              { rpm: 2000, load: 30, hexValue: "58" },
+              { rpm: 2000, load: 40, hexValue: "50" },
+              { rpm: 2000, load: 50, hexValue: "48" },
+              { rpm: 2000, load: 60, hexValue: "40" },
+              { rpm: 2000, load: 70, hexValue: "38" },
+              { rpm: 2000, load: 80, hexValue: "30" },
+              { rpm: 2000, load: 90, hexValue: "28" },
+              { rpm: 2000, load: 100, hexValue: "20" },
+
+              // RPM 2500
+              { rpm: 2500, load: 10, hexValue: "6E" }, // ~22 deg BTDC
+              { rpm: 2500, load: 20, hexValue: "74" }, // ~27 deg BTDC
+              { rpm: 2500, load: 30, hexValue: "60" },
+              { rpm: 2500, load: 40, hexValue: "58" },
+              { rpm: 2500, load: 50, hexValue: "50" },
+              { rpm: 2500, load: 60, hexValue: "48" },
+              { rpm: 2500, load: 70, hexValue: "40" },
+              { rpm: 2500, load: 80, hexValue: "38" },
+              { rpm: 2500, load: 90, hexValue: "30" },
+              { rpm: 2500, load: 100, hexValue: "28" },
+
+              // RPM 3000
+              { rpm: 3000, load: 10, hexValue: "72" }, // ~24 deg BTDC
+              { rpm: 3000, load: 20, hexValue: "78" }, // ~29 deg BTDC
+              { rpm: 3000, load: 30, hexValue: "64" },
+              { rpm: 3000, load: 40, hexValue: "5C" },
+              { rpm: 3000, load: 50, hexValue: "54" },
+              { rpm: 3000, load: 60, hexValue: "4C" },
+              { rpm: 3000, load: 70, hexValue: "44" },
+              { rpm: 3000, load: 80, hexValue: "3C" },
+              { rpm: 3000, load: 90, hexValue: "34" },
+              { rpm: 3000, load: 100, hexValue: "2C" },
+
+              // RPM 3500
+              { rpm: 3500, load: 10, hexValue: "76" }, // ~26 deg BTDC
+              { rpm: 3500, load: 20, hexValue: "7C" }, // ~31 deg BTDC
+              { rpm: 3500, load: 30, hexValue: "68" },
+              { rpm: 3500, load: 40, hexValue: "60" },
+              { rpm: 3500, load: 50, hexValue: "58" },
+              { rpm: 3500, load: 60, hexValue: "50" },
+              { rpm: 3500, load: 70, hexValue: "48" },
+              { rpm: 3500, load: 80, hexValue: "40" },
+              { rpm: 3500, load: 90, hexValue: "38" },
+              { rpm: 3500, load: 100, hexValue: "30" },
+
+              // RPM 4000
+              { rpm: 4000, load: 10, hexValue: "7A" }, // ~28 deg BTDC
+              { rpm: 4000, load: 20, hexValue: "80" }, // ~34 deg BTDC
+              { rpm: 4000, load: 30, hexValue: "6C" },
+              { rpm: 4000, load: 40, hexValue: "64" },
+              { rpm: 4000, load: 50, hexValue: "5C" },
+              { rpm: 4000, load: 60, hexValue: "54" },
+              { rpm: 4000, load: 70, hexValue: "4C" },
+              { rpm: 4000, load: 80, hexValue: "44" },
+              { rpm: 4000, load: 90, hexValue: "3C" },
+              { rpm: 4000, load: 100, hexValue: "34" },
+
+              // RPM 4500 (เพิ่มแกน RPM)
+              { rpm: 4500, load: 10, hexValue: "7E" }, // ~30 deg BTDC
+              { rpm: 4500, load: 20, hexValue: "84" }, // ~37 deg BTDC
+              { rpm: 4500, load: 30, hexValue: "70" },
+              { rpm: 4500, load: 40, hexValue: "68" },
+              { rpm: 4500, load: 50, hexValue: "60" },
+              { rpm: 4500, load: 60, hexValue: "58" },
+              { rpm: 4500, load: 70, hexValue: "50" },
+              { rpm: 4500, load: 80, hexValue: "48" },
+              { rpm: 4500, load: 90, hexValue: "40" },
+              { rpm: 4500, load: 100, hexValue: "38" },
+
+              // RPM 5000 (เพิ่มแกน RPM)
+              { rpm: 5000, load: 10, hexValue: "82" }, // ~32 deg BTDC
+              { rpm: 5000, load: 20, hexValue: "88" }, // ~39 deg BTDC
+              { rpm: 5000, load: 30, hexValue: "74" },
+              { rpm: 5000, load: 40, hexValue: "6C" },
+              { rpm: 5000, load: 50, hexValue: "64" },
+              { rpm: 5000, load: 60, hexValue: "5C" },
+              { rpm: 5000, load: 70, hexValue: "54" },
+              { rpm: 5000, load: 80, hexValue: "4C" },
+              { rpm: 5000, load: 90, hexValue: "44" },
+              { rpm: 5000, load: 100, hexValue: "3C" },
+
+              // RPM 5500 (เพิ่มแกน RPM)
+              { rpm: 5500, load: 10, hexValue: "86" }, // ~34 deg BTDC
+              { rpm: 5500, load: 20, hexValue: "8C" }, // ~41 deg BTDC
+              { rpm: 5500, load: 30, hexValue: "78" },
+              { rpm: 5500, load: 40, hexValue: "70" },
+              { rpm: 5500, load: 50, hexValue: "68" },
+              { rpm: 5500, load: 60, hexValue: "60" },
+              { rpm: 5500, load: 70, hexValue: "58" },
+              { rpm: 5500, load: 80, hexValue: "50" },
+              { rpm: 5500, load: 90, hexValue: "48" },
+              { rpm: 5500, load: 100, hexValue: "40" },
+
+              // RPM 6000 (เพิ่มแกน RPM)
+              { rpm: 6000, load: 10, hexValue: "8A" }, // ~36 deg BTDC
+              { rpm: 6000, load: 20, hexValue: "90" }, // ~43 deg BTDC
+              { rpm: 6000, load: 30, hexValue: "7C" },
+              { rpm: 6000, load: 40, hexValue: "74" },
+              { rpm: 6000, load: 50, hexValue: "6C" },
+              { rpm: 6000, load: 60, hexValue: "64" },
+              { rpm: 6000, load: 70, hexValue: "5C" },
+              { rpm: 6000, load: 80, hexValue: "54" },
+              { rpm: 6000, load: 90, hexValue: "4C" },
+              { rpm: 6000, load: 100, hexValue: "44" },
+
+              // RPM 6500 (เพิ่มแกน RPM)
+              { rpm: 6500, load: 10, hexValue: "8E" }, // ~38 deg BTDC
+              { rpm: 6500, load: 20, hexValue: "94" }, // ~45 deg BTDC
+              { rpm: 6500, load: 30, hexValue: "80" },
+              { rpm: 6500, load: 40, hexValue: "78" },
+              { rpm: 6500, load: 50, hexValue: "70" },
+              { rpm: 6500, load: 60, hexValue: "68" },
+              { rpm: 6500, load: 70, hexValue: "60" },
+              { rpm: 6500, load: 80, hexValue: "58" },
+              { rpm: 6500, load: 90, hexValue: "50" },
+              { rpm: 6500, load: 100, hexValue: "48" },
             ]
           },
-          // --- เพิ่ม Maps ใหม่ที่นี่ ---
+          // --- Maps ที่ปรับปรุงค่าประมาณการ ---
           fuel_map_mt: {
             name: "Fuel Map (MT) (ms)",
             address: 0x1300, type: "16-bit unsigned", factor: 0.001, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [20, 40, 60, 80, 100] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 20, 40, 60, 80, 100] }, // เพิ่มแกน Load
             defaultData: [
-                { rpm: 800, load: 20, hexValue: "07D0" }, { rpm: 1500, load: 20, hexValue: "0834" }, { rpm: 2500, load: 20, hexValue: "0898" }, { rpm: 3500, load: 20, hexValue: "08FC" }, { rpm: 4500, load: 20, hexValue: "0960" }, { rpm: 5500, load: 20, hexValue: "09C4" }, { rpm: 6500, load: 20, hexValue: "0A28" },
-                { rpm: 800, load: 40, hexValue: "08FC" }, { rpm: 1500, load: 40, hexValue: "0960" }, { rpm: 2500, load: 40, hexValue: "09C4" }, { rpm: 3500, load: 40, hexValue: "0A28" }, { rpm: 4500, load: 40, hexValue: "0A8C" }, { rpm: 5500, load: 40, hexValue: "0AF0" }, { rpm: 6500, load: 40, hexValue: "0B54" },
-                { rpm: 800, load: 60, hexValue: "0A28" }, { rpm: 1500, load: 60, hexValue: "0A8C" }, { rpm: 2500, load: 60, hexValue: "0AF0" }, { rpm: 3500, load: 60, hexValue: "0B54" }, { rpm: 4500, load: 60, hexValue: "0BB8" }, { rpm: 5500, load: 60, hexValue: "0C1C" }, { rpm: 6500, load: 60, hexValue: "0C80" },
-                { rpm: 800, load: 80, hexValue: "0B54" }, { rpm: 1500, load: 80, hexValue: "0BB8" }, { rpm: 2500, load: 80, hexValue: "0C1C" }, { rpm: 3500, load: 80, hexValue: "0C80" }, { rpm: 4500, load: 80, hexValue: "0CE4" }, { rpm: 5500, load: 80, hexValue: "0D48" }, { rpm: 6500, load: 80, hexValue: "0DAC" },
-                { rpm: 800, load: 100, hexValue: "0C80" }, { rpm: 1500, load: 100, hexValue: "0CE4" }, { rpm: 2500, load: 100, hexValue: "0D48" }, { rpm: 3500, load: 100, hexValue: "0DAC" }, { rpm: 4500, load: 100, hexValue: "0E10" }, { rpm: 5500, load: 100, hexValue: "0ED8" }, { rpm: 6500, load: 100, hexValue: "0FA0" },
+                // RPM 800
+                { rpm: 800, load: 10, hexValue: "01F4" }, // 500ms (idle)
+                { rpm: 800, load: 20, hexValue: "02BC" }, // 700ms
+                { rpm: 800, load: 40, hexValue: "03E8" }, // 1000ms
+                { rpm: 800, load: 60, hexValue: "05DC" }, // 1500ms
+                { rpm: 800, load: 80, hexValue: "06A4" }, // 1700ms
+                { rpm: 800, load: 100, hexValue: "07D0" }, // 2000ms
+
+                // RPM 1500
+                { rpm: 1500, load: 10, hexValue: "02BC" }, // 700ms
+                { rpm: 1500, load: 20, hexValue: "0320" }, // 800ms
+                { rpm: 1500, load: 40, hexValue: "0514" }, // 1300ms
+                { rpm: 1500, load: 60, hexValue: "06A4" }, // 1700ms
+                { rpm: 1500, load: 80, hexValue: "07D0" }, // 2000ms
+                { rpm: 1500, load: 100, hexValue: "08FC" }, // 2300ms
+
+                // RPM 2500
+                { rpm: 2500, load: 10, hexValue: "03E8" }, // 1000ms
+                { rpm: 2500, load: 20, hexValue: "04B0" }, // 1200ms
+                { rpm: 2500, load: 40, hexValue: "06A4" }, // 1700ms
+                { rpm: 2500, load: 60, hexValue: "07D0" }, // 2000ms
+                { rpm: 2500, load: 80, hexValue: "09C4" }, // 2500ms
+                { rpm: 2500, load: 100, hexValue: "0B54" }, // 2900ms
+
+                // RPM 3500
+                { rpm: 3500, load: 10, hexValue: "0514" }, // 1300ms
+                { rpm: 3500, load: 20, hexValue: "05DC" }, // 1500ms
+                { rpm: 3500, load: 40, hexValue: "07D0" }, // 2000ms
+                { rpm: 3500, load: 60, hexValue: "09C4" }, // 2500ms
+                { rpm: 3500, load: 80, hexValue: "0BB8" }, // 3000ms
+                { rpm: 3500, load: 100, hexValue: "0D48" }, // 3400ms
+
+                // RPM 4500
+                { rpm: 4500, load: 10, hexValue: "06A4" }, // 1700ms
+                { rpm: 4500, load: 20, hexValue: "07D0" }, // 2000ms
+                { rpm: 4500, load: 40, hexValue: "09C4" }, // 2500ms
+                { rpm: 4500, load: 60, hexValue: "0BB8" }, // 3000ms
+                { rpm: 4500, load: 80, hexValue: "0D48" }, // 3400ms
+                { rpm: 4500, load: 100, hexValue: "0E7A" }, // 3700ms
+
+                // RPM 5500
+                { rpm: 5500, load: 10, hexValue: "07D0" }, // 2000ms
+                { rpm: 5500, load: 20, hexValue: "08FC" }, // 2300ms
+                { rpm: 5500, load: 40, hexValue: "0BB8" }, // 3000ms
+                { rpm: 5500, load: 60, hexValue: "0D48" }, // 3400ms
+                { rpm: 5500, load: 80, hexValue: "0E7A" }, // 3700ms
+                { rpm: 5500, load: 100, hexValue: "1004" }, // 4100ms
+
+                // RPM 6500
+                { rpm: 6500, load: 10, hexValue: "08FC" }, // 2300ms
+                { rpm: 6500, load: 20, hexValue: "0A28" }, // 2600ms
+                { rpm: 6500, load: 40, hexValue: "0D48" }, // 3400ms
+                { rpm: 6500, load: 60, hexValue: "0E7A" }, // 3700ms
+                { rpm: 6500, load: 80, hexValue: "1004" }, // 4100ms
+                { rpm: 6500, load: 100, hexValue: "1190" }, // 4500ms
             ]
           },
           fuel_map_at: {
             name: "Fuel Map (AT) (ms)",
             address: 0x1400, type: "16-bit unsigned", factor: 0.001, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [20, 40, 60, 80, 100] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 20, 40, 60, 80, 100] }, // เพิ่มแกน Load
             defaultData: [
-                // Data for AT might differ slightly from MT
-                { rpm: 800, load: 20, hexValue: "07D0" }, { rpm: 1500, load: 20, hexValue: "0820" }, { rpm: 2500, load: 20, hexValue: "0880" }, { rpm: 3500, load: 20, hexValue: "08D0" }, { rpm: 4500, load: 20, hexValue: "0930" }, { rpm: 5500, load: 20, hexValue: "0990" }, { rpm: 6500, load: 20, hexValue: "09E0" },
-                { rpm: 800, load: 40, hexValue: "08EC" }, { rpm: 1500, load: 40, hexValue: "0940" }, { rpm: 2500, load: 40, hexValue: "09A0" }, { rpm: 3500, load: 40, hexValue: "0A00" }, { rpm: 4500, load: 40, hexValue: "0A60" }, { rpm: 5500, load: 40, hexValue: "0AC0" }, { rpm: 6500, load: 40, hexValue: "0B20" },
-                { rpm: 800, load: 60, hexValue: "0A10" }, { rpm: 1500, load: 60, hexValue: "0A70" }, { rpm: 2500, load: 60, hexValue: "0AD0" }, { rpm: 3500, load: 60, hexValue: "0B30" }, { rpm: 4500, load: 60, hexValue: "0B90" }, { rpm: 5500, load: 60, hexValue: "0BF0" }, { rpm: 6500, load: 60, hexValue: "0C50" },
-                { rpm: 800, load: 80, hexValue: "0B40" }, { rpm: 1500, load: 80, hexValue: "0BA0" }, { rpm: 2500, load: 80, hexValue: "0C00" }, { rpm: 3500, load: 80, hexValue: "0C60" }, { rpm: 4500, load: 80, hexValue: "0CC0" }, { rpm: 5500, load: 80, hexValue: "0D20" }, { rpm: 6500, load: 80, hexValue: "0D80" },
-                { rpm: 800, load: 100, hexValue: "0C70" }, { rpm: 1500, load: 100, hexValue: "0CD0" }, { rpm: 2500, load: 100, hexValue: "0D30" }, { rpm: 3500, load: 100, hexValue: "0D90" }, { rpm: 4500, load: 100, hexValue: "0DF0" }, { rpm: 5500, load: 100, hexValue: "0E50" }, { rpm: 6500, load: 100, hexValue: "0F00" },
+                // Data for AT might differ slightly from MT (slightly richer for smoothness)
+                // RPM 800
+                { rpm: 800, load: 10, hexValue: "0226" }, // 550ms (idle)
+                { rpm: 800, load: 20, hexValue: "02EE" }, // 750ms
+                { rpm: 800, load: 40, hexValue: "041A" }, // 1050ms
+                { rpm: 800, load: 60, hexValue: "060E" }, // 1550ms
+                { rpm: 800, load: 80, hexValue: "06D6" }, // 1750ms
+                { rpm: 800, load: 100, hexValue: "0802" }, // 2050ms
+
+                // RPM 1500
+                { rpm: 1500, load: 10, hexValue: "02EE" }, // 750ms
+                { rpm: 1500, load: 20, hexValue: "0352" }, // 850ms
+                { rpm: 1500, load: 40, hexValue: "0546" }, // 1350ms
+                { rpm: 1500, load: 60, hexValue: "06D6" }, // 1750ms
+                { rpm: 1500, load: 80, hexValue: "0802" }, // 2050ms
+                { rpm: 1500, load: 100, hexValue: "092E" }, // 2350ms
+
+                // RPM 2500
+                { rpm: 2500, load: 10, hexValue: "041A" }, // 1050ms
+                { rpm: 2500, load: 20, hexValue: "04DE" }, // 1250ms
+                { rpm: 2500, load: 40, hexValue: "06D6" }, // 1750ms
+                { rpm: 2500, load: 60, hexValue: "0802" }, // 2050ms
+                { rpm: 2500, load: 80, hexValue: "09F6" }, // 2550ms
+                { rpm: 2500, load: 100, hexValue: "0B86" }, // 2950ms
+
+                // RPM 3500
+                { rpm: 3500, load: 10, hexValue: "0546" }, // 1350ms
+                { rpm: 3500, load: 20, hexValue: "060E" }, // 1550ms
+                { rpm: 3500, load: 40, hexValue: "0802" }, // 2050ms
+                { rpm: 3500, load: 60, hexValue: "09F6" }, // 2550ms
+                { rpm: 3500, load: 80, hexValue: "0BEA" }, // 3050ms
+                { rpm: 3500, load: 100, hexValue: "0D7A" }, // 3450ms
+
+                // RPM 4500
+                { rpm: 4500, load: 10, hexValue: "06D6" }, // 1750ms
+                { rpm: 4500, load: 20, hexValue: "0802" }, // 2050ms
+                { rpm: 4500, load: 40, hexValue: "09F6" }, // 2550ms
+                { rpm: 4500, load: 60, hexValue: "0BEA" }, // 3050ms
+                { rpm: 4500, load: 80, hexValue: "0D7A" }, // 3450ms
+                { rpm: 4500, load: 100, hexValue: "0EC6" }, // 3750ms
+
+                // RPM 5500
+                { rpm: 5500, load: 10, hexValue: "0802" }, // 2050ms
+                { rpm: 5500, load: 20, hexValue: "092E" }, // 2350ms
+                { rpm: 5500, load: 40, hexValue: "0BEA" }, // 3050ms
+                { rpm: 5500, load: 60, hexValue: "0D7A" }, // 3450ms
+                { rpm: 5500, load: 80, hexValue: "0EC6" }, // 3750ms
+                { rpm: 5500, load: 100, hexValue: "1036" }, // 4150ms
+
+                // RPM 6500
+                { rpm: 6500, load: 10, hexValue: "092E" }, // 2350ms
+                { rpm: 6500, load: 20, hexValue: "0A5A" }, // 2650ms
+                { rpm: 6500, load: 40, hexValue: "0D7A" }, // 3450ms
+                { rpm: 6500, load: 60, hexValue: "0EC6" }, // 3750ms
+                { rpm: 6500, load: 80, hexValue: "1036" }, // 4150ms
+                { rpm: 6500, load: 100, hexValue: "11C2" }, // 4550ms
             ]
           },
           throttle_response: {
             name: "Throttle Response (%)",
             address: 0x1500, type: "8-bit unsigned", factor: 0.39, offset: 0, // Roughly 100 / 255
             axes: { x: "RPM", y: "Pedal Position" },
-            axisValues: { rpm: [800, 2000, 4000, 6000], pedal_position: [10, 30, 60, 90, 100] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], pedal_position: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }, // เพิ่มแกน Pedal Position
             defaultData: [
-                { rpm: 800, pedal_position: 10, hexValue: "1A" }, { rpm: 2000, pedal_position: 10, hexValue: "1F" }, { rpm: 4000, pedal_position: 10, hexValue: "25" }, { rpm: 6000, pedal_position: 10, hexValue: "2A" },
-                { rpm: 800, pedal_position: 30, hexValue: "32" }, { rpm: 2000, pedal_position: 30, hexValue: "3A" }, { rpm: 4000, pedal_position: 30, hexValue: "42" }, { rpm: 6000, pedal_position: 30, hexValue: "4A" },
-                { rpm: 800, pedal_position: 60, hexValue: "50" }, { rpm: 2000, pedal_position: 60, hexValue: "58" }, { rpm: 4000, pedal_position: 60, hexValue: "60" }, { rpm: 6000, pedal_position: 60, hexValue: "68" },
-                { rpm: 800, pedal_position: 90, hexValue: "70" }, { rpm: 2000, pedal_position: 90, hexValue: "78" }, { rpm: 4000, pedal_position: 90, hexValue: "80" }, { rpm: 6000, pedal_position: 90, hexValue: "88" },
-                { rpm: 800, pedal_position: 100, hexValue: "90" }, { rpm: 2000, pedal_position: 100, hexValue: "A0" }, { rpm: 4000, pedal_position: 100, hexValue: "B0" }, { rpm: 6000, pedal_position: 100, hexValue: "C0" },
+                // RPM 800
+                { rpm: 800, pedal_position: 10, hexValue: "1A" }, // 10%
+                { rpm: 800, pedal_position: 20, hexValue: "20" }, // 12%
+                { rpm: 800, pedal_position: 30, hexValue: "28" }, // 15%
+                { rpm: 800, pedal_position: 40, hexValue: "32" }, // 20%
+                { rpm: 800, pedal_position: 50, hexValue: "40" }, // 25%
+                { rpm: 800, pedal_position: 60, hexValue: "50" }, // 30%
+                { rpm: 800, pedal_position: 70, hexValue: "60" }, // 37%
+                { rpm: 800, pedal_position: 80, hexValue: "70" }, // 43%
+                { rpm: 800, pedal_position: 90, hexValue: "80" }, // 50%
+                { rpm: 800, pedal_position: 100, hexValue: "90" }, // 56%
+
+                // RPM 1500 (เริ่มเร็วขึ้น)
+                { rpm: 1500, pedal_position: 10, hexValue: "1E" },
+                { rpm: 1500, pedal_position: 20, hexValue: "25" },
+                { rpm: 1500, pedal_position: 30, hexValue: "30" },
+                { rpm: 1500, pedal_position: 40, hexValue: "40" },
+                { rpm: 1500, pedal_position: 50, hexValue: "50" },
+                { rpm: 1500, pedal_position: 60, hexValue: "68" },
+                { rpm: 1500, pedal_position: 70, hexValue: "78" },
+                { rpm: 1500, pedal_position: 80, hexValue: "88" },
+                { rpm: 1500, pedal_position: 90, hexValue: "98" },
+                { rpm: 1500, pedal_position: 100, hexValue: "A8" },
+
+                // RPM 2500
+                { rpm: 2500, pedal_position: 10, hexValue: "22" },
+                { rpm: 2500, pedal_position: 20, hexValue: "2A" },
+                { rpm: 2500, pedal_position: 30, hexValue: "38" },
+                { rpm: 2500, pedal_position: 40, hexValue: "48" },
+                { rpm: 2500, pedal_position: 50, hexValue: "58" },
+                { rpm: 2500, pedal_position: 60, hexValue: "70" },
+                { rpm: 2500, pedal_position: 70, hexValue: "80" },
+                { rpm: 2500, pedal_position: 80, hexValue: "90" },
+                { rpm: 2500, pedal_position: 90, hexValue: "A0" },
+                { rpm: 2500, pedal_position: 100, hexValue: "B0" },
+
+                // RPM 3500 (เริ่มตอบสนองไวขึ้น)
+                { rpm: 3500, pedal_position: 10, hexValue: "26" },
+                { rpm: 3500, pedal_position: 20, hexValue: "30" },
+                { rpm: 3500, pedal_position: 30, hexValue: "40" },
+                { rpm: 3500, pedal_position: 40, hexValue: "50" },
+                { rpm: 3500, pedal_position: 50, hexValue: "60" },
+                { rpm: 3500, pedal_position: 60, hexValue: "78" },
+                { rpm: 3500, pedal_position: 70, hexValue: "88" },
+                { rpm: 3500, pedal_position: 80, hexValue: "98" },
+                { rpm: 3500, pedal_position: 90, hexValue: "A8" },
+                { rpm: 3500, pedal_position: 100, hexValue: "B8" },
+
+                // RPM 4500
+                { rpm: 4500, pedal_position: 10, hexValue: "2A" },
+                { rpm: 4500, pedal_position: 20, hexValue: "34" },
+                { rpm: 4500, pedal_position: 30, hexValue: "44" },
+                { rpm: 4500, pedal_position: 40, hexValue: "54" },
+                { rpm: 4500, pedal_position: 50, hexValue: "64" },
+                { rpm: 4500, pedal_position: 60, hexValue: "7C" },
+                { rpm: 4500, pedal_position: 70, hexValue: "8C" },
+                { rpm: 4500, pedal_position: 80, hexValue: "9C" },
+                { rpm: 4500, pedal_position: 90, hexValue: "AC" },
+                { rpm: 4500, pedal_position: 100, hexValue: "BC" },
+
+                // RPM 5500
+                { rpm: 5500, pedal_position: 10, hexValue: "2E" },
+                { rpm: 5500, pedal_position: 20, hexValue: "38" },
+                { rpm: 5500, pedal_position: 30, hexValue: "48" },
+                { rpm: 5500, pedal_position: 40, hexValue: "58" },
+                { rpm: 5500, pedal_position: 50, hexValue: "68" },
+                { rpm: 5500, pedal_position: 60, hexValue: "80" },
+                { rpm: 5500, pedal_position: 70, hexValue: "90" },
+                { rpm: 5500, pedal_position: 80, hexValue: "A0" },
+                { rpm: 5500, pedal_position: 90, hexValue: "B0" },
+                { rpm: 5500, pedal_position: 100, hexValue: "C0" }, // 75% response at 100% pedal
+
+                // RPM 6500 (ตอบสนองไวที่สุด)
+                { rpm: 6500, pedal_position: 10, hexValue: "32" },
+                { rpm: 6500, pedal_position: 20, hexValue: "3C" },
+                { rpm: 6500, pedal_position: 30, hexValue: "4C" },
+                { rpm: 6500, pedal_position: 40, hexValue: "5C" },
+                { rpm: 6500, pedal_position: 50, hexValue: "6C" },
+                { rpm: 6500, pedal_position: 60, hexValue: "84" },
+                { rpm: 6500, pedal_position: 70, hexValue: "94" },
+                { rpm: 6500, pedal_position: 80, hexValue: "A4" },
+                { rpm: 6500, pedal_position: 90, hexValue: "B4" },
+                { rpm: 6500, pedal_position: 100, hexValue: "C8" }, // 80% response at 100% pedal
             ]
           },
           rev_limit: {
             name: "Rev Limit (RPM)",
             address: 0x1600, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Gear (Sim)", y: "Limit" }, // สมมติว่ามีค่า Limit ต่อเกียร์ หรืออาจเป็นค่าเดียว
+            axes: { x: "Gear (Sim)", y: "Limit" },
             axisValues: { gear_sim: ["P", "N", "R", "1", "2", "3", "4", "5", "6"], limit: ["RPM"] },
             defaultData: [
-                { gear_sim: "P", hexValue: "07D0" }, // 2000 RPM
-                { gear_sim: "N", hexValue: "07D0" }, // 2000 RPM
-                { gear_sim: "R", hexValue: "1388" }, // 5000 RPM
-                { gear_sim: "1", hexValue: "18F8" }, // 6400 RPM
-                { gear_sim: "2", hexValue: "19C4" }, // 6600 RPM
-                { gear_sim: "3", hexValue: "1A90" }, // 6800 RPM
-                { gear_sim: "4", hexValue: "1B5C" }, // 7000 RPM
-                { gear_sim: "5", hexValue: "1C28" }, // 7200 RPM
-                { gear_sim: "6", hexValue: "1C28" }  // 7200 RPM
+                { gear_sim: "P", hexValue: "07D0" }, // 2000 RPM (Idle / Park)
+                { gear_sim: "N", hexValue: "07D0" }, // 2000 RPM (Idle / Neutral)
+                { gear_sim: "R", hexValue: "1388" }, // 5000 RPM (Reverse)
+                { gear_sim: "1", hexValue: "1D4C" }, // 7500 RPM (Actual Skyactiv-G redline is higher, but common tuner limit)
+                { gear_sim: "2", hexValue: "1D4C" }, // 7500 RPM
+                { gear_sim: "3", hexValue: "1D4C" }, // 7500 RPM
+                { gear_sim: "4", hexValue: "1D4C" }, // 7500 RPM
+                { gear_sim: "5", hexValue: "1D4C" }, // 7500 RPM
+                { gear_sim: "6", hexValue: "1D4C" }  // 7500 RPM
             ]
           },
           speed_limit: {
             name: "Speed Limit (km/h)",
             address: 0x1700, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Mode", y: "Limit" }, // สมมติว่ามีโหมดจำกัดความเร็ว
-            axisValues: { mode: ["Standard", "Sport"], limit: ["km/h"] },
+            axes: { x: "Mode", y: "Limit" },
+            axisValues: { mode: ["Standard", "Sport", "Remove"], limit: ["km/h"] }, // เพิ่ม Remove
             defaultData: [
-                { mode: "Standard", hexValue: "B4" }, // 180 km/h
-                { mode: "Sport", hexValue: "C8" }    // 200 km/h
+                { mode: "Standard", hexValue: "B4" }, // 180 km/h (Common JDM/Asian limit)
+                { mode: "Sport", hexValue: "C8" },    // 200 km/h
+                { mode: "Remove", hexValue: "FF" }    // 255 km/h (effectively no limit for 8-bit)
             ]
           },
           torque_management: {
             name: "Torque Management (Nm)",
             address: 0x1800, type: "16-bit unsigned", factor: 0.5, offset: 0,
             axes: { x: "RPM", y: "Gear" },
-            axisValues: { rpm: [1500, 2500, 3500, 4500], gear: [1, 2, 3, 4, 5, 6] },
+            axisValues: { rpm: [1500, 2500, 3500, 4500, 5500, 6500], gear: [1, 2, 3, 4, 5, 6] },
             defaultData: [
-                { rpm: 1500, gear: 1, hexValue: "02BC" }, { rpm: 2500, gear: 1, hexValue: "0320" }, { rpm: 3500, gear: 1, hexValue: "0384" }, { rpm: 4500, gear: 1, hexValue: "03E8" },
-                { rpm: 1500, gear: 2, hexValue: "0320" }, { rpm: 2500, gear: 2, hexValue: "0384" }, { rpm: 3500, gear: 2, hexValue: "03E8" }, { rpm: 4500, gear: 2, hexValue: "044C" },
-                { rpm: 1500, gear: 3, hexValue: "03E8" }, { rpm: 2500, gear: 3, hexValue: "044C" }, { rpm: 3500, gear: 3, hexValue: "04B0" }, { rpm: 4500, gear: 3, hexValue: "0514" },
-                { rpm: 1500, gear: 4, hexValue: "04B0" }, { rpm: 2500, gear: 4, hexValue: "0514" }, { rpm: 3500, gear: 4, hexValue: "0578" }, { rpm: 4500, gear: 4, hexValue: "05DC" },
-                { rpm: 1500, gear: 5, hexValue: "0514" }, { rpm: 2500, gear: 5, hexValue: "0578" }, { rpm: 3500, gear: 5, hexValue: "05DC" }, { rpm: 4500, gear: 5, hexValue: "0640" },
-                { rpm: 1500, gear: 6, hexValue: "0578" }, { rpm: 2500, gear: 6, hexValue: "05DC" }, { rpm: 3500, gear: 6, hexValue: "0640" }, { rpm: 4500, gear: 6, hexValue: "06A4" },
+                // More realistic torque limits for Skyactiv-G (peak torque around 4000 RPM)
+                { rpm: 1500, gear: 1, hexValue: "01F4" }, // 250 Nm
+                { rpm: 2500, gear: 1, hexValue: "02BC" }, // 360 Nm
+                { rpm: 3500, gear: 1, hexValue: "03E8" }, // 500 Nm
+                { rpm: 4500, gear: 1, hexValue: "044C" }, // 550 Nm
+                { rpm: 5500, gear: 1, hexValue: "03E8" }, // 500 Nm
+                { rpm: 6500, gear: 1, hexValue: "0320" }, // 400 Nm
+
+                { rpm: 1500, gear: 2, hexValue: "02BC" }, // 360 Nm
+                { rpm: 2500, gear: 2, hexValue: "0320" }, // 400 Nm
+                { rpm: 3500, gear: 2, hexValue: "044C" }, // 550 Nm
+                { rpm: 4500, gear: 2, hexValue: "04B0" }, // 600 Nm
+                { rpm: 5500, gear: 2, hexValue: "044C" }, // 550 Nm
+                { rpm: 6500, gear: 2, hexValue: "0384" }, // 450 Nm
+
+                { rpm: 1500, gear: 3, hexValue: "03E8" }, // 500 Nm
+                { rpm: 2500, gear: 3, hexValue: "044C" }, // 550 Nm
+                { rpm: 3500, gear: 3, hexValue: "04B0" }, // 600 Nm
+                { rpm: 4500, gear: 3, hexValue: "0514" }, // 650 Nm
+                { rpm: 5500, gear: 3, hexValue: "04B0" }, // 600 Nm
+                { rpm: 6500, gear: 3, hexValue: "03E8" }, // 500 Nm
+
+                { rpm: 1500, gear: 4, hexValue: "04B0" }, // 600 Nm
+                { rpm: 2500, gear: 4, hexValue: "0514" }, // 650 Nm
+                { rpm: 3500, gear: 4, hexValue: "0578" }, // 700 Nm
+                { rpm: 4500, gear: 4, hexValue: "05DC" }, // 750 Nm
+                { rpm: 5500, gear: 4, hexValue: "0578" }, // 700 Nm
+                { rpm: 6500, gear: 4, hexValue: "04B0" }, // 600 Nm
+
+                { rpm: 1500, gear: 5, hexValue: "0514" }, // 650 Nm
+                { rpm: 2500, gear: 5, hexValue: "0578" }, // 700 Nm
+                { rpm: 3500, gear: 5, hexValue: "05DC" }, // 750 Nm
+                { rpm: 4500, gear: 5, hexValue: "0640" }, // 800 Nm
+                { rpm: 5500, gear: 5, hexValue: "05DC" }, // 750 Nm
+                { rpm: 6500, gear: 5, hexValue: "0514" }, // 650 Nm
+
+                { rpm: 1500, gear: 6, hexValue: "0578" }, // 700 Nm
+                { rpm: 2500, gear: 6, hexValue: "05DC" }, // 750 Nm
+                { rpm: 3500, gear: 6, hexValue: "0640" }, // 800 Nm
+                { rpm: 4500, gear: 6, hexValue: "06A4" }, // 850 Nm
+                { rpm: 5500, gear: 6, hexValue: "0640" }, // 800 Nm
+                { rpm: 6500, gear: 6, hexValue: "0578" }, // 700 Nm
             ]
           },
           vvt_control: {
             name: "VVT Control (Intake Angle)",
-            address: 0x1900, type: "8-bit signed", factor: 0.5, offset: -10, // Example values for VVT
+            address: 0x1900, type: "8-bit signed", factor: 0.5, offset: -10,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 4000, 6000], load: [20, 50, 80, 100] },
+            axisValues: { rpm: [800, 2000, 3000, 4000, 5000, 6000], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน RPM/Load
             defaultData: [
-              { rpm: 800, load: 20, hexValue: "20" }, { rpm: 2000, load: 20, hexValue: "25" }, { rpm: 4000, load: 20, hexValue: "2A" }, { rpm: 6000, load: 20, hexValue: "2F" },
-              { rpm: 800, load: 50, hexValue: "25" }, { rpm: 2000, load: 50, hexValue: "2A" }, { rpm: 4000, load: 50, hexValue: "2F" }, { rpm: 6000, load: 50, hexValue: "34" },
-              { rpm: 800, load: 80, hexValue: "2A" }, { rpm: 2000, load: 80, hexValue: "2F" }, { rpm: 4000, load: 80, hexValue: "34" }, { rpm: 6000, load: 80, hexValue: "39" },
-              { rpm: 800, load: 100, hexValue: "30" }, { rpm: 2000, load: 100, hexValue: "35" }, { rpm: 4000, load: 100, hexValue: "3A" }, { rpm: 6000, load: 100, hexValue: "3F" },
+              // RPM 800
+              { rpm: 800, load: 10, hexValue: "20" }, { rpm: 800, load: 30, hexValue: "25" }, { rpm: 800, load: 50, hexValue: "2A" },
+              { rpm: 800, load: 70, hexValue: "2F" }, { rpm: 800, load: 90, hexValue: "34" }, { rpm: 800, load: 100, hexValue: "39" },
+
+              // RPM 2000 (กลางๆ)
+              { rpm: 2000, load: 10, hexValue: "25" }, { rpm: 2000, load: 30, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2F" },
+              { rpm: 2000, load: 70, hexValue: "34" }, { rpm: 2000, load: 90, hexValue: "39" }, { rpm: 2000, load: 100, hexValue: "3E" },
+
+              // RPM 3000 (เริ่ม Advace มากขึ้น)
+              { rpm: 3000, load: 10, hexValue: "30" }, { rpm: 3000, load: 30, hexValue: "35" }, { rpm: 3000, load: 50, hexValue: "3A" },
+              { rpm: 3000, load: 70, hexValue: "3F" }, { rpm: 3000, load: 90, hexValue: "44" }, { rpm: 3000, load: 100, hexValue: "49" },
+
+              // RPM 4000 (Advance มากขึ้น)
+              { rpm: 4000, load: 10, hexValue: "3A" }, { rpm: 4000, load: 30, hexValue: "3F" }, { rpm: 4000, load: 50, hexValue: "44" },
+              { rpm: 4000, load: 70, hexValue: "49" }, { rpm: 4000, load: 90, hexValue: "4E" }, { rpm: 4000, load: 100, hexValue: "53" },
+
+              // RPM 5000 (เริ่มลด Advance หรือคงที่)
+              { rpm: 5000, load: 10, hexValue: "38" }, { rpm: 5000, load: 30, hexValue: "3D" }, { rpm: 5000, load: 50, hexValue: "42" },
+              { rpm: 5000, load: 70, hexValue: "47" }, { rpm: 5000, load: 90, hexValue: "4C" }, { rpm: 5000, load: 100, hexValue: "51" },
+
+              // RPM 6000 (ลด Advance เพื่อกำลังสูงสุด)
+              { rpm: 6000, load: 10, hexValue: "30" }, { rpm: 6000, load: 30, hexValue: "35" }, { rpm: 6000, load: 50, hexValue: "3A" },
+              { rpm: 6000, load: 70, hexValue: "3F" }, { rpm: 6000, load: 90, hexValue: "44" }, { rpm: 6000, load: 100, hexValue: "49" },
             ]
           },
           idle_control: {
             name: "Idle RPM Control",
             address: 0x1A00, type: "16-bit unsigned", factor: 1, offset: 0,
             axes: { x: "Coolant Temp (°C)", y: "Target RPM" },
-            axisValues: { coolant_temp: [-20, 0, 20, 60, 90], target_rpm: ["RPM"] },
+            axisValues: { coolant_temp: [-20, 0, 20, 40, 60, 80, 90], target_rpm: ["RPM"] }, // เพิ่มแกน Coolant Temp
             defaultData: [
-                { coolant_temp: -20, hexValue: "05DC" }, // 1500 RPM (cold start)
-                { coolant_temp: 0, hexValue: "04B0" },  // 1200 RPM
-                { coolant_temp: 20, hexValue: "03E8" }, // 1000 RPM
-                { coolant_temp: 60, hexValue: "0320" }, // 800 RPM
-                { coolant_temp: 90, hexValue: "02EE" }  // 750 RPM (normal idle)
+                { coolant_temp: -20, hexValue: "07D0" }, // 2000 RPM (Cold start enrichment / high idle)
+                { coolant_temp: 0, hexValue: "0640" },  // 1600 RPM
+                { coolant_temp: 20, hexValue: "04B0" }, // 1200 RPM
+                { coolant_temp: 40, hexValue: "03E8" }, // 1000 RPM
+                { coolant_temp: 60, hexValue: "0352" }, // 850 RPM
+                { coolant_temp: 80, hexValue: "0320" }, // 800 RPM
+                { coolant_temp: 90, hexValue: "02EE" }  // 750 RPM (Normal operating temp idle)
             ]
           },
           knock_control_sens: {
             name: "Knock Sensor Sensitivity",
             address: 0x1B00, type: "8-bit unsigned", factor: 0.1, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 4000, 6000], load: [10, 50, 100] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน
             defaultData: [
-                { rpm: 800, load: 10, hexValue: "50" }, { rpm: 2000, load: 10, hexValue: "40" }, { rpm: 4000, load: 10, hexValue: "30" }, { rpm: 6000, load: 10, hexValue: "20" },
-                { rpm: 800, load: 50, hexValue: "60" }, { rpm: 2000, load: 50, hexValue: "50" }, { rpm: 4000, load: 50, hexValue: "40" }, { rpm: 6000, load: 50, hexValue: "30" },
-                { rpm: 800, load: 100, hexValue: "70" }, { rpm: 2000, load: 100, hexValue: "60" }, { rpm: 4000, load: 100, hexValue: "50" }, { rpm: 6000, load: 100, hexValue: "40" },
+                // Sensitivity often higher at low RPM/load (to detect knock early) and lower at high RPM/load (less sensitive to noise)
+                { rpm: 800, load: 10, hexValue: "70" }, { rpm: 800, load: 30, hexValue: "60" }, { rpm: 800, load: 50, hexValue: "50" }, { rpm: 800, load: 70, hexValue: "40" }, { rpm: 800, load: 90, hexValue: "30" }, { rpm: 800, load: 100, hexValue: "20" },
+                { rpm: 1500, load: 10, hexValue: "60" }, { rpm: 1500, load: 30, hexValue: "50" }, { rpm: 1500, load: 50, hexValue: "40" }, { rpm: 1500, load: 70, hexValue: "30" }, { rpm: 1500, load: 90, hexValue: "20" }, { rpm: 1500, load: 100, hexValue: "18" },
+                { rpm: 2500, load: 10, hexValue: "50" }, { rpm: 2500, load: 30, hexValue: "40" }, { rpm: 2500, load: 50, hexValue: "30" }, { rpm: 2500, load: 70, hexValue: "20" }, { rpm: 2500, load: 90, hexValue: "18" }, { rpm: 2500, load: 100, hexValue: "10" },
+                { rpm: 3500, load: 10, hexValue: "40" }, { rpm: 3500, load: 30, hexValue: "30" }, { rpm: 3500, load: 50, hexValue: "20" }, { rpm: 3500, load: 70, hexValue: "18" }, { rpm: 3500, load: 90, hexValue: "10" }, { rpm: 3500, load: 100, hexValue: "0A" },
+                { rpm: 4500, load: 10, hexValue: "30" }, { rpm: 4500, load: 30, hexValue: "20" }, { rpm: 4500, load: 50, hexValue: "18" }, { rpm: 4500, load: 70, hexValue: "10" }, { rpm: 4500, load: 90, hexValue: "0A" }, { rpm: 4500, load: 100, hexValue: "05" },
+                { rpm: 5500, load: 10, hexValue: "20" }, { rpm: 5500, load: 30, hexValue: "18" }, { rpm: 5500, load: 50, hexValue: "10" }, { rpm: 5500, load: 70, hexValue: "0A" }, { rpm: 5500, load: 90, hexValue: "05" }, { rpm: 5500, load: 100, hexValue: "02" },
+                { rpm: 6500, load: 10, hexValue: "10" }, { rpm: 6500, load: 30, hexValue: "0A" }, { rpm: 6500, load: 50, hexValue: "05" }, { rpm: 6500, load: 70, hexValue: "02" }, { rpm: 6500, load: 90, hexValue: "01" }, { rpm: 6500, load: 100, hexValue: "00" }, // Least sensitive at high load/RPM
             ]
           },
           closed_open_loop: {
-            name: "Closed/Open Loop Switch",
+            name: "Closed/Open Loop Switch (Load Threshold)",
             address: 0x1C00, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 4000], load: [20, 80] },
+            axes: { x: "RPM", y: "Load Threshold" }, // Changed axis from arbitrary "Status" to "Load Threshold"
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500], load_threshold: ["%"] },
             defaultData: [
-                { rpm: 800, load: 20, hexValue: "01" }, // Closed Loop (1)
-                { rpm: 2000, load: 20, hexValue: "01" },
-                { rpm: 4000, load: 20, hexValue: "01" },
-                { rpm: 800, load: 80, hexValue: "01" },
-                { rpm: 2000, load: 80, hexValue: "00" }, // Open Loop (0) at higher load/RPM
-                { rpm: 4000, load: 80, hexValue: "00" },
+                // ECU enters Open Loop at higher loads to protect engine and deliver max power
+                { rpm: 800, load_threshold: 100 }, // Always Closed Loop at idle/very low load
+                { rpm: 1500, load_threshold: 90 }, // Enter Open Loop if Load > 90%
+                { rpm: 2500, load_threshold: 80 },
+                { rpm: 3500, load_threshold: 70 },
+                { rpm: 4500, load_threshold: 60 },
+                { rpm: 5500, load_threshold: 50 }, // May enter Open Loop earlier at high RPM
             ]
           },
           intake_air_temp_comp: {
             name: "Intake Air Temp Compensation (Ignition Advance)",
             address: 0x1D00, type: "8-bit signed", factor: 0.1, offset: 0,
             axes: { x: "IAT (°C)", y: "Compensation (°)" },
-            axisValues: { iat: [-20, 0, 20, 40, 60], compensation_deg: ["Degree"] },
+            axisValues: { iat: [-20, 0, 20, 40, 60, 80], compensation_deg: ["Degree"] }, // เพิ่มแกน
             defaultData: [
-                { iat: -20, hexValue: "20" }, // +3.2 deg (cooler air, more timing)
-                { iat: 0, hexValue: "10" },  // +1.6 deg
+                { iat: -20, hexValue: "28" }, // +4.0 deg (cooler air, more timing)
+                { iat: 0, hexValue: "18" },  // +2.4 deg
                 { iat: 20, hexValue: "00" },  // 0 deg
                 { iat: 40, hexValue: "F0" },  // -1.6 deg (hotter air, less timing)
                 { iat: 60, hexValue: "E0" },  // -3.2 deg
+                { iat: 80, hexValue: "D0" },  // -4.8 deg
             ]
           },
           fuel_cut_map: {
             name: "Fuel Cut RPM (Overrun)",
             address: 0x1E00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Mode", y: "RPM" },
-            axisValues: { mode: ["Standard", "Aggressive"], rpm: ["RPM"] },
+            axes: { x: "RPM Range", y: "Cut RPM" }, // เปลี่ยน Axis
+            axisValues: { rpm_range: ["Low RPM", "High RPM"], cut_rpm: ["RPM"] },
             defaultData: [
-                { mode: "Standard", hexValue: "1E14" }, // 7700 RPM
-                { mode: "Aggressive", hexValue: "1F40" }, // 8000 RPM (cut later)
+                { rpm_range: "Low RPM", hexValue: "0BB8" }, // 3000 RPM (e.g. for light engine braking)
+                { rpm_range: "High RPM", hexValue: "1F40" }, // 8000 RPM (for hard engine braking / deceleration fuel cut)
             ]
           },
           engine_braking_control: {
-            name: "Engine Braking (Torque Reduction)",
+            name: "Engine Braking (Torque Reduction %)",
             address: 0x1F00, type: "8-bit unsigned", factor: 0.39, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000], load: [0, 5, 10] }, // Load 0 = Foot off gas
+            axes: { x: "RPM", y: "Throttle Position (approx.)" }, // Load 0 is usually closed throttle
+            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], throttle_pos: [0, 5, 10] },
             defaultData: [
-                { rpm: 1000, load: 0, hexValue: "20" }, { rpm: 2000, load: 0, hexValue: "30" }, { rpm: 3000, load: 0, hexValue: "40" },
-                { rpm: 1000, load: 5, hexValue: "10" }, { rpm: 2000, load: 5, hexValue: "20" }, { rpm: 3000, load: 5, hexValue: "30" },
-                { rpm: 1000, load: 10, hexValue: "05" }, { rpm: 2000, load: 10, hexValue: "10" }, { rpm: 3000, load: 10, hexValue: "20" },
+                // Higher RPM / lower throttle % = more engine braking (fuel cut and possibly retarded timing)
+                { rpm: 1000, throttle_pos: 0, hexValue: "20" }, { rpm: 2000, throttle_pos: 0, hexValue: "30" }, { rpm: 3000, throttle_pos: 0, hexValue: "40" }, { rpm: 4000, throttle_pos: 0, hexValue: "50" }, { rpm: 5000, throttle_pos: 0, hexValue: "60" }, { rpm: 6000, throttle_pos: 0, hexValue: "70" },
+                { rpm: 1000, throttle_pos: 5, hexValue: "18" }, { rpm: 2000, throttle_pos: 5, hexValue: "28" }, { rpm: 3000, throttle_pos: 5, hexValue: "38" }, { rpm: 4000, throttle_pos: 5, hexValue: "48" }, { rpm: 5000, throttle_pos: 5, hexValue: "58" }, { rpm: 6000, throttle_pos: 5, hexValue: "68" },
+                { rpm: 1000, throttle_pos: 10, hexValue: "10" }, { rpm: 2000, throttle_pos: 10, hexValue: "20" }, { rpm: 3000, throttle_pos: 10, hexValue: "30" }, { rpm: 4000, throttle_pos: 10, hexValue: "40" }, { rpm: 5000, throttle_pos: 10, hexValue: "50" }, { rpm: 6000, throttle_pos: 10, hexValue: "60" },
             ]
           },
           start_up_enrichment: {
             name: "Start-Up Enrichment (ms)",
             address: 0x2000, type: "16-bit unsigned", factor: 0.001, offset: 0,
             axes: { x: "Coolant Temp (°C)", y: "Enrichment" },
-            axisValues: { coolant_temp: [-20, 0, 20, 40], enrichment: ["ms"] },
+            axisValues: { coolant_temp: [-30, -20, 0, 20, 40, 60], enrichment: ["ms"] }, // เพิ่มแกน
             defaultData: [
+                { coolant_temp: -30, hexValue: "0FA0" }, // 4000ms (Very cold start)
                 { coolant_temp: -20, hexValue: "0C80" }, // 3200ms
                 { coolant_temp: 0, hexValue: "09C4" },  // 2500ms
                 { coolant_temp: 20, hexValue: "0640" }, // 1600ms
                 { coolant_temp: 40, hexValue: "03E8" }, // 1000ms
+                { coolant_temp: 60, hexValue: "01F4" }, // 500ms
             ]
           },
           catalyst_heating: {
-            name: "Catalyst Heating Strategy (Air Pump Duration)",
+            name: "Catalyst Heating Strategy (Timing/RPM)",
             address: 0x2100, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Coolant Temp (°C)", y: "Duration (sec)" },
-            axisValues: { coolant_temp: [-10, 10, 30], duration: ["sec"] },
+            axes: { x: "Coolant Temp (°C)", y: "Strategy Level" }, // เปลี่ยน Axis (อาจเป็นการปรับองศาไฟ/รอบสูงขึ้น)
+            axisValues: { coolant_temp: [-10, 10, 30, 50], strategy_level: ["Level"] },
             defaultData: [
-                { coolant_temp: -10, hexValue: "3C" }, // 60 seconds
-                { coolant_temp: 10, hexValue: "2D" },  // 45 seconds
-                { coolant_temp: 30, hexValue: "1E" },  // 30 seconds
+                { coolant_temp: -10, hexValue: "04" }, // Aggressive (e.g. retarded timing, higher idle)
+                { coolant_temp: 10, hexValue: "03" },
+                { coolant_temp: 30, hexValue: "02" },
+                { coolant_temp: 50, hexValue: "01" }, // Minimal
             ]
           },
           egr_control: { // Simulated for Skyactiv-G (though less common than diesel)
             name: "EGR Control Map (%)",
             address: 0x2200, type: "8-bit unsigned", factor: 0.39, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500], load: [10, 30, 50] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500], load: [10, 20, 30, 40, 50] }, // เพิ่มแกน
             defaultData: [
-              { rpm: 800, load: 10, hexValue: "50" }, { rpm: 1500, load: 10, hexValue: "40" }, { rpm: 2500, load: 10, hexValue: "30" }, { rpm: 3500, load: 10, hexValue: "20" },
-              { rpm: 800, load: 30, hexValue: "40" }, { rpm: 1500, load: 30, hexValue: "30" }, { rpm: 2500, load: 30, hexValue: "20" }, { rpm: 3500, load: 30, hexValue: "10" },
-              { rpm: 800, load: 50, hexValue: "30" }, { rpm: 1500, load: 50, hexValue: "20" }, { rpm: 2500, load: 50, hexValue: "10" }, { rpm: 3500, load: 50, hexValue: "05" },
+              // EGR usually active at light load for fuel economy and NOx reduction
+              { rpm: 800, load: 10, hexValue: "50" }, { rpm: 800, load: 20, hexValue: "40" }, { rpm: 800, load: 30, hexValue: "30" }, { rpm: 800, load: 40, hexValue: "20" }, { rpm: 800, load: 50, hexValue: "10" },
+              { rpm: 1500, load: 10, hexValue: "60" }, { rpm: 1500, load: 20, hexValue: "50" }, { rpm: 1500, load: 30, hexValue: "40" }, { rpm: 1500, load: 40, hexValue: "30" }, { rpm: 1500, load: 50, hexValue: "20" },
+              { rpm: 2500, load: 10, hexValue: "50" }, { rpm: 2500, load: 20, hexValue: "40" }, { rpm: 2500, load: 30, hexValue: "30" }, { rpm: 2500, load: 40, hexValue: "20" }, { rpm: 2500, load: 50, hexValue: "10" },
+              { rpm: 3500, load: 10, hexValue: "30" }, { rpm: 3500, load: 20, hexValue: "20" }, { rpm: 3500, load: 30, hexValue: "10" }, { rpm: 3500, load: 40, hexValue: "05" }, { rpm: 3500, load: 50, hexValue: "00" },
+              { rpm: 4500, load: 10, hexValue: "20" }, { rpm: 4500, load: 20, hexValue: "10" }, { rpm: 4500, load: 30, hexValue: "05" }, { rpm: 4500, load: 40, hexValue: "00" }, { rpm: 4500, load: 50, hexValue: "00" },
             ]
           },
           fan_control: {
             name: "Radiator Fan Control (°C)",
             address: 0x2300, type: "8-bit unsigned", factor: 1, offset: 0,
             axes: { x: "Temperature (°C)", y: "Fan Speed (%)" },
-            axisValues: { temperature: [90, 95, 100, 105], fan_speed: ["%"] },
+            axisValues: { temperature: [85, 90, 95, 100, 105], fan_speed: ["%"] }, // เพิ่มแกน
             defaultData: [
+                { temperature: 85, hexValue: "00" },  // Off
                 { temperature: 90, hexValue: "32" },  // 50%
                 { temperature: 95, hexValue: "64" },  // 100%
-                { temperature: 100, hexValue: "FF" }, // Max (255)
-                { temperature: 105, hexValue: "FF" }, // Max
+                { temperature: 100, hexValue: "C8" }, // 200 (approx. max for 8-bit)
+                { temperature: 105, hexValue: "FF" }, // Max (255)
             ]
           },
           transmission_torque_management_at: {
             name: "Transmission Torque Mgmt (AT) (Nm)",
             address: 0x2400, type: "16-bit unsigned", factor: 0.5, offset: 0,
             axes: { x: "RPM", y: "Gear" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000], gear: [1, 2, 3, 4, 5, 6] },
+            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], gear: [1, 2, 3, 4, 5, 6] },
             defaultData: [
-                { rpm: 1000, gear: 1, hexValue: "02BC" }, { rpm: 2000, gear: 1, hexValue: "0320" }, { rpm: 3000, gear: 1, hexValue: "0384" }, { rpm: 4000, gear: 1, hexValue: "03E8" },
-                { rpm: 1000, gear: 2, hexValue: "0320" }, { rpm: 2000, gear: 2, hexValue: "0384" }, { rpm: 3000, gear: 2, hexValue: "03E8" }, { rpm: 4000, gear: 2, hexValue: "044C" },
-                { rpm: 1000, gear: 3, hexValue: "03E8" }, { rpm: 2000, gear: 3, hexValue: "044C" }, { rpm: 3000, gear: 3, hexValue: "04B0" }, { rpm: 4000, gear: 3, hexValue: "0514" },
-                { rpm: 1000, gear: 4, hexValue: "04B0" }, { rpm: 2000, gear: 4, hexValue: "0514" }, { rpm: 3000, gear: 4, hexValue: "0578" }, { rpm: 4000, gear: 4, hexValue: "05DC" },
-                { rpm: 1000, gear: 5, hexValue: "0514" }, { rpm: 2000, gear: 5, hexValue: "0578" }, { rpm: 3000, gear: 5, hexValue: "05DC" }, { rpm: 4000, gear: 5, hexValue: "0640" },
-                { rpm: 1000, gear: 6, hexValue: "0578" }, { rpm: 2000, gear: 6, hexValue: "05DC" }, { rpm: 3000, gear: 6, hexValue: "0640" }, { rpm: 4000, gear: 6, hexValue: "06A4" },
+                // Torque reduction during shifts for AT smoothness and longevity
+                { rpm: 1000, gear: 1, hexValue: "01F4" }, // 250 Nm
+                { rpm: 2000, gear: 1, hexValue: "02BC" }, // 360 Nm
+                { rpm: 3000, gear: 1, hexValue: "03E8" }, // 500 Nm
+                { rpm: 4000, gear: 1, hexValue: "044C" }, // 550 Nm
+                { rpm: 5000, gear: 1, hexValue: "03E8" }, // 500 Nm
+                { rpm: 6000, gear: 1, hexValue: "0320" }, // 400 Nm
+
+                { rpm: 1000, gear: 2, hexValue: "02BC" }, // 360 Nm
+                { rpm: 2000, gear: 2, hexValue: "0320" }, // 400 Nm
+                { rpm: 3000, gear: 2, hexValue: "044C" }, // 550 Nm
+                { rpm: 4000, gear: 2, hexValue: "04B0" }, // 600 Nm
+                { rpm: 5000, gear: 2, hexValue: "044C" }, // 550 Nm
+                { rpm: 6000, gear: 2, hexValue: "0384" }, // 450 Nm
+
+                { rpm: 1000, gear: 3, hexValue: "03E8" }, // 500 Nm
+                { rpm: 2000, gear: 3, hexValue: "044C" }, // 550 Nm
+                { rpm: 3000, gear: 3, hexValue: "04B0" }, // 600 Nm
+                { rpm: 4000, gear: 3, hexValue: "0514" }, // 650 Nm
+                { rpm: 5000, gear: 3, hexValue: "04B0" }, // 600 Nm
+                { rpm: 6000, gear: 3, hexValue: "03E8" }, // 500 Nm
+
+                { rpm: 1000, gear: 4, hexValue: "04B0" }, // 600 Nm
+                { rpm: 2000, gear: 4, hexValue: "0514" }, // 650 Nm
+                { rpm: 3000, gear: 4, hexValue: "0578" }, // 700 Nm
+                { rpm: 4000, gear: 4, hexValue: "05DC" }, // 750 Nm
+                { rpm: 5000, gear: 4, hexValue: "0578" }, // 700 Nm
+                { rpm: 6000, gear: 4, hexValue: "04B0" }, // 600 Nm
+
+                { rpm: 1000, gear: 5, hexValue: "0514" }, // 650 Nm
+                { rpm: 2000, gear: 5, hexValue: "0578" }, // 700 Nm
+                { rpm: 3000, gear: 5, hexValue: "05DC" }, // 750 Nm
+                { rpm: 4000, gear: 5, hexValue: "0640" }, // 800 Nm
+                { rpm: 5000, gear: 5, hexValue: "05DC" }, // 750 Nm
+                { rpm: 6000, gear: 5, hexValue: "0514" }, // 650 Nm
+
+                { rpm: 1000, gear: 6, hexValue: "0578" }, // 700 Nm
+                { rpm: 2000, gear: 6, hexValue: "05DC" }, // 750 Nm
+                { rpm: 3000, gear: 6, hexValue: "0640" }, // 800 Nm
+                { rpm: 4000, gear: 6, hexValue: "06A4" }, // 850 Nm
+                { rpm: 5000, gear: 6, hexValue: "0640" }, // 800 Nm
+                { rpm: 6000, gear: 6, hexValue: "0578" }, // 700 Nm
             ]
           },
           fuel_economy_optimization: {
             name: "Fuel Economy Optimization (Target AFR)",
             address: 0x2500, type: "16-bit unsigned", factor: 0.001, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500], load: [10, 30, 50] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500], load: [10, 20, 30, 40, 50] }, // เพิ่มแกน
             defaultData: [
-                { rpm: 800, load: 10, hexValue: "29A0" }, { rpm: 1500, load: 10, hexValue: "28CC" }, { rpm: 2500, load: 10, hexValue: "2838" }, { rpm: 3500, load: 10, hexValue: "27A4" }, // AFR ~14.7
-                { rpm: 800, load: 30, hexValue: "27A4" }, { rpm: 1500, load: 30, hexValue: "2710" }, { rpm: 2500, load: 30, hexValue: "267C" }, { rpm: 3500, load: 30, hexValue: "25E8" },
-                { rpm: 800, load: 50, hexValue: "2554" }, { rpm: 1500, load: 50, hexValue: "24C0" }, { rpm: 2500, load: 50, hexValue: "242C" }, { rpm: 3500, load: 50, hexValue: "2398" },
+                // Leaner AFR for fuel economy at light loads, richer for power/protection at higher loads
+                { rpm: 800, load: 10, hexValue: "39D0" }, { rpm: 800, load: 20, hexValue: "3970" }, { rpm: 800, load: 30, hexValue: "3910" }, { rpm: 800, load: 40, hexValue: "38B0" }, { rpm: 800, load: 50, hexValue: "3850" },
+                { rpm: 1500, load: 10, hexValue: "3970" }, { rpm: 1500, load: 20, hexValue: "3910" }, { rpm: 1500, load: 30, hexValue: "38B0" }, { rpm: 1500, load: 40, hexValue: "3850" }, { rpm: 1500, load: 50, hexValue: "37F0" },
+                { rpm: 2500, load: 10, hexValue: "38B0" }, { rpm: 2500, load: 20, hexValue: "3850" }, { rpm: 2500, load: 30, hexValue: "37F0" }, { rpm: 2500, load: 40, hexValue: "3790" }, { rpm: 2500, load: 50, hexValue: "3730" },
+                { rpm: 3500, load: 10, hexValue: "37F0" }, { rpm: 3500, load: 20, hexValue: "3790" }, { rpm: 3500, load: 30, hexValue: "3730" }, { rpm: 3500, load: 40, hexValue: "36D0" }, { rpm: 3500, load: 50, hexValue: "3670" },
+                { rpm: 4500, load: 10, hexValue: "3730" }, { rpm: 4500, load: 20, hexValue: "36D0" }, { rpm: 4500, load: 30, hexValue: "3670" }, { rpm: 4500, load: 40, hexValue: "3610" }, { rpm: 4500, load: 50, hexValue: "35B0" },
+                { rpm: 5500, load: 10, hexValue: "3670" }, { rpm: 5500, load: 20, hexValue: "3610" }, { rpm: 5500, load: 30, hexValue: "35B0" }, { rpm: 5500, load: 40, hexValue: "3550" }, { rpm: 5500, load: 50, hexValue: "34F0" },
             ]
           },
           load_to_torque_conversion: {
             name: "Load to Torque Conversion (Nm/Load)",
             address: 0x2600, type: "16-bit unsigned", factor: 0.01, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000], load: [20, 50, 80, 100] },
+            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], load: [20, 40, 60, 80, 100] }, // เพิ่มแกน
             defaultData: [
-                { rpm: 1000, load: 20, hexValue: "00C8" }, { rpm: 2000, load: 20, hexValue: "00FA" }, { rpm: 3000, load: 20, hexValue: "012C" }, { rpm: 4000, load: 20, hexValue: "015E" },
-                { rpm: 1000, load: 50, hexValue: "01C2" }, { rpm: 2000, load: 50, hexValue: "01F4" }, { rpm: 3000, load: 50, hexValue: "0226" }, { rpm: 4000, load: 50, hexValue: "0258" },
-                { rpm: 1000, load: 80, hexValue: "02BC" }, { rpm: 2000, load: 80, hexValue: "02EE" }, { rpm: 3000, load: 80, hexValue: "0320" }, { rpm: 4000, load: 80, hexValue: "0352" },
-                { rpm: 1000, load: 100, hexValue: "03E8" }, { rpm: 2000, load: 100, hexValue: "044C" }, { rpm: 3000, load: 100, hexValue: "04B0" }, { rpm: 4000, load: 100, hexValue: "0514" },
+                // Example of how engine load (derived from MAF/MAP) maps to engine torque
+                { rpm: 1000, load: 20, hexValue: "00C8" }, { rpm: 1000, load: 40, hexValue: "0190" }, { rpm: 1000, load: 60, hexValue: "0258" }, { rpm: 1000, load: 80, hexValue: "0320" }, { rpm: 1000, load: 100, hexValue: "03E8" },
+                { rpm: 2000, load: 20, hexValue: "00FA" }, { rpm: 2000, load: 40, hexValue: "01C2" }, { rpm: 2000, load: 60, hexValue: "028A" }, { rpm: 2000, load: 80, hexValue: "0352" }, { rpm: 2000, load: 100, hexValue: "041A" },
+                { rpm: 3000, load: 20, hexValue: "012C" }, { rpm: 3000, load: 40, hexValue: "01F4" }, { rpm: 3000, load: 60, hexValue: "02BC" }, { rpm: 3000, load: 80, hexValue: "0384" }, { rpm: 3000, load: 100, hexValue: "044C" },
+                { rpm: 4000, load: 20, hexValue: "015E" }, { rpm: 4000, load: 40, hexValue: "0226" }, { rpm: 4000, load: 60, hexValue: "02EE" }, { rpm: 4000, load: 80, hexValue: "03B6" }, { rpm: 4000, load: 100, hexValue: "047E" },
+                { rpm: 5000, load: 20, hexValue: "0190" }, { rpm: 5000, load: 40, hexValue: "0258" }, { rpm: 5000, load: 60, hexValue: "0320" }, { rpm: 5000, load: 80, hexValue: "03E8" }, { rpm: 5000, load: 100, hexValue: "04B0" },
+                { rpm: 6000, load: 20, hexValue: "01C2" }, { rpm: 6000, load: 40, hexValue: "028A" }, { rpm: 6000, load: 60, hexValue: "0352" }, { rpm: 6000, load: 80, hexValue: "041A" }, { rpm: 6000, load: 100, hexValue: "04E2" },
             ]
           },
           fuel_pressure_map: {
             name: "Fuel Pressure Map (bar)",
             address: 0x2700, type: "16-bit unsigned", factor: 0.1, offset: 0,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500], load: [30, 60, 90] },
+            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน
             defaultData: [
-              { rpm: 800, load: 30, hexValue: "2EE0" }, { rpm: 1500, load: 30, hexValue: "3A98" }, { rpm: 2500, load: 30, hexValue: "4650" }, { rpm: 3500, load: 30, hexValue: "5208" },
-              { rpm: 800, load: 60, hexValue: "3A98" }, { rpm: 1500, load: 60, hexValue: "4650" }, { rpm: 2500, load: 60, hexValue: "5208" }, { rpm: 3500, load: 60, hexValue: "5DC0" },
-              { rpm: 800, load: 90, hexValue: "5208" }, { rpm: 1500, load: 90, hexValue: "5DC0" }, { rpm: 2500, load: 90, hexValue: "6978" }, { rpm: 3500, load: 90, hexValue: "7530" },
+                // Direct Injection engines run much higher fuel pressure than port injection
+                { rpm: 800, load: 10, hexValue: "0BB8" }, // 300 bar (Idle)
+                { rpm: 800, load: 30, hexValue: "0F3C" }, // 390 bar
+                { rpm: 800, load: 50, hexValue: "12C0" }, // 480 bar
+                { rpm: 800, load: 70, hexValue: "1644" }, // 570 bar
+                { rpm: 800, load: 90, hexValue: "19C8" }, // 660 bar
+                { rpm: 800, load: 100, hexValue: "1D4C" }, // 750 bar
+
+                { rpm: 1500, load: 10, hexValue: "0F3C" }, { rpm: 1500, load: 30, hexValue: "12C0" }, { rpm: 1500, load: 50, hexValue: "1644" }, { rpm: 1500, load: 70, hexValue: "19C8" }, { rpm: 1500, load: 90, hexValue: "1D4C" }, { rpm: 1500, load: 100, hexValue: "20D0" },
+                { rpm: 2500, load: 10, hexValue: "12C0" }, { rpm: 2500, load: 30, hexValue: "1644" }, { rpm: 2500, load: 50, hexValue: "19C8" }, { rpm: 2500, load: 70, hexValue: "1D4C" }, { rpm: 2500, load: 90, hexValue: "20D0" }, { rpm: 2500, load: 100, hexValue: "2454" },
+                { rpm: 3500, load: 10, hexValue: "1644" }, { rpm: 3500, load: 30, hexValue: "19C8" }, { rpm: 3500, load: 50, hexValue: "1D4C" }, { rpm: 3500, load: 70, hexValue: "20D0" }, { rpm: 3500, load: 90, hexValue: "2454" }, { rpm: 3500, load: 100, hexValue: "27D8" },
+                { rpm: 4500, load: 10, hexValue: "19C8" }, { rpm: 4500, load: 30, hexValue: "1D4C" }, { rpm: 4500, load: 50, hexValue: "20D0" }, { rpm: 4500, load: 70, hexValue: "2454" }, { rpm: 4500, load: 90, hexValue: "27D8" }, { rpm: 4500, load: 100, hexValue: "2B5C" },
+                { rpm: 5500, load: 10, hexValue: "1D4C" }, { rpm: 5500, load: 30, hexValue: "20D0" }, { rpm: 5500, load: 50, hexValue: "2454" }, { rpm: 5500, load: 70, hexValue: "27D8" }, { rpm: 5500, load: 90, hexValue: "2B5C" }, { rpm: 5500, load: 100, hexValue: "2EE0" },
+                { rpm: 6500, load: 10, hexValue: "20D0" }, { rpm: 6500, load: 30, hexValue: "2454" }, { rpm: 6500, load: 50, hexValue: "27D8" }, { rpm: 6500, load: 70, hexValue: "2B5C" }, { rpm: 6500, load: 90, hexValue: "2EE0" }, { rpm: 6500, load: 100, hexValue: "3264" }, // ~800 bar at redline
             ]
           },
           o2_sensor_calibration: {
-            name: "O2 Sensor Calibration (Voltage Offset)",
-            address: 0x2800, type: "8-bit signed", factor: 0.01, offset: 0,
-            axes: { x: "RPM", y: "Load" }, // Simplified example
-            axisValues: { rpm: [1000, 2000, 3000], load: [20, 50, 80] },
+            name: "O2 Sensor Calibration (Voltage Offset mV)",
+            address: 0x2800, type: "16-bit signed", factor: 0.1, offset: 0, // ค่าเป็น mV, Factor 0.1
+            axes: { x: "RPM", y: "Load" },
+            axisValues: { rpm: [1000, 2000, 3000, 4000], load: [10, 30, 50, 70] }, // O2 Sensor active mostly in closed loop (light-mid load)
             defaultData: [
-                { rpm: 1000, load: 20, hexValue: "05" }, // +0.05V
-                { rpm: 2000, load: 20, hexValue: "00" }, // 0V
-                { rpm: 3000, load: 20, hexValue: "FB" }, // -0.05V
-                { rpm: 1000, load: 50, hexValue: "0A" },
-                { rpm: 2000, load: 50, hexValue: "05" },
-                { rpm: 3000, load: 50, hexValue: "00" },
-                { rpm: 1000, load: 80, hexValue: "0F" },
-                { rpm: 2000, load: 80, hexValue: "0A" },
-                { rpm: 3000, load: 80, hexValue: "05" },
+                { rpm: 1000, load: 10, hexValue: "0005" }, // +0.5 mV
+                { rpm: 1000, load: 30, hexValue: "0000" }, // 0 mV
+                { rpm: 1000, load: 50, hexValue: "FFF5" }, // -0.5 mV (Using 2's complement for negative numbers for 16-bit signed)
+                { rpm: 1000, load: 70, hexValue: "FFEB" }, // -2.1 mV (close to open loop threshold)
+
+                { rpm: 2000, load: 10, hexValue: "0008" },
+                { rpm: 2000, load: 30, hexValue: "0003" },
+                { rpm: 2000, load: 50, hexValue: "FFF8" },
+                { rpm: 2000, load: 70, hexValue: "FFEA" },
+
+                { rpm: 3000, load: 10, hexValue: "000A" },
+                { rpm: 3000, load: 30, hexValue: "0005" },
+                { rpm: 3000, load: 50, hexValue: "FFF8" },
+                { rpm: 3000, load: 70, hexValue: "FFE0" },
+
+                { rpm: 4000, load: 10, hexValue: "000C" },
+                { rpm: 4000, load: 30, hexValue: "0007" },
+                { rpm: 4000, load: 50, hexValue: "FFF0" },
+                { rpm: 4000, load: 70, hexValue: "FFD8" },
             ]
           },
           camshaft_position_control: {
-            name: "Camshaft Position Control (Degrees)",
-            address: 0x2900, type: "8-bit signed", factor: 0.5, offset: 0,
+            name: "Camshaft Position Control (Intake - Degrees)",
+            address: 0x2900, type: "8-bit signed", factor: 0.5, offset: -10, // Same as VVT, but VVT is a broad term, this is specific map
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 4000, 6000], load: [20, 50, 80, 100] },
+            axisValues: { rpm: [800, 2000, 3000, 4000, 5000, 6000], load: [10, 30, 50, 70, 90, 100] },
             defaultData: [
-                { rpm: 800, load: 20, hexValue: "10" }, { rpm: 2000, load: 20, hexValue: "15" }, { rpm: 4000, load: 20, hexValue: "1A" }, { rpm: 6000, load: 20, hexValue: "1F" },
-                { rpm: 800, load: 50, hexValue: "15" }, { rpm: 2000, load: 50, hexValue: "1A" }, { rpm: 4000, load: 50, hexValue: "1F" }, { rpm: 6000, load: 50, hexValue: "24" },
-                { rpm: 800, load: 80, hexValue: "1A" }, { rpm: 2000, load: 80, hexValue: "1F" }, { rpm: 4000, load: 80, hexValue: "24" }, { rpm: 6000, load: 80, hexValue: "29" },
-                { rpm: 800, load: 100, hexValue: "20" }, { rpm: 2000, load: 100, hexValue: "25" }, { rpm: 4000, load: 100, hexValue: "2A" }, { rpm: 6000, load: 100, hexValue: "2F" },
+              // RPM 800
+              { rpm: 800, load: 10, hexValue: "20" }, { rpm: 800, load: 30, hexValue: "25" }, { rpm: 800, load: 50, hexValue: "2A" },
+              { rpm: 800, load: 70, hexValue: "2F" }, { rpm: 800, load: 90, hexValue: "34" }, { rpm: 800, load: 100, hexValue: "39" },
+
+              // RPM 2000 (กลางๆ)
+              { rpm: 2000, load: 10, hexValue: "25" }, { rpm: 2000, load: 30, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2F" },
+              { rpm: 2000, load: 70, hexValue: "34" }, { rpm: 2000, load: 90, hexValue: "39" }, { rpm: 2000, load: 100, hexValue: "3E" },
+
+              // RPM 3000 (เริ่ม Advace มากขึ้น)
+              { rpm: 3000, load: 10, hexValue: "30" }, { rpm: 3000, load: 30, hexValue: "35" }, { rpm: 3000, load: 50, hexValue: "3A" },
+              { rpm: 3000, load: 70, hexValue: "3F" }, { rpm: 3000, load: 90, hexValue: "44" }, { rpm: 3000, load: 100, hexValue: "49" },
+
+              // RPM 4000 (Advance มากขึ้น)
+              { rpm: 4000, load: 10, hexValue: "3A" }, { rpm: 4000, load: 30, hexValue: "3F" }, { rpm: 4000, load: 50, hexValue: "44" },
+              { rpm: 4000, load: 70, hexValue: "49" }, { rpm: 4000, load: 90, hexValue: "4E" }, { rpm: 4000, load: 100, hexValue: "53" },
+
+              // RPM 5000 (เริ่มลด Advance หรือคงที่)
+              { rpm: 5000, load: 10, hexValue: "38" }, { rpm: 5000, load: 30, hexValue: "3D" }, { rpm: 5000, load: 50, hexValue: "42" },
+              { rpm: 5000, load: 70, hexValue: "47" }, { rpm: 5000, load: 90, hexValue: "4C" }, { rpm: 5000, load: 100, hexValue: "51" },
+
+              // RPM 6000 (ลด Advance เพื่อกำลังสูงสุด)
+              { rpm: 6000, load: 10, hexValue: "30" }, { rpm: 6000, load: 30, hexValue: "35" }, { rpm: 6000, load: 50, hexValue: "3A" },
+              { rpm: 6000, load: 70, hexValue: "3F" }, { rpm: 6000, load: 90, hexValue: "44" }, { rpm: 6000, load: 100, hexValue: "49" },
             ]
           },
           fuel_cut_delay: {
             name: "Fuel Cut Delay (ms)",
             address: 0x2A00, type: "16-bit unsigned", factor: 1, offset: 0,
             axes: { x: "RPM", y: "Delay" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000], delay: ["ms"] },
+            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], delay: ["ms"] }, // เพิ่มแกน
             defaultData: [
-                { rpm: 1000, delay: 0, hexValue: "0064" }, // 100ms
-                { rpm: 2000, delay: 0, hexValue: "0050" }, // 80ms
-                { rpm: 3000, delay: 0, hexValue: "0032" }, // 50ms
-                { rpm: 4000, delay: 0, hexValue: "001E" }, // 30ms
+                // Delay before fuel cut engages on deceleration
+                { rpm: 1000, delay: 0, hexValue: "01F4" }, // 500ms (longer delay at low RPM)
+                { rpm: 2000, delay: 0, hexValue: "012C" }, // 300ms
+                { rpm: 3000, delay: 0, hexValue: "00C8" }, // 200ms
+                { rpm: 4000, delay: 0, hexValue: "0096" }, // 150ms
+                { rpm: 5000, delay: 0, hexValue: "0064" }, // 100ms
+                { rpm: 6000, delay: 0, hexValue: "0032" }, // 50ms (shortest delay at high RPM)
             ]
           },
           launch_control_mt: {
@@ -820,7 +1300,7 @@
             axes: { x: "Mode", y: "RPM" },
             axisValues: { mode: ["Default"], rpm: ["RPM"] },
             defaultData: [
-                { mode: "Default", hexValue: "1770" }, // 6000 RPM
+                { mode: "Default", hexValue: "1388" }, // 5000 RPM (Typical LC RPM)
             ]
           },
           flat_foot_shifting_mt: {
@@ -829,11 +1309,11 @@
             axes: { x: "Mode", y: "RPM" },
             axisValues: { mode: ["Default"], rpm: ["RPM"] },
             defaultData: [
-                { mode: "Default", hexValue: "19C4" }, // 6600 RPM
+                { mode: "Default", hexValue: "1C28" }, // 7200 RPM (just below redline for quick shifts)
             ]
           },
           // สำหรับรุ่นเทอร์โบ ถ้ามีใน Mazda 2 Skyactiv-G:
-          // turbo_boost_control: { 
+          // turbo_boost_control: {
           //   name: "Turbo Boost Control (bar)",
           //   address: 0x2D00, type: "16-bit unsigned", factor: 0.01, offset: 0,
           //   axes: { x: "RPM", y: "Load" },
