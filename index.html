@@ -240,6 +240,8 @@
       margin-top: 20px;
       box-sizing: border-box;
       align-self: center; /* จัดให้อยู่กึ่งกลางใน Flex container */
+      /* เพิ่ม display: block; เพื่อให้แน่ใจว่ามันถูก render เสมอ */
+      display: block; 
     }
 
     .file-info {
@@ -371,10 +373,10 @@
         <select id="viewMode">
           <option value="text">Text</option>
           <option value="2d">2D Graph</option>
-          <option value="3d">3D Graph (Simulated)</option>
+          <option value="3d">3d Graph (Simulated)</option>
         </select>
       </div>
-      <canvas id="graphCanvas" style="display: none;"></canvas>
+      <canvas id="graphCanvas"></canvas> 
     </div>
 
     <div class="section">
@@ -772,7 +774,7 @@
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
-            renderGraph();
+            renderGraph(); // เรียก renderGraph เพื่อซ่อนกราฟเมื่อไม่มีข้อมูล
             mapStatus.textContent = "None selected";
             document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
         }
@@ -798,7 +800,7 @@
             hexGrid.innerHTML = '';
             currentMapData = null;
             currentMapDefinition = null;
-            renderGraph();
+            renderGraph(); // เรียก renderGraph เพื่อซ่อนกราฟเมื่อไม่มีข้อมูล
             mapStatus.textContent = "None selected";
             document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
             return;
@@ -1025,9 +1027,6 @@
 
     // --- Graphing (2D Simulation with Chart.js) ---
     function renderGraph() {
-        // ซ่อน canvas ไว้ก่อนเสมอ เพื่อจัดการการแสดงผลใหม่
-        graphCanvas.style.display = 'none';
-
         // ทำลาย Chart instance เดิมก่อนสร้างใหม่ เพื่อป้องกันปัญหาข้อมูลซ้อนทับหรือค้าง
         if (chartInstance) {
             chartInstance.destroy();
@@ -1040,8 +1039,11 @@
             !currentMapDefinition.name.includes("DTC Switch")) {
             
             try {
-                // แสดง canvas
-                graphCanvas.style.display = 'block';
+                // ตรวจสอบให้แน่ใจว่า Canvas มีขนาดและถูกแสดงผล
+                graphCanvas.style.width = '100%';
+                graphCanvas.style.maxWidth = '500px';
+                graphCanvas.style.height = '250px';
+                graphCanvas.style.display = 'block'; // ให้แน่ใจว่ามันถูกแสดง
 
                 const xAxisLabel = currentMapDefinition?.axes?.x;
                 const yAxisLabel = currentMapDefinition?.axes?.y;
