@@ -361,7 +361,9 @@
             option.textContent = "No maps available";
             mapTypeSelect.appendChild(option);
         }
-        loadMapData(); // Load map data for the first option
+        // Always attempt to load map data after populating options
+        // This ensures the first map in the new list is loaded.
+        loadMapData();
     }
 
     // Loads and displays the selected map data
@@ -449,7 +451,7 @@
         input.maxLength = maxLength;
         input.value = row.hexValue;
         input.setAttribute("data-index", index);
-        input.addEventListener("input", updateFromHexGrid);
+        input.addEventListener("input", updateFromHexGrid); // Add Event Listener
         hexGrid.appendChild(input);
       });
     }
@@ -526,10 +528,24 @@
             chartInstance.destroy(); // Destroy previous chart instance
         }
 
+        // Only show graph if viewMode is '2d', currentMapData exists,
+        // and it's not a DTC Switch map (as DTC doesn't have numerical axes for graphing)
         if (viewMode === '2d' && currentMapData && currentMapDefinition && !currentMapDefinition.name.includes("DTC Switch")) {
             graphCanvas.style.display = 'block';
-            const labels = currentMapData.map(d => d.rpm || d.load || d.tps); // Use appropriate axis label
-            const dataValues = currentMapData.map(d => (hexToDec(d.hexValue) * currentMapDefinition.factor + currentMapDefinition.offset));
+            
+            let labels = [];
+            let dataValues = [];
+
+            // Determine which axis to use for labels (RPM, Load, or TPS)
+            if (currentMapDefinition.axes && currentMapDefinition.axes.x) {
+                labels = currentMapData.map(d => d[currentMapDefinition.axes.x.toLowerCase()]);
+            } else if (currentMapDefinition.axes && currentMapDefinition.axes.y) {
+                labels = currentMapData.map(d => d[currentMapDefinition.axes.y.toLowerCase()]);
+            } else {
+                labels = currentMapData.map((_, i) => `Point ${i + 1}`); // Fallback
+            }
+
+            dataValues = currentMapData.map(d => (hexToDec(d.hexValue) * currentMapDefinition.factor + currentMapDefinition.offset));
 
             chartInstance = new Chart(graphCtx, {
                 type: 'line', // Line chart for 2D map
@@ -552,7 +568,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: currentMapDefinition.axes.x || (currentMapDefinition.axes.y ? 'Load/TPS' : 'Index'),
+                                text: currentMapDefinition.axes.x || (currentMapDefinition.axes.y ? currentMapDefinition.axes.y : 'Index'),
                                 color: '#ccc'
                             },
                             ticks: { color: '#eee' },
@@ -596,21 +612,23 @@
         }
 
         const file = fileInput.files[0];
-        // In a real app, you would read the binary content of the file here.
-        // For simulation, we'll just acknowledge the file and "load" a dummy ECU content.
         showMessage(`Simulating loading of "${file.name}"... This is where the actual binary parsing would happen.`);
         
-        // Simulate a dummy ECU file content (as an array of bytes/hex strings)
-        // In reality, this would be parsing the actual .bin or .hex file
         currentECUFile = Array(0x4000).fill('00'); // Simulate a 16KB ECU file filled with '00'
-        // And then populate specific map regions with our default data
-        // This is a very simplified simulation of how data would be read from a file.
+        
+        // This part remains a simplification: it populates the ECU file with default data
+        // from our predefined 'ecuDefinitions' for *all* models/maps, not just the selected one.
+        // In a real app, this would be actual parsing of the loaded binary file.
         for (const modelKey in ecuDefinitions) {
             for (const mapKey in ecuDefinitions[modelKey]) {
                 const mapDef = ecuDefinitions[modelKey][mapKey];
                 let currentAddress = mapDef.address;
                 mapDef.defaultData.forEach(item => {
-                    const hexBytes = item.hexValue;
+                    // Ensure hexValue has correct length for byte representation
+                    let hexBytes = item.hexValue;
+                    const byteLength = mapDef.type === "16-bit unsigned" ? 4 : 2; // 2 or 4 chars = 1 or 2 bytes
+                    hexBytes = hexBytes.padStart(byteLength, '0');
+
                     for (let i = 0; i < hexBytes.length; i += 2) {
                         if (currentAddress < currentECUFile.length) {
                              currentECUFile[currentAddress++] = hexBytes.substring(i, i + 2);
@@ -620,8 +638,9 @@
             }
         }
 
-        // Once file is "loaded", we can select a default map
-        populateMapOptions(); // This will also call loadMapData()
+        // *** Crucial Fix: Call populateMapOptions() AFTER the file is "loaded" ***
+        // This will refresh the map dropdown and then load the first map for the current model.
+        populateMapOptions(); 
     }
 
     function simulateFileSave() {
@@ -629,12 +648,6 @@
             showMessage("No ECU file loaded to save.", true);
             return;
         }
-
-        // In a real app, you would compile currentMapData back into the currentECUFile
-        // then trigger a download of the modified binary file.
-        // This would involve converting all modified HEX values back into a binary array.
-
-        // For simulation, just show a message.
         showMessage("Simulating saving of modified ECU file. This is where the file would be compiled and downloaded.");
     }
 
@@ -648,15 +661,16 @@
       const map = mapTypeSelect.options[mapTypeSelect.selectedIndex].text;
       const mode = viewModeSelect.value;
 
-      // Simulate the impact of tuning based on changes
       let originalTotalValue = 0;
       let modifiedTotalValue = 0;
 
-      // Calculate totals for comparison (for non-DTC maps)
       if (!currentMapDefinition.name.includes("DTC Switch")) {
-          ecuDefinitions[carModelSelect.value][mapTypeSelect.value].defaultData.forEach(item => {
-              originalTotalValue += hexToDec(item.hexValue);
-          });
+          const originalMapDataDef = ecuDefinitions[carModelSelect.value][mapTypeSelect.value];
+          if (originalMapDataDef && originalMapDataDef.defaultData) {
+              originalMapDataDef.defaultData.forEach(item => {
+                  originalTotalValue += hexToDec(item.hexValue);
+              });
+          }
           currentMapData.forEach(item => {
               modifiedTotalValue += hexToDec(item.hexValue);
           });
@@ -666,25 +680,26 @@
       let torqueChange = 0;
       let response = "Standard response.";
 
-      const diffRatio = (modifiedTotalValue - originalTotalValue) / originalTotalValue;
+      // Handle division by zero for originalTotalValue if it's 0 or no original data
+      const diffRatio = (originalTotalValue !== 0) ? (modifiedTotalValue - originalTotalValue) / originalTotalValue : 0;
+
 
       if (mapTypeSelect.value === "iq_limit") {
-        hpChange = (diffRatio * 25).toFixed(1); // Simulating up to 25 HP change
-        torqueChange = (diffRatio * 30).toFixed(1); // Simulating up to 30% torque change
+        hpChange = (diffRatio * 25).toFixed(1);
+        torqueChange = (diffRatio * 30).toFixed(1);
         response = diffRatio > 0 ? "Significantly improved throttle response and power delivery." : "Softer power delivery for economy.";
       } else if (mapTypeSelect.value === "torque_map") {
         hpChange = (diffRatio * 20).toFixed(1);
         torqueChange = (diffRatio * 35).toFixed(1);
         response = diffRatio > 0 ? "Stronger pull throughout the RPM range." : "Smoother and more linear torque delivery.";
       } else if (mapTypeSelect.value === "dtc_switch") {
-          // For DTC switch, check if any DTCs are disabled (value '00')
           const disabledDTCs = currentMapData.filter(d => d.hexValue === "00");
           if (disabledDTCs.length > 0) {
               response = `Warning: ${disabledDTCs.length} DTCs (${disabledDTCs.map(d => d.id).join(', ')}) are currently disabled. Use with caution!`;
-              resultArea.style.color = '#ffaa00'; // Orange for warning
+              resultArea.style.color = '#ffaa00';
           } else {
               response = "All DTCs are enabled as per standard. No issues detected.";
-              resultArea.style.color = '#aaffaa'; // Green
+              resultArea.style.color = '#aaffaa';
           }
           hpChange = "N/A";
           torqueChange = "N/A";
@@ -699,7 +714,7 @@
         <p>Initial Results: Horsepower change ~${hpChange} HP, Torque change ~${torqueChange} %, ${response}</p>
         <p><em>(ผลลัพธ์จำลองนี้ไม่ได้อิงจากหลักการจูนจริง แต่แสดงให้เห็นถึงการเปลี่ยนแปลง)</em></p>
       `;
-      resultArea.style.color = '#aaffaa'; // Reset color
+      resultArea.style.color = '#aaffaa';
     }
 
     function compareMaps() {
@@ -708,7 +723,7 @@
             return;
         }
 
-        const originalMapState = history[0]; // Assuming first state is original
+        const originalMapState = history[0];
         let changes = 0;
         let comparisonDetails = 'Changes detected:<br>';
 
@@ -716,7 +731,7 @@
             const originalItem = originalMapState.currentMapData[index];
             if (originalItem && modifiedItem.hexValue !== originalItem.hexValue) {
                 changes++;
-                comparisonDetails += `Row ${index + 1} (${modifiedItem.rpm || modifiedItem.id}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
+                comparisonDetails += `Row ${index + 1} (${modifiedItem.rpm || modifiedItem.id || 'N/A'}): Original HEX: ${originalItem.hexValue}, Modified HEX: ${modifiedItem.hexValue}<br>`;
             }
         });
 
@@ -727,7 +742,7 @@
                 <p>📊 Map Comparison Complete: Found ${changes} differences.</p>
                 <p>${comparisonDetails}</p>
             `;
-            resultArea.style.color = '#ffffaa'; // Yellow for comparison
+            resultArea.style.color = '#ffffaa';
         }
     }
 
@@ -737,15 +752,12 @@
             return;
         }
 
-        // In a real scenario, checksum calculation is highly specific to ECU type.
-        // It's usually a complex algorithm (e.g., CRC32, Fletcher-16) applied over specific regions of the binary.
-        // For simulation, we'll do a very simple sum of hex values.
         let sum = 0;
         currentECUFile.forEach(hexByte => {
             sum += hexToDec(hexByte);
         });
 
-        const simulatedChecksum = decToHex(sum % 65536, 4); // Sum modulo 65536 (for 2-byte checksum)
+        const simulatedChecksum = decToHex(sum % 65536, 4);
 
         resultArea.innerHTML = `
             <p>➕ Simulated Checksum Calculation Complete.</p>
@@ -757,11 +769,9 @@
 
     // --- Undo/Redo Functionality ---
     function addToHistory() {
-        // Remove future states if we're not at the latest point in history
         if (historyPointer < history.length - 1) {
             history = history.slice(0, historyPointer + 1);
         }
-        // Save a deep copy of the current state
         history.push({
             currentMapData: JSON.parse(JSON.stringify(currentMapData)),
             currentMapDefinition: JSON.parse(JSON.stringify(currentMapDefinition))
@@ -775,9 +785,12 @@
             const prevState = history[historyPointer];
             currentMapData = JSON.parse(JSON.stringify(prevState.currentMapData));
             currentMapDefinition = JSON.parse(JSON.stringify(prevState.currentMapDefinition));
+            // Important: Re-render table, hex grid, and graph based on the restored state
             renderTuningTable();
             renderHexGrid();
             renderGraph();
+            // Also ensure the mapTypeSelect and carModelSelect reflect the history state if needed
+            // (For this specific issue, it's about the map data, so re-rendering is enough)
             showMessage("Undo successful.", false);
         } else {
             showMessage("No more changes to undo.", true);
@@ -787,11 +800,12 @@
     // --- Event Listeners and Initial Load ---
     document.addEventListener("DOMContentLoaded", () => {
       carModelSelect.addEventListener("change", populateMapOptions);
-      mapTypeSelect.addEventListener("change", loadMapData); // Reload map when type changes
-      viewModeSelect.addEventListener("change", renderGraph); // Render graph when view mode changes
+      mapTypeSelect.addEventListener("change", loadMapData);
+      viewModeSelect.addEventListener("change", renderGraph);
       
-      // Initial load: Simulate a file load and populate maps
-      simulateFileLoad(); // This will trigger populateMapOptions and loadMapData
+      // Initial load: Simulate a file load.
+      // This will now correctly populate map options and load the first map.
+      simulateFileLoad(); 
     });
   </script>
 
