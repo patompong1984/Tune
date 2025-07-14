@@ -1,4 +1,422 @@
-// --- Data Definitions ---
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WinOLS ECU Tuning Simulator (Advanced)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a2a3a, #2d3b4d); /* Enhanced dark gradient */
+      color: #eee;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      border: 1px solid #2a6496;
+    }
+
+    h1 {
+      color: #00bfff;
+      margin: 0;
+      font-size: 2.5rem;
+      text-shadow: 0 0 10px rgba(0, 191, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    h1 .icon {
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      color: #7fdbff;
+      margin-top: 5px;
+      font-size: 1.1rem;
+    }
+
+    .section {
+      background: rgba(30, 40, 50, 0.8);
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      border: 1px solid #3a506b;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .section h3 {
+      color: #00bfff;
+      margin-top: 0;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #3a506b;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.4rem;
+    }
+
+    .section h3 .icon {
+      font-size: 1.2rem;
+    }
+
+    label {
+      margin-right: 10px;
+      color: #aaccff;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    select, input[type=number], input.hex, button, input[type=file] {
+      background: rgba(50, 60, 80, 0.8);
+      color: #eee;
+      border: 1px solid #4a6380;
+      padding: 10px 15px;
+      margin: 8px 15px 8px 0;
+      border-radius: 6px;
+      font-size: 1.05em;
+      transition: all 0.3s ease;
+    }
+
+    select:focus, input:focus, button:focus, input[type=file]:focus {
+      outline: none;
+      border-color: #00bfff;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.7);
+      background: rgba(60, 80, 100, 0.9);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(40, 50, 65, 0.7);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #4a6380;
+      padding: 12px;
+      color: #eee;
+      text-align: center;
+    }
+
+    th {
+      background: rgba(30, 70, 100, 0.7);
+      color: #7fdbff;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(45, 55, 70, 0.5);
+    }
+
+    tr:hover {
+      background: rgba(60, 80, 110, 0.6);
+    }
+
+    input.map-value-input {
+      width: 100%;
+      max-width: 120px;
+      text-align: center;
+      background: rgba(60, 70, 90, 0.8);
+    }
+
+    .hex-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(40, 50, 65, 0.7);
+      border-radius: 6px;
+      border: 1px solid #4a6380;
+    }
+
+    input.hex {
+      width: 100%;
+      box-sizing: border-box;
+      text-transform: uppercase;
+      font-family: 'Consolas', 'Monaco', monospace;
+      text-align: center;
+      padding: 10px;
+    }
+
+    button {
+      background: linear-gradient(to right, #0062cc, #00bfff);
+      color: white;
+      border: none;
+      padding: 14px 30px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      border-radius: 50px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0, 110, 255, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #0050a0, #009acd);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 110, 255, 0.5);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    #resultArea, #messageArea {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(40, 50, 65, 0.8);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1em;
+      border: 1px solid #00bfff;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+    }
+    
+    #resultArea {
+      color: #aaffaa;
+    }
+    
+    #messageArea {
+      color: #aaccff;
+    }
+    
+    #messageArea.error {
+      color: #ffaaaa;
+      border-color: #ff5555;
+      box-shadow: 0 0 15px rgba(255, 85, 85, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 25px;
+    }
+
+    /* --- ปรับขนาด Canvas ให้เล็กลงและมองง่ายขึ้นตรงนี้ --- */
+    #graphCanvas {
+      width: 100%;
+      max-width: 500px; /* ลดความกว้างสูงสุดอีก */
+      height: 250px;    /* ลดความสูงอีก */
+      background: rgba(30, 40, 50, 0.7);
+      border: 1px solid #4a6380;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-sizing: border-box;
+      align-self: center; /* จัดให้อยู่กึ่งกลางใน Flex container */
+      /* เพิ่ม display: block; เพื่อให้แน่ใจว่ามันถูก render เสมอ */
+      display: block; 
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(40, 60, 80, 0.6);
+      border-radius: 8px;
+      border: 1px solid #4a6380;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-active {
+      background: #00ff00;
+      box-shadow: 0 0 8px #00ff00;
+    }
+    
+    .status-inactive {
+      background: #ff5555;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .section {
+        padding: 20px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      button {
+        width: 100%;
+        max-width: 300px;
+      }
+      
+      .file-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      /* ปรับขนาดกราฟสำหรับหน้าจอเล็ก */
+      #graphCanvas {
+        height: 200px; /* ลดความสูงของกราฟบนมือถือ */
+        max-width: 100%; /* ให้เต็มความกว้างของคอนเทนเนอร์บนมือถือ */
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      select, input[type=number], input.hex, button, input[type=file] {
+        width: 100%;
+        margin: 8px 0;
+      }
+      
+      .hex-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
+      /* ปรับขนาดกราฟสำหรับหน้าจอเล็กสุด */
+      #graphCanvas {
+        height: 150px; /* ลดความสูงของกราฟบนมือถือจอเล็ก */
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span class="icon">🔧</span> WinOLS ECU Tuning Simulator (Advanced)</h1>
+      <div class="subtitle">Professional-grade ECU remapping simulation for performance tuning</div>
+    </header>
+
+    <div class="section">
+      <h3><span class="icon">📂</span> File Operations</h3>
+      <div>
+        <label for="fileInput">Load ECU File (.bin/.hex):</label>
+        <input type="file" id="fileInput" accept=".bin, .hex" disabled>
+        <button onclick="simulateFileLoad()">Simulate Load</button>
+        <button onclick="simulateFileSave()">Simulate Save</button>
+      </div>
+      <div id="messageArea"></div>
+      <div class="file-info">
+        <div><span class="status-indicator status-inactive"></span> ECU File: <span id="fileStatus">Not loaded</span></div>
+        <div><span class="status-indicator status-inactive"></span> Current Map: <span id="mapStatus">None selected</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">⚙️</span> Vehicle & Model Selection</h3>
+      <div>
+        <label for="carBrand">Brand:</label>
+        <select id="carBrand">
+          <option value="Mazda">Mazda</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Honda">Honda</option>
+          <option value="Isuzu">Isuzu</option>
+          <option value="Ford">Ford</option>
+          <option value="Nissan">Nissan</option>
+          <option value="BMW">BMW</option>
+          <option value="Mercedes-Benz">Mercedes-Benz</option>
+        </select>
+
+        <label for="carModel">Model:</label>
+        <select id="carModel"></select>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">🗺️</span> Map Selection & View Mode</h3>
+      <div>
+        <label for="mapType">Select Map for Tuning:</label>
+        <select id="mapType"></select>
+      </div>
+      <div style="margin-top: 20px;">
+        <label for="viewMode">Display Mode:</label>
+        <select id="viewMode">
+          <option value="text">Text</option>
+          <option value="2d">2D Graph</option>
+          <option value="3d">3d Graph (Simulated)</option>
+        </select>
+      </div>
+      <canvas id="graphCanvas"></canvas> 
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">📈</span> Map Tuning Area</h3>
+      <div style="overflow-x: auto;">
+        <table id="tuningTable">
+          <thead>
+            <tr><th>Axis X</th><th>Axis Y</th><th>Value</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span class="icon">🔢</span> HEX Viewer</h3>
+      <div class="hex-grid" id="hexGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="button-group">
+        <button onclick="confirmTuning()"><span>✅</span> Confirm Tuning</button>
+        <button onclick="compareMaps()"><span>📊</span> Compare Maps</button>
+        <button onclick="calculateChecksum()"><span>➕</span> Calc Checksum</button>
+        <button onclick="undoLastChange()"><span>↩️</span> Undo</button>
+        <button onclick="redoChange()"><span>↪️</span> Redo</button>
+      </div>
+      <div id="resultArea"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- Global State ---
+    let currentECUFile = null;
+    let currentMapData = null;
+    let currentMapDefinition = null;
+    let history = [];
+    let historyPointer = -1;
+
+    // --- Data Definitions ---
     const ecuDefinitions = {
       "Mazda": {
         "Mazda 2 Skyactiv-D (Diesel)": {
@@ -79,833 +497,22 @@
             name: "Ignition Timing (degrees BTDC)",
             address: 0x1000, type: "8-bit signed", factor: 0.5, offset: -30,
             axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500], load: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] },
+            axisValues: { rpm: [800, 1000, 1500, 2000, 2500, 3000, 3500, 4000], load: [10, 30, 50, 70, 90, 100] },
             defaultData: [
-              // RPM 800
-              { rpm: 800, load: 10, hexValue: "50" }, // ~5 deg BTDC (Idle)
-              { rpm: 800, load: 20, hexValue: "58" }, // ~9 deg BTDC
-              { rpm: 800, load: 30, hexValue: "40" }, // ~ -10 deg BTDC (Low load, maybe for warm up)
-              { rpm: 800, load: 40, hexValue: "38" },
-              { rpm: 800, load: 50, hexValue: "30" },
-              { rpm: 800, load: 60, hexValue: "28" },
-              { rpm: 800, load: 70, hexValue: "20" },
-              { rpm: 800, load: 80, hexValue: "18" },
-              { rpm: 800, load: 90, hexValue: "10" },
-              { rpm: 800, load: 100, hexValue: "08" }, // ~-26 deg BTDC (full load, very retarded for torque/cat protection)
-
-              // RPM 1000
-              { rpm: 1000, load: 10, hexValue: "54" }, // ~7 deg BTDC
-              { rpm: 1000, load: 20, hexValue: "5C" }, // ~11 deg BTDC
-              { rpm: 1000, load: 30, hexValue: "44" },
-              { rpm: 1000, load: 40, hexValue: "3C" },
-              { rpm: 1000, load: 50, hexValue: "34" },
-              { rpm: 1000, load: 60, hexValue: "2C" },
-              { rpm: 1000, load: 70, hexValue: "24" },
-              { rpm: 1000, load: 80, hexValue: "1C" },
-              { rpm: 1000, load: 90, hexValue: "14" },
-              { rpm: 1000, load: 100, hexValue: "0C" },
-
-              // RPM 1500
-              { rpm: 1500, load: 10, hexValue: "60" }, // ~15 deg BTDC
-              { rpm: 1500, load: 20, hexValue: "68" }, // ~19 deg BTDC
-              { rpm: 1500, load: 30, hexValue: "50" },
-              { rpm: 1500, load: 40, hexValue: "48" },
-              { rpm: 1500, load: 50, hexValue: "40" },
-              { rpm: 1500, load: 60, hexValue: "38" },
-              { rpm: 1500, load: 70, hexValue: "30" },
-              { rpm: 1500, load: 80, hexValue: "28" },
-              { rpm: 1500, load: 90, hexValue: "20" },
-              { rpm: 1500, load: 100, hexValue: "18" },
-
-              // RPM 2000
-              { rpm: 2000, load: 10, hexValue: "6A" }, // ~20 deg BTDC (Changed from 0.50 for realism)
-              { rpm: 2000, load: 20, hexValue: "70" }, // ~25 deg BTDC
-              { rpm: 2000, load: 30, hexValue: "58" },
-              { rpm: 2000, load: 40, hexValue: "50" },
-              { rpm: 2000, load: 50, hexValue: "48" },
-              { rpm: 2000, load: 60, hexValue: "40" },
-              { rpm: 2000, load: 70, hexValue: "38" },
-              { rpm: 2000, load: 80, hexValue: "30" },
-              { rpm: 2000, load: 90, hexValue: "28" },
-              { rpm: 2000, load: 100, hexValue: "20" },
-
-              // RPM 2500
-              { rpm: 2500, load: 10, hexValue: "6E" }, // ~22 deg BTDC
-              { rpm: 2500, load: 20, hexValue: "74" }, // ~27 deg BTDC
-              { rpm: 2500, load: 30, hexValue: "60" },
-              { rpm: 2500, load: 40, hexValue: "58" },
-              { rpm: 2500, load: 50, hexValue: "50" },
-              { rpm: 2500, load: 60, hexValue: "48" },
-              { rpm: 2500, load: 70, hexValue: "40" },
-              { rpm: 2500, load: 80, hexValue: "38" },
-              { rpm: 2500, load: 90, hexValue: "30" },
-              { rpm: 2500, load: 100, hexValue: "28" },
-
-              // RPM 3000
-              { rpm: 3000, load: 10, hexValue: "72" }, // ~24 deg BTDC
-              { rpm: 3000, load: 20, hexValue: "78" }, // ~29 deg BTDC
-              { rpm: 3000, load: 30, hexValue: "64" },
-              { rpm: 3000, load: 40, hexValue: "5C" },
-              { rpm: 3000, load: 50, hexValue: "54" },
-              { rpm: 3000, load: 60, hexValue: "4C" },
-              { rpm: 3000, load: 70, hexValue: "44" },
-              { rpm: 3000, load: 80, hexValue: "3C" },
-              { rpm: 3000, load: 90, hexValue: "34" },
-              { rpm: 3000, load: 100, hexValue: "2C" },
-
-              // RPM 3500
-              { rpm: 3500, load: 10, hexValue: "76" }, // ~26 deg BTDC
-              { rpm: 3500, load: 20, hexValue: "7C" }, // ~31 deg BTDC
-              { rpm: 3500, load: 30, hexValue: "68" },
-              { rpm: 3500, load: 40, hexValue: "60" },
-              { rpm: 3500, load: 50, hexValue: "58" },
-              { rpm: 3500, load: 60, hexValue: "50" },
-              { rpm: 3500, load: 70, hexValue: "48" },
-              { rpm: 3500, load: 80, hexValue: "40" },
-              { rpm: 3500, load: 90, hexValue: "38" },
-              { rpm: 3500, load: 100, hexValue: "30" },
-
-              // RPM 4000
-              { rpm: 4000, load: 10, hexValue: "7A" }, // ~28 deg BTDC
-              { rpm: 4000, load: 20, hexValue: "80" }, // ~34 deg BTDC
-              { rpm: 4000, load: 30, hexValue: "6C" },
-              { rpm: 4000, load: 40, hexValue: "64" },
-              { rpm: 4000, load: 50, hexValue: "5C" },
-              { rpm: 4000, load: 60, hexValue: "54" },
-              { rpm: 4000, load: 70, hexValue: "4C" },
-              { rpm: 4000, load: 80, hexValue: "44" },
-              { rpm: 4000, load: 90, hexValue: "3C" },
-              { rpm: 4000, load: 100, hexValue: "34" },
-
-              // RPM 4500 (เพิ่มแกน RPM)
-              { rpm: 4500, load: 10, hexValue: "7E" }, // ~30 deg BTDC
-              { rpm: 4500, load: 20, hexValue: "84" }, // ~37 deg BTDC
-              { rpm: 4500, load: 30, hexValue: "70" },
-              { rpm: 4500, load: 40, hexValue: "68" },
-              { rpm: 4500, load: 50, hexValue: "60" },
-              { rpm: 4500, load: 60, hexValue: "58" },
-              { rpm: 4500, load: 70, hexValue: "50" },
-              { rpm: 4500, load: 80, hexValue: "48" },
-              { rpm: 4500, load: 90, hexValue: "40" },
-              { rpm: 4500, load: 100, hexValue: "38" },
-
-              // RPM 5000 (เพิ่มแกน RPM)
-              { rpm: 5000, load: 10, hexValue: "82" }, // ~32 deg BTDC
-              { rpm: 5000, load: 20, hexValue: "88" }, // ~39 deg BTDC
-              { rpm: 5000, load: 30, hexValue: "74" },
-              { rpm: 5000, load: 40, hexValue: "6C" },
-              { rpm: 5000, load: 50, hexValue: "64" },
-              { rpm: 5000, load: 60, hexValue: "5C" },
-              { rpm: 5000, load: 70, hexValue: "54" },
-              { rpm: 5000, load: 80, hexValue: "4C" },
-              { rpm: 5000, load: 90, hexValue: "44" },
-              { rpm: 5000, load: 100, hexValue: "3C" },
-
-              // RPM 5500 (เพิ่มแกน RPM)
-              { rpm: 5500, load: 10, hexValue: "86" }, // ~34 deg BTDC
-              { rpm: 5500, load: 20, hexValue: "8C" }, // ~41 deg BTDC
-              { rpm: 5500, load: 30, hexValue: "78" },
-              { rpm: 5500, load: 40, hexValue: "70" },
-              { rpm: 5500, load: 50, hexValue: "68" },
-              { rpm: 5500, load: 60, hexValue: "60" },
-              { rpm: 5500, load: 70, hexValue: "58" },
-              { rpm: 5500, load: 80, hexValue: "50" },
-              { rpm: 5500, load: 90, hexValue: "48" },
-              { rpm: 5500, load: 100, hexValue: "40" },
-
-              // RPM 6000 (เพิ่มแกน RPM)
-              { rpm: 6000, load: 10, hexValue: "8A" }, // ~36 deg BTDC
-              { rpm: 6000, load: 20, hexValue: "90" }, // ~43 deg BTDC
-              { rpm: 6000, load: 30, hexValue: "7C" },
-              { rpm: 6000, load: 40, hexValue: "74" },
-              { rpm: 6000, load: 50, hexValue: "6C" },
-              { rpm: 6000, load: 60, hexValue: "64" },
-              { rpm: 6000, load: 70, hexValue: "5C" },
-              { rpm: 6000, load: 80, hexValue: "54" },
-              { rpm: 6000, load: 90, hexValue: "4C" },
-              { rpm: 6000, load: 100, hexValue: "44" },
-
-              // RPM 6500 (เพิ่มแกน RPM)
-              { rpm: 6500, load: 10, hexValue: "8E" }, // ~38 deg BTDC
-              { rpm: 6500, load: 20, hexValue: "94" }, // ~45 deg BTDC
-              { rpm: 6500, load: 30, hexValue: "80" },
-              { rpm: 6500, load: 40, hexValue: "78" },
-              { rpm: 6500, load: 50, hexValue: "70" },
-              { rpm: 6500, load: 60, hexValue: "68" },
-              { rpm: 6500, load: 70, hexValue: "60" },
-              { rpm: 6500, load: 80, hexValue: "58" },
-              { rpm: 6500, load: 90, hexValue: "50" },
-              { rpm: 6500, load: 100, hexValue: "48" },
+              { rpm: 800, load: 10, hexValue: "30" }, { rpm: 1000, load: 10, hexValue: "35" }, { rpm: 1500, load: 10, hexValue: "3A" }, { rpm: 2000, load: 10, hexValue: "3D" },
+              { rpm: 2500, load: 10, hexValue: "40" }, { rpm: 3000, load: 10, hexValue: "42" }, { rpm: 3500, load: 10, hexValue: "44" }, { rpm: 4000, load: 10, hexValue: "45" },
+              { rpm: 800, load: 30, hexValue: "2A" }, { rpm: 1000, load: 30, hexValue: "2F" }, { rpm: 1500, load: 30, hexValue: "34" }, { rpm: 2000, load: 30, hexValue: "37" },
+              { rpm: 2500, load: 30, hexValue: "3A" }, { rpm: 3000, load: 30, hexValue: "3C" }, { rpm: 3500, load: 30, hexValue: "3E" }, { rpm: 4000, load: 30, hexValue: "3F" },
+              { rpm: 800, load: 50, hexValue: "20" }, { rpm: 1000, load: 50, hexValue: "25" }, { rpm: 1500, load: 50, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2D" },
+              { rpm: 2500, load: 50, hexValue: "30" }, { rpm: 3000, load: 50, hexValue: "32" }, { rpm: 3500, load: 50, hexValue: "34" }, { rpm: 4000, load: 50, hexValue: "35" },
+              { rpm: 800, load: 70, hexValue: "18" }, { rpm: 1000, load: 70, hexValue: "1D" }, { rpm: 1500, load: 70, hexValue: "22" }, { rpm: 2000, load: 70, hexValue: "25" },
+              { rpm: 2500, load: 70, hexValue: "28" }, { rpm: 3000, load: 70, hexValue: "2A" }, { rpm: 3500, load: 70, hexValue: "2C" }, { rpm: 4000, load: 70, hexValue: "2D" },
+              { rpm: 800, load: 90, hexValue: "10" }, { rpm: 1000, load: 90, hexValue: "15" }, { rpm: 1500, load: 90, hexValue: "1A" }, { rpm: 2000, load: 90, hexValue: "1D" },
+              { rpm: 2500, load: 90, hexValue: "20" }, { rpm: 3000, load: 90, hexValue: "22" }, { rpm: 3500, load: 90, hexValue: "24" }, { rpm: 4000, load: 90, hexValue: "25" },
+              { rpm: 800, load: 100, hexValue: "08" }, { rpm: 1000, load: 100, hexValue: "0D" }, { rpm: 1500, load: 100, hexValue: "12" }, { rpm: 2000, load: 100, hexValue: "15" },
+              { rpm: 2500, load: 100, hexValue: "18" }, { rpm: 3000, load: 100, hexValue: "1A" }, { rpm: 3500, load: 100, hexValue: "1C" }, { rpm: 4000, load: 100, hexValue: "1D" },
             ]
-          },
-          // --- Maps ที่ปรับปรุงค่าประมาณการ ---
-          fuel_map_mt: {
-            name: "Fuel Map (MT) (ms)",
-            address: 0x1300, type: "16-bit unsigned", factor: 0.001, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 20, 40, 60, 80, 100] }, // เพิ่มแกน Load
-            defaultData: [
-                // RPM 800
-                { rpm: 800, load: 10, hexValue: "01F4" }, // 500ms (idle)
-                { rpm: 800, load: 20, hexValue: "02BC" }, // 700ms
-                { rpm: 800, load: 40, hexValue: "03E8" }, // 1000ms
-                { rpm: 800, load: 60, hexValue: "05DC" }, // 1500ms
-                { rpm: 800, load: 80, hexValue: "06A4" }, // 1700ms
-                { rpm: 800, load: 100, hexValue: "07D0" }, // 2000ms
-
-                // RPM 1500
-                { rpm: 1500, load: 10, hexValue: "02BC" }, // 700ms
-                { rpm: 1500, load: 20, hexValue: "0320" }, // 800ms
-                { rpm: 1500, load: 40, hexValue: "0514" }, // 1300ms
-                { rpm: 1500, load: 60, hexValue: "06A4" }, // 1700ms
-                { rpm: 1500, load: 80, hexValue: "07D0" }, // 2000ms
-                { rpm: 1500, load: 100, hexValue: "08FC" }, // 2300ms
-
-                // RPM 2500
-                { rpm: 2500, load: 10, hexValue: "03E8" }, // 1000ms
-                { rpm: 2500, load: 20, hexValue: "04B0" }, // 1200ms
-                { rpm: 2500, load: 40, hexValue: "06A4" }, // 1700ms
-                { rpm: 2500, load: 60, hexValue: "07D0" }, // 2000ms
-                { rpm: 2500, load: 80, hexValue: "09C4" }, // 2500ms
-                { rpm: 2500, load: 100, hexValue: "0B54" }, // 2900ms
-
-                // RPM 3500
-                { rpm: 3500, load: 10, hexValue: "0514" }, // 1300ms
-                { rpm: 3500, load: 20, hexValue: "05DC" }, // 1500ms
-                { rpm: 3500, load: 40, hexValue: "07D0" }, // 2000ms
-                { rpm: 3500, load: 60, hexValue: "09C4" }, // 2500ms
-                { rpm: 3500, load: 80, hexValue: "0BB8" }, // 3000ms
-                { rpm: 3500, load: 100, hexValue: "0D48" }, // 3400ms
-
-                // RPM 4500
-                { rpm: 4500, load: 10, hexValue: "06A4" }, // 1700ms
-                { rpm: 4500, load: 20, hexValue: "07D0" }, // 2000ms
-                { rpm: 4500, load: 40, hexValue: "09C4" }, // 2500ms
-                { rpm: 4500, load: 60, hexValue: "0BB8" }, // 3000ms
-                { rpm: 4500, load: 80, hexValue: "0D48" }, // 3400ms
-                { rpm: 4500, load: 100, hexValue: "0E7A" }, // 3700ms
-
-                // RPM 5500
-                { rpm: 5500, load: 10, hexValue: "07D0" }, // 2000ms
-                { rpm: 5500, load: 20, hexValue: "08FC" }, // 2300ms
-                { rpm: 5500, load: 40, hexValue: "0BB8" }, // 3000ms
-                { rpm: 5500, load: 60, hexValue: "0D48" }, // 3400ms
-                { rpm: 5500, load: 80, hexValue: "0E7A" }, // 3700ms
-                { rpm: 5500, load: 100, hexValue: "1004" }, // 4100ms
-
-                // RPM 6500
-                { rpm: 6500, load: 10, hexValue: "08FC" }, // 2300ms
-                { rpm: 6500, load: 20, hexValue: "0A28" }, // 2600ms
-                { rpm: 6500, load: 40, hexValue: "0D48" }, // 3400ms
-                { rpm: 6500, load: 60, hexValue: "0E7A" }, // 3700ms
-                { rpm: 6500, load: 80, hexValue: "1004" }, // 4100ms
-                { rpm: 6500, load: 100, hexValue: "1190" }, // 4500ms
-            ]
-          },
-          fuel_map_at: {
-            name: "Fuel Map (AT) (ms)",
-            address: 0x1400, type: "16-bit unsigned", factor: 0.001, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 20, 40, 60, 80, 100] }, // เพิ่มแกน Load
-            defaultData: [
-                // Data for AT might differ slightly from MT (slightly richer for smoothness)
-                // RPM 800
-                { rpm: 800, load: 10, hexValue: "0226" }, // 550ms (idle)
-                { rpm: 800, load: 20, hexValue: "02EE" }, // 750ms
-                { rpm: 800, load: 40, hexValue: "041A" }, // 1050ms
-                { rpm: 800, load: 60, hexValue: "060E" }, // 1550ms
-                { rpm: 800, load: 80, hexValue: "06D6" }, // 1750ms
-                { rpm: 800, load: 100, hexValue: "0802" }, // 2050ms
-
-                // RPM 1500
-                { rpm: 1500, load: 10, hexValue: "02EE" }, // 750ms
-                { rpm: 1500, load: 20, hexValue: "0352" }, // 850ms
-                { rpm: 1500, load: 40, hexValue: "0546" }, // 1350ms
-                { rpm: 1500, load: 60, hexValue: "06D6" }, // 1750ms
-                { rpm: 1500, load: 80, hexValue: "0802" }, // 2050ms
-                { rpm: 1500, load: 100, hexValue: "092E" }, // 2350ms
-
-                // RPM 2500
-                { rpm: 2500, load: 10, hexValue: "041A" }, // 1050ms
-                { rpm: 2500, load: 20, hexValue: "04DE" }, // 1250ms
-                { rpm: 2500, load: 40, hexValue: "06D6" }, // 1750ms
-                { rpm: 2500, load: 60, hexValue: "0802" }, // 2050ms
-                { rpm: 2500, load: 80, hexValue: "09F6" }, // 2550ms
-                { rpm: 2500, load: 100, hexValue: "0B86" }, // 2950ms
-
-                // RPM 3500
-                { rpm: 3500, load: 10, hexValue: "0546" }, // 1350ms
-                { rpm: 3500, load: 20, hexValue: "060E" }, // 1550ms
-                { rpm: 3500, load: 40, hexValue: "0802" }, // 2050ms
-                { rpm: 3500, load: 60, hexValue: "09F6" }, // 2550ms
-                { rpm: 3500, load: 80, hexValue: "0BEA" }, // 3050ms
-                { rpm: 3500, load: 100, hexValue: "0D7A" }, // 3450ms
-
-                // RPM 4500
-                { rpm: 4500, load: 10, hexValue: "06D6" }, // 1750ms
-                { rpm: 4500, load: 20, hexValue: "0802" }, // 2050ms
-                { rpm: 4500, load: 40, hexValue: "09F6" }, // 2550ms
-                { rpm: 4500, load: 60, hexValue: "0BEA" }, // 3050ms
-                { rpm: 4500, load: 80, hexValue: "0D7A" }, // 3450ms
-                { rpm: 4500, load: 100, hexValue: "0EC6" }, // 3750ms
-
-                // RPM 5500
-                { rpm: 5500, load: 10, hexValue: "0802" }, // 2050ms
-                { rpm: 5500, load: 20, hexValue: "092E" }, // 2350ms
-                { rpm: 5500, load: 40, hexValue: "0BEA" }, // 3050ms
-                { rpm: 5500, load: 60, hexValue: "0D7A" }, // 3450ms
-                { rpm: 5500, load: 80, hexValue: "0EC6" }, // 3750ms
-                { rpm: 5500, load: 100, hexValue: "1036" }, // 4150ms
-
-                // RPM 6500
-                { rpm: 6500, load: 10, hexValue: "092E" }, // 2350ms
-                { rpm: 6500, load: 20, hexValue: "0A5A" }, // 2650ms
-                { rpm: 6500, load: 40, hexValue: "0D7A" }, // 3450ms
-                { rpm: 6500, load: 60, hexValue: "0EC6" }, // 3750ms
-                { rpm: 6500, load: 80, hexValue: "1036" }, // 4150ms
-                { rpm: 6500, load: 100, hexValue: "11C2" }, // 4550ms
-            ]
-          },
-          throttle_response: {
-            name: "Throttle Response (%)",
-            address: 0x1500, type: "8-bit unsigned", factor: 0.39, offset: 0, // Roughly 100 / 255
-            axes: { x: "RPM", y: "Pedal Position" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], pedal_position: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100] }, // เพิ่มแกน Pedal Position
-            defaultData: [
-                // RPM 800
-                { rpm: 800, pedal_position: 10, hexValue: "1A" }, // 10%
-                { rpm: 800, pedal_position: 20, hexValue: "20" }, // 12%
-                { rpm: 800, pedal_position: 30, hexValue: "28" }, // 15%
-                { rpm: 800, pedal_position: 40, hexValue: "32" }, // 20%
-                { rpm: 800, pedal_position: 50, hexValue: "40" }, // 25%
-                { rpm: 800, pedal_position: 60, hexValue: "50" }, // 30%
-                { rpm: 800, pedal_position: 70, hexValue: "60" }, // 37%
-                { rpm: 800, pedal_position: 80, hexValue: "70" }, // 43%
-                { rpm: 800, pedal_position: 90, hexValue: "80" }, // 50%
-                { rpm: 800, pedal_position: 100, hexValue: "90" }, // 56%
-
-                // RPM 1500 (เริ่มเร็วขึ้น)
-                { rpm: 1500, pedal_position: 10, hexValue: "1E" },
-                { rpm: 1500, pedal_position: 20, hexValue: "25" },
-                { rpm: 1500, pedal_position: 30, hexValue: "30" },
-                { rpm: 1500, pedal_position: 40, hexValue: "40" },
-                { rpm: 1500, pedal_position: 50, hexValue: "50" },
-                { rpm: 1500, pedal_position: 60, hexValue: "68" },
-                { rpm: 1500, pedal_position: 70, hexValue: "78" },
-                { rpm: 1500, pedal_position: 80, hexValue: "88" },
-                { rpm: 1500, pedal_position: 90, hexValue: "98" },
-                { rpm: 1500, pedal_position: 100, hexValue: "A8" },
-
-                // RPM 2500
-                { rpm: 2500, pedal_position: 10, hexValue: "22" },
-                { rpm: 2500, pedal_position: 20, hexValue: "2A" },
-                { rpm: 2500, pedal_position: 30, hexValue: "38" },
-                { rpm: 2500, pedal_position: 40, hexValue: "48" },
-                { rpm: 2500, pedal_position: 50, hexValue: "58" },
-                { rpm: 2500, pedal_position: 60, hexValue: "70" },
-                { rpm: 2500, pedal_position: 70, hexValue: "80" },
-                { rpm: 2500, pedal_position: 80, hexValue: "90" },
-                { rpm: 2500, pedal_position: 90, hexValue: "A0" },
-                { rpm: 2500, pedal_position: 100, hexValue: "B0" },
-
-                // RPM 3500 (เริ่มตอบสนองไวขึ้น)
-                { rpm: 3500, pedal_position: 10, hexValue: "26" },
-                { rpm: 3500, pedal_position: 20, hexValue: "30" },
-                { rpm: 3500, pedal_position: 30, hexValue: "40" },
-                { rpm: 3500, pedal_position: 40, hexValue: "50" },
-                { rpm: 3500, pedal_position: 50, hexValue: "60" },
-                { rpm: 3500, pedal_position: 60, hexValue: "78" },
-                { rpm: 3500, pedal_position: 70, hexValue: "88" },
-                { rpm: 3500, pedal_position: 80, hexValue: "98" },
-                { rpm: 3500, pedal_position: 90, hexValue: "A8" },
-                { rpm: 3500, pedal_position: 100, hexValue: "B8" },
-
-                // RPM 4500
-                { rpm: 4500, pedal_position: 10, hexValue: "2A" },
-                { rpm: 4500, pedal_position: 20, hexValue: "34" },
-                { rpm: 4500, pedal_position: 30, hexValue: "44" },
-                { rpm: 4500, pedal_position: 40, hexValue: "54" },
-                { rpm: 4500, pedal_position: 50, hexValue: "64" },
-                { rpm: 4500, pedal_position: 60, hexValue: "7C" },
-                { rpm: 4500, pedal_position: 70, hexValue: "8C" },
-                { rpm: 4500, pedal_position: 80, hexValue: "9C" },
-                { rpm: 4500, pedal_position: 90, hexValue: "AC" },
-                { rpm: 4500, pedal_position: 100, hexValue: "BC" },
-
-                // RPM 5500
-                { rpm: 5500, pedal_position: 10, hexValue: "2E" },
-                { rpm: 5500, pedal_position: 20, hexValue: "38" },
-                { rpm: 5500, pedal_position: 30, hexValue: "48" },
-                { rpm: 5500, pedal_position: 40, hexValue: "58" },
-                { rpm: 5500, pedal_position: 50, hexValue: "68" },
-                { rpm: 5500, pedal_position: 60, hexValue: "80" },
-                { rpm: 5500, pedal_position: 70, hexValue: "90" },
-                { rpm: 5500, pedal_position: 80, hexValue: "A0" },
-                { rpm: 5500, pedal_position: 90, hexValue: "B0" },
-                { rpm: 5500, pedal_position: 100, hexValue: "C0" }, // 75% response at 100% pedal
-
-                // RPM 6500 (ตอบสนองไวที่สุด)
-                { rpm: 6500, pedal_position: 10, hexValue: "32" },
-                { rpm: 6500, pedal_position: 20, hexValue: "3C" },
-                { rpm: 6500, pedal_position: 30, hexValue: "4C" },
-                { rpm: 6500, pedal_position: 40, hexValue: "5C" },
-                { rpm: 6500, pedal_position: 50, hexValue: "6C" },
-                { rpm: 6500, pedal_position: 60, hexValue: "84" },
-                { rpm: 6500, pedal_position: 70, hexValue: "94" },
-                { rpm: 6500, pedal_position: 80, hexValue: "A4" },
-                { rpm: 6500, pedal_position: 90, hexValue: "B4" },
-                { rpm: 6500, pedal_position: 100, hexValue: "C8" }, // 80% response at 100% pedal
-            ]
-          },
-          rev_limit: {
-            name: "Rev Limit (RPM)",
-            address: 0x1600, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Gear (Sim)", y: "Limit" },
-            axisValues: { gear_sim: ["P", "N", "R", "1", "2", "3", "4", "5", "6"], limit: ["RPM"] },
-            defaultData: [
-                { gear_sim: "P", hexValue: "07D0" }, // 2000 RPM (Idle / Park)
-                { gear_sim: "N", hexValue: "07D0" }, // 2000 RPM (Idle / Neutral)
-                { gear_sim: "R", hexValue: "1388" }, // 5000 RPM (Reverse)
-                { gear_sim: "1", hexValue: "1D4C" }, // 7500 RPM (Actual Skyactiv-G redline is higher, but common tuner limit)
-                { gear_sim: "2", hexValue: "1D4C" }, // 7500 RPM
-                { gear_sim: "3", hexValue: "1D4C" }, // 7500 RPM
-                { gear_sim: "4", hexValue: "1D4C" }, // 7500 RPM
-                { gear_sim: "5", hexValue: "1D4C" }, // 7500 RPM
-                { gear_sim: "6", hexValue: "1D4C" }  // 7500 RPM
-            ]
-          },
-          speed_limit: {
-            name: "Speed Limit (km/h)",
-            address: 0x1700, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Mode", y: "Limit" },
-            axisValues: { mode: ["Standard", "Sport", "Remove"], limit: ["km/h"] }, // เพิ่ม Remove
-            defaultData: [
-                { mode: "Standard", hexValue: "B4" }, // 180 km/h (Common JDM/Asian limit)
-                { mode: "Sport", hexValue: "C8" },    // 200 km/h
-                { mode: "Remove", hexValue: "FF" }    // 255 km/h (effectively no limit for 8-bit)
-            ]
-          },
-          torque_management: {
-            name: "Torque Management (Nm)",
-            address: 0x1800, type: "16-bit unsigned", factor: 0.5, offset: 0,
-            axes: { x: "RPM", y: "Gear" },
-            axisValues: { rpm: [1500, 2500, 3500, 4500, 5500, 6500], gear: [1, 2, 3, 4, 5, 6] },
-            defaultData: [
-                // More realistic torque limits for Skyactiv-G (peak torque around 4000 RPM)
-                { rpm: 1500, gear: 1, hexValue: "01F4" }, // 250 Nm
-                { rpm: 2500, gear: 1, hexValue: "02BC" }, // 360 Nm
-                { rpm: 3500, gear: 1, hexValue: "03E8" }, // 500 Nm
-                { rpm: 4500, gear: 1, hexValue: "044C" }, // 550 Nm
-                { rpm: 5500, gear: 1, hexValue: "03E8" }, // 500 Nm
-                { rpm: 6500, gear: 1, hexValue: "0320" }, // 400 Nm
-
-                { rpm: 1500, gear: 2, hexValue: "02BC" }, // 360 Nm
-                { rpm: 2500, gear: 2, hexValue: "0320" }, // 400 Nm
-                { rpm: 3500, gear: 2, hexValue: "044C" }, // 550 Nm
-                { rpm: 4500, gear: 2, hexValue: "04B0" }, // 600 Nm
-                { rpm: 5500, gear: 2, hexValue: "044C" }, // 550 Nm
-                { rpm: 6500, gear: 2, hexValue: "0384" }, // 450 Nm
-
-                { rpm: 1500, gear: 3, hexValue: "03E8" }, // 500 Nm
-                { rpm: 2500, gear: 3, hexValue: "044C" }, // 550 Nm
-                { rpm: 3500, gear: 3, hexValue: "04B0" }, // 600 Nm
-                { rpm: 4500, gear: 3, hexValue: "0514" }, // 650 Nm
-                { rpm: 5500, gear: 3, hexValue: "04B0" }, // 600 Nm
-                { rpm: 6500, gear: 3, hexValue: "03E8" }, // 500 Nm
-
-                { rpm: 1500, gear: 4, hexValue: "04B0" }, // 600 Nm
-                { rpm: 2500, gear: 4, hexValue: "0514" }, // 650 Nm
-                { rpm: 3500, gear: 4, hexValue: "0578" }, // 700 Nm
-                { rpm: 4500, gear: 4, hexValue: "05DC" }, // 750 Nm
-                { rpm: 5500, gear: 4, hexValue: "0578" }, // 700 Nm
-                { rpm: 6500, gear: 4, hexValue: "04B0" }, // 600 Nm
-
-                { rpm: 1500, gear: 5, hexValue: "0514" }, // 650 Nm
-                { rpm: 2500, gear: 5, hexValue: "0578" }, // 700 Nm
-                { rpm: 3500, gear: 5, hexValue: "05DC" }, // 750 Nm
-                { rpm: 4500, gear: 5, hexValue: "0640" }, // 800 Nm
-                { rpm: 5500, gear: 5, hexValue: "05DC" }, // 750 Nm
-                { rpm: 6500, gear: 5, hexValue: "0514" }, // 650 Nm
-
-                { rpm: 1500, gear: 6, hexValue: "0578" }, // 700 Nm
-                { rpm: 2500, gear: 6, hexValue: "05DC" }, // 750 Nm
-                { rpm: 3500, gear: 6, hexValue: "0640" }, // 800 Nm
-                { rpm: 4500, gear: 6, hexValue: "06A4" }, // 850 Nm
-                { rpm: 5500, gear: 6, hexValue: "0640" }, // 800 Nm
-                { rpm: 6500, gear: 6, hexValue: "0578" }, // 700 Nm
-            ]
-          },
-          vvt_control: {
-            name: "VVT Control (Intake Angle)",
-            address: 0x1900, type: "8-bit signed", factor: 0.5, offset: -10,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 3000, 4000, 5000, 6000], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน RPM/Load
-            defaultData: [
-              // RPM 800
-              { rpm: 800, load: 10, hexValue: "20" }, { rpm: 800, load: 30, hexValue: "25" }, { rpm: 800, load: 50, hexValue: "2A" },
-              { rpm: 800, load: 70, hexValue: "2F" }, { rpm: 800, load: 90, hexValue: "34" }, { rpm: 800, load: 100, hexValue: "39" },
-
-              // RPM 2000 (กลางๆ)
-              { rpm: 2000, load: 10, hexValue: "25" }, { rpm: 2000, load: 30, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2F" },
-              { rpm: 2000, load: 70, hexValue: "34" }, { rpm: 2000, load: 90, hexValue: "39" }, { rpm: 2000, load: 100, hexValue: "3E" },
-
-              // RPM 3000 (เริ่ม Advace มากขึ้น)
-              { rpm: 3000, load: 10, hexValue: "30" }, { rpm: 3000, load: 30, hexValue: "35" }, { rpm: 3000, load: 50, hexValue: "3A" },
-              { rpm: 3000, load: 70, hexValue: "3F" }, { rpm: 3000, load: 90, hexValue: "44" }, { rpm: 3000, load: 100, hexValue: "49" },
-
-              // RPM 4000 (Advance มากขึ้น)
-              { rpm: 4000, load: 10, hexValue: "3A" }, { rpm: 4000, load: 30, hexValue: "3F" }, { rpm: 4000, load: 50, hexValue: "44" },
-              { rpm: 4000, load: 70, hexValue: "49" }, { rpm: 4000, load: 90, hexValue: "4E" }, { rpm: 4000, load: 100, hexValue: "53" },
-
-              // RPM 5000 (เริ่มลด Advance หรือคงที่)
-              { rpm: 5000, load: 10, hexValue: "38" }, { rpm: 5000, load: 30, hexValue: "3D" }, { rpm: 5000, load: 50, hexValue: "42" },
-              { rpm: 5000, load: 70, hexValue: "47" }, { rpm: 5000, load: 90, hexValue: "4C" }, { rpm: 5000, load: 100, hexValue: "51" },
-
-              // RPM 6000 (ลด Advance เพื่อกำลังสูงสุด)
-              { rpm: 6000, load: 10, hexValue: "30" }, { rpm: 6000, load: 30, hexValue: "35" }, { rpm: 6000, load: 50, hexValue: "3A" },
-              { rpm: 6000, load: 70, hexValue: "3F" }, { rpm: 6000, load: 90, hexValue: "44" }, { rpm: 6000, load: 100, hexValue: "49" },
-            ]
-          },
-          idle_control: {
-            name: "Idle RPM Control",
-            address: 0x1A00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Coolant Temp (°C)", y: "Target RPM" },
-            axisValues: { coolant_temp: [-20, 0, 20, 40, 60, 80, 90], target_rpm: ["RPM"] }, // เพิ่มแกน Coolant Temp
-            defaultData: [
-                { coolant_temp: -20, hexValue: "07D0" }, // 2000 RPM (Cold start enrichment / high idle)
-                { coolant_temp: 0, hexValue: "0640" },  // 1600 RPM
-                { coolant_temp: 20, hexValue: "04B0" }, // 1200 RPM
-                { coolant_temp: 40, hexValue: "03E8" }, // 1000 RPM
-                { coolant_temp: 60, hexValue: "0352" }, // 850 RPM
-                { coolant_temp: 80, hexValue: "0320" }, // 800 RPM
-                { coolant_temp: 90, hexValue: "02EE" }  // 750 RPM (Normal operating temp idle)
-            ]
-          },
-          knock_control_sens: {
-            name: "Knock Sensor Sensitivity",
-            address: 0x1B00, type: "8-bit unsigned", factor: 0.1, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน
-            defaultData: [
-                // Sensitivity often higher at low RPM/load (to detect knock early) and lower at high RPM/load (less sensitive to noise)
-                { rpm: 800, load: 10, hexValue: "70" }, { rpm: 800, load: 30, hexValue: "60" }, { rpm: 800, load: 50, hexValue: "50" }, { rpm: 800, load: 70, hexValue: "40" }, { rpm: 800, load: 90, hexValue: "30" }, { rpm: 800, load: 100, hexValue: "20" },
-                { rpm: 1500, load: 10, hexValue: "60" }, { rpm: 1500, load: 30, hexValue: "50" }, { rpm: 1500, load: 50, hexValue: "40" }, { rpm: 1500, load: 70, hexValue: "30" }, { rpm: 1500, load: 90, hexValue: "20" }, { rpm: 1500, load: 100, hexValue: "18" },
-                { rpm: 2500, load: 10, hexValue: "50" }, { rpm: 2500, load: 30, hexValue: "40" }, { rpm: 2500, load: 50, hexValue: "30" }, { rpm: 2500, load: 70, hexValue: "20" }, { rpm: 2500, load: 90, hexValue: "18" }, { rpm: 2500, load: 100, hexValue: "10" },
-                { rpm: 3500, load: 10, hexValue: "40" }, { rpm: 3500, load: 30, hexValue: "30" }, { rpm: 3500, load: 50, hexValue: "20" }, { rpm: 3500, load: 70, hexValue: "18" }, { rpm: 3500, load: 90, hexValue: "10" }, { rpm: 3500, load: 100, hexValue: "0A" },
-                { rpm: 4500, load: 10, hexValue: "30" }, { rpm: 4500, load: 30, hexValue: "20" }, { rpm: 4500, load: 50, hexValue: "18" }, { rpm: 4500, load: 70, hexValue: "10" }, { rpm: 4500, load: 90, hexValue: "0A" }, { rpm: 4500, load: 100, hexValue: "05" },
-                { rpm: 5500, load: 10, hexValue: "20" }, { rpm: 5500, load: 30, hexValue: "18" }, { rpm: 5500, load: 50, hexValue: "10" }, { rpm: 5500, load: 70, hexValue: "0A" }, { rpm: 5500, load: 90, hexValue: "05" }, { rpm: 5500, load: 100, hexValue: "02" },
-                { rpm: 6500, load: 10, hexValue: "10" }, { rpm: 6500, load: 30, hexValue: "0A" }, { rpm: 6500, load: 50, hexValue: "05" }, { rpm: 6500, load: 70, hexValue: "02" }, { rpm: 6500, load: 90, hexValue: "01" }, { rpm: 6500, load: 100, hexValue: "00" }, // Least sensitive at high load/RPM
-            ]
-          },
-          closed_open_loop: {
-            name: "Closed/Open Loop Switch (Load Threshold)",
-            address: 0x1C00, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "RPM", y: "Load Threshold" }, // Changed axis from arbitrary "Status" to "Load Threshold"
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500], load_threshold: ["%"] },
-            defaultData: [
-                // ECU enters Open Loop at higher loads to protect engine and deliver max power
-                { rpm: 800, load_threshold: 100 }, // Always Closed Loop at idle/very low load
-                { rpm: 1500, load_threshold: 90 }, // Enter Open Loop if Load > 90%
-                { rpm: 2500, load_threshold: 80 },
-                { rpm: 3500, load_threshold: 70 },
-                { rpm: 4500, load_threshold: 60 },
-                { rpm: 5500, load_threshold: 50 }, // May enter Open Loop earlier at high RPM
-            ]
-          },
-          intake_air_temp_comp: {
-            name: "Intake Air Temp Compensation (Ignition Advance)",
-            address: 0x1D00, type: "8-bit signed", factor: 0.1, offset: 0,
-            axes: { x: "IAT (°C)", y: "Compensation (°)" },
-            axisValues: { iat: [-20, 0, 20, 40, 60, 80], compensation_deg: ["Degree"] }, // เพิ่มแกน
-            defaultData: [
-                { iat: -20, hexValue: "28" }, // +4.0 deg (cooler air, more timing)
-                { iat: 0, hexValue: "18" },  // +2.4 deg
-                { iat: 20, hexValue: "00" },  // 0 deg
-                { iat: 40, hexValue: "F0" },  // -1.6 deg (hotter air, less timing)
-                { iat: 60, hexValue: "E0" },  // -3.2 deg
-                { iat: 80, hexValue: "D0" },  // -4.8 deg
-            ]
-          },
-          fuel_cut_map: {
-            name: "Fuel Cut RPM (Overrun)",
-            address: 0x1E00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "RPM Range", y: "Cut RPM" }, // เปลี่ยน Axis
-            axisValues: { rpm_range: ["Low RPM", "High RPM"], cut_rpm: ["RPM"] },
-            defaultData: [
-                { rpm_range: "Low RPM", hexValue: "0BB8" }, // 3000 RPM (e.g. for light engine braking)
-                { rpm_range: "High RPM", hexValue: "1F40" }, // 8000 RPM (for hard engine braking / deceleration fuel cut)
-            ]
-          },
-          engine_braking_control: {
-            name: "Engine Braking (Torque Reduction %)",
-            address: 0x1F00, type: "8-bit unsigned", factor: 0.39, offset: 0,
-            axes: { x: "RPM", y: "Throttle Position (approx.)" }, // Load 0 is usually closed throttle
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], throttle_pos: [0, 5, 10] },
-            defaultData: [
-                // Higher RPM / lower throttle % = more engine braking (fuel cut and possibly retarded timing)
-                { rpm: 1000, throttle_pos: 0, hexValue: "20" }, { rpm: 2000, throttle_pos: 0, hexValue: "30" }, { rpm: 3000, throttle_pos: 0, hexValue: "40" }, { rpm: 4000, throttle_pos: 0, hexValue: "50" }, { rpm: 5000, throttle_pos: 0, hexValue: "60" }, { rpm: 6000, throttle_pos: 0, hexValue: "70" },
-                { rpm: 1000, throttle_pos: 5, hexValue: "18" }, { rpm: 2000, throttle_pos: 5, hexValue: "28" }, { rpm: 3000, throttle_pos: 5, hexValue: "38" }, { rpm: 4000, throttle_pos: 5, hexValue: "48" }, { rpm: 5000, throttle_pos: 5, hexValue: "58" }, { rpm: 6000, throttle_pos: 5, hexValue: "68" },
-                { rpm: 1000, throttle_pos: 10, hexValue: "10" }, { rpm: 2000, throttle_pos: 10, hexValue: "20" }, { rpm: 3000, throttle_pos: 10, hexValue: "30" }, { rpm: 4000, throttle_pos: 10, hexValue: "40" }, { rpm: 5000, throttle_pos: 10, hexValue: "50" }, { rpm: 6000, throttle_pos: 10, hexValue: "60" },
-            ]
-          },
-          start_up_enrichment: {
-            name: "Start-Up Enrichment (ms)",
-            address: 0x2000, type: "16-bit unsigned", factor: 0.001, offset: 0,
-            axes: { x: "Coolant Temp (°C)", y: "Enrichment" },
-            axisValues: { coolant_temp: [-30, -20, 0, 20, 40, 60], enrichment: ["ms"] }, // เพิ่มแกน
-            defaultData: [
-                { coolant_temp: -30, hexValue: "0FA0" }, // 4000ms (Very cold start)
-                { coolant_temp: -20, hexValue: "0C80" }, // 3200ms
-                { coolant_temp: 0, hexValue: "09C4" },  // 2500ms
-                { coolant_temp: 20, hexValue: "0640" }, // 1600ms
-                { coolant_temp: 40, hexValue: "03E8" }, // 1000ms
-                { coolant_temp: 60, hexValue: "01F4" }, // 500ms
-            ]
-          },
-          catalyst_heating: {
-            name: "Catalyst Heating Strategy (Timing/RPM)",
-            address: 0x2100, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Coolant Temp (°C)", y: "Strategy Level" }, // เปลี่ยน Axis (อาจเป็นการปรับองศาไฟ/รอบสูงขึ้น)
-            axisValues: { coolant_temp: [-10, 10, 30, 50], strategy_level: ["Level"] },
-            defaultData: [
-                { coolant_temp: -10, hexValue: "04" }, // Aggressive (e.g. retarded timing, higher idle)
-                { coolant_temp: 10, hexValue: "03" },
-                { coolant_temp: 30, hexValue: "02" },
-                { coolant_temp: 50, hexValue: "01" }, // Minimal
-            ]
-          },
-          egr_control: { // Simulated for Skyactiv-G (though less common than diesel)
-            name: "EGR Control Map (%)",
-            address: 0x2200, type: "8-bit unsigned", factor: 0.39, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500], load: [10, 20, 30, 40, 50] }, // เพิ่มแกน
-            defaultData: [
-              // EGR usually active at light load for fuel economy and NOx reduction
-              { rpm: 800, load: 10, hexValue: "50" }, { rpm: 800, load: 20, hexValue: "40" }, { rpm: 800, load: 30, hexValue: "30" }, { rpm: 800, load: 40, hexValue: "20" }, { rpm: 800, load: 50, hexValue: "10" },
-              { rpm: 1500, load: 10, hexValue: "60" }, { rpm: 1500, load: 20, hexValue: "50" }, { rpm: 1500, load: 30, hexValue: "40" }, { rpm: 1500, load: 40, hexValue: "30" }, { rpm: 1500, load: 50, hexValue: "20" },
-              { rpm: 2500, load: 10, hexValue: "50" }, { rpm: 2500, load: 20, hexValue: "40" }, { rpm: 2500, load: 30, hexValue: "30" }, { rpm: 2500, load: 40, hexValue: "20" }, { rpm: 2500, load: 50, hexValue: "10" },
-              { rpm: 3500, load: 10, hexValue: "30" }, { rpm: 3500, load: 20, hexValue: "20" }, { rpm: 3500, load: 30, hexValue: "10" }, { rpm: 3500, load: 40, hexValue: "05" }, { rpm: 3500, load: 50, hexValue: "00" },
-              { rpm: 4500, load: 10, hexValue: "20" }, { rpm: 4500, load: 20, hexValue: "10" }, { rpm: 4500, load: 30, hexValue: "05" }, { rpm: 4500, load: 40, hexValue: "00" }, { rpm: 4500, load: 50, hexValue: "00" },
-            ]
-          },
-          fan_control: {
-            name: "Radiator Fan Control (°C)",
-            address: 0x2300, type: "8-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Temperature (°C)", y: "Fan Speed (%)" },
-            axisValues: { temperature: [85, 90, 95, 100, 105], fan_speed: ["%"] }, // เพิ่มแกน
-            defaultData: [
-                { temperature: 85, hexValue: "00" },  // Off
-                { temperature: 90, hexValue: "32" },  // 50%
-                { temperature: 95, hexValue: "64" },  // 100%
-                { temperature: 100, hexValue: "C8" }, // 200 (approx. max for 8-bit)
-                { temperature: 105, hexValue: "FF" }, // Max (255)
-            ]
-          },
-          transmission_torque_management_at: {
-            name: "Transmission Torque Mgmt (AT) (Nm)",
-            address: 0x2400, type: "16-bit unsigned", factor: 0.5, offset: 0,
-            axes: { x: "RPM", y: "Gear" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], gear: [1, 2, 3, 4, 5, 6] },
-            defaultData: [
-                // Torque reduction during shifts for AT smoothness and longevity
-                { rpm: 1000, gear: 1, hexValue: "01F4" }, // 250 Nm
-                { rpm: 2000, gear: 1, hexValue: "02BC" }, // 360 Nm
-                { rpm: 3000, gear: 1, hexValue: "03E8" }, // 500 Nm
-                { rpm: 4000, gear: 1, hexValue: "044C" }, // 550 Nm
-                { rpm: 5000, gear: 1, hexValue: "03E8" }, // 500 Nm
-                { rpm: 6000, gear: 1, hexValue: "0320" }, // 400 Nm
-
-                { rpm: 1000, gear: 2, hexValue: "02BC" }, // 360 Nm
-                { rpm: 2000, gear: 2, hexValue: "0320" }, // 400 Nm
-                { rpm: 3000, gear: 2, hexValue: "044C" }, // 550 Nm
-                { rpm: 4000, gear: 2, hexValue: "04B0" }, // 600 Nm
-                { rpm: 5000, gear: 2, hexValue: "044C" }, // 550 Nm
-                { rpm: 6000, gear: 2, hexValue: "0384" }, // 450 Nm
-
-                { rpm: 1000, gear: 3, hexValue: "03E8" }, // 500 Nm
-                { rpm: 2000, gear: 3, hexValue: "044C" }, // 550 Nm
-                { rpm: 3000, gear: 3, hexValue: "04B0" }, // 600 Nm
-                { rpm: 4000, gear: 3, hexValue: "0514" }, // 650 Nm
-                { rpm: 5000, gear: 3, hexValue: "04B0" }, // 600 Nm
-                { rpm: 6000, gear: 3, hexValue: "03E8" }, // 500 Nm
-
-                { rpm: 1000, gear: 4, hexValue: "04B0" }, // 600 Nm
-                { rpm: 2000, gear: 4, hexValue: "0514" }, // 650 Nm
-                { rpm: 3000, gear: 4, hexValue: "0578" }, // 700 Nm
-                { rpm: 4000, gear: 4, hexValue: "05DC" }, // 750 Nm
-                { rpm: 5000, gear: 4, hexValue: "0578" }, // 700 Nm
-                { rpm: 6000, gear: 4, hexValue: "04B0" }, // 600 Nm
-
-                { rpm: 1000, gear: 5, hexValue: "0514" }, // 650 Nm
-                { rpm: 2000, gear: 5, hexValue: "0578" }, // 700 Nm
-                { rpm: 3000, gear: 5, hexValue: "05DC" }, // 750 Nm
-                { rpm: 4000, gear: 5, hexValue: "0640" }, // 800 Nm
-                { rpm: 5000, gear: 5, hexValue: "05DC" }, // 750 Nm
-                { rpm: 6000, gear: 5, hexValue: "0514" }, // 650 Nm
-
-                { rpm: 1000, gear: 6, hexValue: "0578" }, // 700 Nm
-                { rpm: 2000, gear: 6, hexValue: "05DC" }, // 750 Nm
-                { rpm: 3000, gear: 6, hexValue: "0640" }, // 800 Nm
-                { rpm: 4000, gear: 6, hexValue: "06A4" }, // 850 Nm
-                { rpm: 5000, gear: 6, hexValue: "0640" }, // 800 Nm
-                { rpm: 6000, gear: 6, hexValue: "0578" }, // 700 Nm
-            ]
-          },
-          fuel_economy_optimization: {
-            name: "Fuel Economy Optimization (Target AFR)",
-            address: 0x2500, type: "16-bit unsigned", factor: 0.001, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500], load: [10, 20, 30, 40, 50] }, // เพิ่มแกน
-            defaultData: [
-                // Leaner AFR for fuel economy at light loads, richer for power/protection at higher loads
-                { rpm: 800, load: 10, hexValue: "39D0" }, { rpm: 800, load: 20, hexValue: "3970" }, { rpm: 800, load: 30, hexValue: "3910" }, { rpm: 800, load: 40, hexValue: "38B0" }, { rpm: 800, load: 50, hexValue: "3850" },
-                { rpm: 1500, load: 10, hexValue: "3970" }, { rpm: 1500, load: 20, hexValue: "3910" }, { rpm: 1500, load: 30, hexValue: "38B0" }, { rpm: 1500, load: 40, hexValue: "3850" }, { rpm: 1500, load: 50, hexValue: "37F0" },
-                { rpm: 2500, load: 10, hexValue: "38B0" }, { rpm: 2500, load: 20, hexValue: "3850" }, { rpm: 2500, load: 30, hexValue: "37F0" }, { rpm: 2500, load: 40, hexValue: "3790" }, { rpm: 2500, load: 50, hexValue: "3730" },
-                { rpm: 3500, load: 10, hexValue: "37F0" }, { rpm: 3500, load: 20, hexValue: "3790" }, { rpm: 3500, load: 30, hexValue: "3730" }, { rpm: 3500, load: 40, hexValue: "36D0" }, { rpm: 3500, load: 50, hexValue: "3670" },
-                { rpm: 4500, load: 10, hexValue: "3730" }, { rpm: 4500, load: 20, hexValue: "36D0" }, { rpm: 4500, load: 30, hexValue: "3670" }, { rpm: 4500, load: 40, hexValue: "3610" }, { rpm: 4500, load: 50, hexValue: "35B0" },
-                { rpm: 5500, load: 10, hexValue: "3670" }, { rpm: 5500, load: 20, hexValue: "3610" }, { rpm: 5500, load: 30, hexValue: "35B0" }, { rpm: 5500, load: 40, hexValue: "3550" }, { rpm: 5500, load: 50, hexValue: "34F0" },
-            ]
-          },
-          load_to_torque_conversion: {
-            name: "Load to Torque Conversion (Nm/Load)",
-            address: 0x2600, type: "16-bit unsigned", factor: 0.01, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], load: [20, 40, 60, 80, 100] }, // เพิ่มแกน
-            defaultData: [
-                // Example of how engine load (derived from MAF/MAP) maps to engine torque
-                { rpm: 1000, load: 20, hexValue: "00C8" }, { rpm: 1000, load: 40, hexValue: "0190" }, { rpm: 1000, load: 60, hexValue: "0258" }, { rpm: 1000, load: 80, hexValue: "0320" }, { rpm: 1000, load: 100, hexValue: "03E8" },
-                { rpm: 2000, load: 20, hexValue: "00FA" }, { rpm: 2000, load: 40, hexValue: "01C2" }, { rpm: 2000, load: 60, hexValue: "028A" }, { rpm: 2000, load: 80, hexValue: "0352" }, { rpm: 2000, load: 100, hexValue: "041A" },
-                { rpm: 3000, load: 20, hexValue: "012C" }, { rpm: 3000, load: 40, hexValue: "01F4" }, { rpm: 3000, load: 60, hexValue: "02BC" }, { rpm: 3000, load: 80, hexValue: "0384" }, { rpm: 3000, load: 100, hexValue: "044C" },
-                { rpm: 4000, load: 20, hexValue: "015E" }, { rpm: 4000, load: 40, hexValue: "0226" }, { rpm: 4000, load: 60, hexValue: "02EE" }, { rpm: 4000, load: 80, hexValue: "03B6" }, { rpm: 4000, load: 100, hexValue: "047E" },
-                { rpm: 5000, load: 20, hexValue: "0190" }, { rpm: 5000, load: 40, hexValue: "0258" }, { rpm: 5000, load: 60, hexValue: "0320" }, { rpm: 5000, load: 80, hexValue: "03E8" }, { rpm: 5000, load: 100, hexValue: "04B0" },
-                { rpm: 6000, load: 20, hexValue: "01C2" }, { rpm: 6000, load: 40, hexValue: "028A" }, { rpm: 6000, load: 60, hexValue: "0352" }, { rpm: 6000, load: 80, hexValue: "041A" }, { rpm: 6000, load: 100, hexValue: "04E2" },
-            ]
-          },
-          fuel_pressure_map: {
-            name: "Fuel Pressure Map (bar)",
-            address: 0x2700, type: "16-bit unsigned", factor: 0.1, offset: 0,
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 1500, 2500, 3500, 4500, 5500, 6500], load: [10, 30, 50, 70, 90, 100] }, // เพิ่มแกน
-            defaultData: [
-                // Direct Injection engines run much higher fuel pressure than port injection
-                { rpm: 800, load: 10, hexValue: "0BB8" }, // 300 bar (Idle)
-                { rpm: 800, load: 30, hexValue: "0F3C" }, // 390 bar
-                { rpm: 800, load: 50, hexValue: "12C0" }, // 480 bar
-                { rpm: 800, load: 70, hexValue: "1644" }, // 570 bar
-                { rpm: 800, load: 90, hexValue: "19C8" }, // 660 bar
-                { rpm: 800, load: 100, hexValue: "1D4C" }, // 750 bar
-
-                { rpm: 1500, load: 10, hexValue: "0F3C" }, { rpm: 1500, load: 30, hexValue: "12C0" }, { rpm: 1500, load: 50, hexValue: "1644" }, { rpm: 1500, load: 70, hexValue: "19C8" }, { rpm: 1500, load: 90, hexValue: "1D4C" }, { rpm: 1500, load: 100, hexValue: "20D0" },
-                { rpm: 2500, load: 10, hexValue: "12C0" }, { rpm: 2500, load: 30, hexValue: "1644" }, { rpm: 2500, load: 50, hexValue: "19C8" }, { rpm: 2500, load: 70, hexValue: "1D4C" }, { rpm: 2500, load: 90, hexValue: "20D0" }, { rpm: 2500, load: 100, hexValue: "2454" },
-                { rpm: 3500, load: 10, hexValue: "1644" }, { rpm: 3500, load: 30, hexValue: "19C8" }, { rpm: 3500, load: 50, hexValue: "1D4C" }, { rpm: 3500, load: 70, hexValue: "20D0" }, { rpm: 3500, load: 90, hexValue: "2454" }, { rpm: 3500, load: 100, hexValue: "27D8" },
-                { rpm: 4500, load: 10, hexValue: "19C8" }, { rpm: 4500, load: 30, hexValue: "1D4C" }, { rpm: 4500, load: 50, hexValue: "20D0" }, { rpm: 4500, load: 70, hexValue: "2454" }, { rpm: 4500, load: 90, hexValue: "27D8" }, { rpm: 4500, load: 100, hexValue: "2B5C" },
-                { rpm: 5500, load: 10, hexValue: "1D4C" }, { rpm: 5500, load: 30, hexValue: "20D0" }, { rpm: 5500, load: 50, hexValue: "2454" }, { rpm: 5500, load: 70, hexValue: "27D8" }, { rpm: 5500, load: 90, hexValue: "2B5C" }, { rpm: 5500, load: 100, hexValue: "2EE0" },
-                { rpm: 6500, load: 10, hexValue: "20D0" }, { rpm: 6500, load: 30, hexValue: "2454" }, { rpm: 6500, load: 50, hexValue: "27D8" }, { rpm: 6500, load: 70, hexValue: "2B5C" }, { rpm: 6500, load: 90, hexValue: "2EE0" }, { rpm: 6500, load: 100, hexValue: "3264" }, // ~800 bar at redline
-            ]
-          },
-          o2_sensor_calibration: {
-            name: "O2 Sensor Calibration (Voltage Offset mV)",
-            address: 0x2800, type: "16-bit signed", factor: 0.1, offset: 0, // ค่าเป็น mV, Factor 0.1
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000], load: [10, 30, 50, 70] }, // O2 Sensor active mostly in closed loop (light-mid load)
-            defaultData: [
-                { rpm: 1000, load: 10, hexValue: "0005" }, // +0.5 mV
-                { rpm: 1000, load: 30, hexValue: "0000" }, // 0 mV
-                { rpm: 1000, load: 50, hexValue: "FFF5" }, // -0.5 mV (Using 2's complement for negative numbers for 16-bit signed)
-                { rpm: 1000, load: 70, hexValue: "FFEB" }, // -2.1 mV (close to open loop threshold)
-
-                { rpm: 2000, load: 10, hexValue: "0008" },
-                { rpm: 2000, load: 30, hexValue: "0003" },
-                { rpm: 2000, load: 50, hexValue: "FFF8" },
-                { rpm: 2000, load: 70, hexValue: "FFEA" },
-
-                { rpm: 3000, load: 10, hexValue: "000A" },
-                { rpm: 3000, load: 30, hexValue: "0005" },
-                { rpm: 3000, load: 50, hexValue: "FFF8" },
-                { rpm: 3000, load: 70, hexValue: "FFE0" },
-
-                { rpm: 4000, load: 10, hexValue: "000C" },
-                { rpm: 4000, load: 30, hexValue: "0007" },
-                { rpm: 4000, load: 50, hexValue: "FFF0" },
-                { rpm: 4000, load: 70, hexValue: "FFD8" },
-            ]
-          },
-          camshaft_position_control: {
-            name: "Camshaft Position Control (Intake - Degrees)",
-            address: 0x2900, type: "8-bit signed", factor: 0.5, offset: -10, // Same as VVT, but VVT is a broad term, this is specific map
-            axes: { x: "RPM", y: "Load" },
-            axisValues: { rpm: [800, 2000, 3000, 4000, 5000, 6000], load: [10, 30, 50, 70, 90, 100] },
-            defaultData: [
-              // RPM 800
-              { rpm: 800, load: 10, hexValue: "20" }, { rpm: 800, load: 30, hexValue: "25" }, { rpm: 800, load: 50, hexValue: "2A" },
-              { rpm: 800, load: 70, hexValue: "2F" }, { rpm: 800, load: 90, hexValue: "34" }, { rpm: 800, load: 100, hexValue: "39" },
-
-              // RPM 2000 (กลางๆ)
-              { rpm: 2000, load: 10, hexValue: "25" }, { rpm: 2000, load: 30, hexValue: "2A" }, { rpm: 2000, load: 50, hexValue: "2F" },
-              { rpm: 2000, load: 70, hexValue: "34" }, { rpm: 2000, load: 90, hexValue: "39" }, { rpm: 2000, load: 100, hexValue: "3E" },
-
-              // RPM 3000 (เริ่ม Advace มากขึ้น)
-              { rpm: 3000, load: 10, hexValue: "30" }, { rpm: 3000, load: 30, hexValue: "35" }, { rpm: 3000, load: 50, hexValue: "3A" },
-              { rpm: 3000, load: 70, hexValue: "3F" }, { rpm: 3000, load: 90, hexValue: "44" }, { rpm: 3000, load: 100, hexValue: "49" },
-
-              // RPM 4000 (Advance มากขึ้น)
-              { rpm: 4000, load: 10, hexValue: "3A" }, { rpm: 4000, load: 30, hexValue: "3F" }, { rpm: 4000, load: 50, hexValue: "44" },
-              { rpm: 4000, load: 70, hexValue: "49" }, { rpm: 4000, load: 90, hexValue: "4E" }, { rpm: 4000, load: 100, hexValue: "53" },
-
-              // RPM 5000 (เริ่มลด Advance หรือคงที่)
-              { rpm: 5000, load: 10, hexValue: "38" }, { rpm: 5000, load: 30, hexValue: "3D" }, { rpm: 5000, load: 50, hexValue: "42" },
-              { rpm: 5000, load: 70, hexValue: "47" }, { rpm: 5000, load: 90, hexValue: "4C" }, { rpm: 5000, load: 100, hexValue: "51" },
-
-              // RPM 6000 (ลด Advance เพื่อกำลังสูงสุด)
-              { rpm: 6000, load: 10, hexValue: "30" }, { rpm: 6000, load: 30, hexValue: "35" }, { rpm: 6000, load: 50, hexValue: "3A" },
-              { rpm: 6000, load: 70, hexValue: "3F" }, { rpm: 6000, load: 90, hexValue: "44" }, { rpm: 6000, load: 100, hexValue: "49" },
-            ]
-          },
-          fuel_cut_delay: {
-            name: "Fuel Cut Delay (ms)",
-            address: 0x2A00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "RPM", y: "Delay" },
-            axisValues: { rpm: [1000, 2000, 3000, 4000, 5000, 6000], delay: ["ms"] }, // เพิ่มแกน
-            defaultData: [
-                // Delay before fuel cut engages on deceleration
-                { rpm: 1000, delay: 0, hexValue: "01F4" }, // 500ms (longer delay at low RPM)
-                { rpm: 2000, delay: 0, hexValue: "012C" }, // 300ms
-                { rpm: 3000, delay: 0, hexValue: "00C8" }, // 200ms
-                { rpm: 4000, delay: 0, hexValue: "0096" }, // 150ms
-                { rpm: 5000, delay: 0, hexValue: "0064" }, // 100ms
-                { rpm: 6000, delay: 0, hexValue: "0032" }, // 50ms (shortest delay at high RPM)
-            ]
-          },
-          launch_control_mt: {
-            name: "Launch Control (MT) RPM",
-            address: 0x2B00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Mode", y: "RPM" },
-            axisValues: { mode: ["Default"], rpm: ["RPM"] },
-            defaultData: [
-                { mode: "Default", hexValue: "1388" }, // 5000 RPM (Typical LC RPM)
-            ]
-          },
-          flat_foot_shifting_mt: {
-            name: "Flat Foot Shifting (MT) RPM",
-            address: 0x2C00, type: "16-bit unsigned", factor: 1, offset: 0,
-            axes: { x: "Mode", y: "RPM" },
-            axisValues: { mode: ["Default"], rpm: ["RPM"] },
-            defaultData: [
-                { mode: "Default", hexValue: "1C28" }, // 7200 RPM (just below redline for quick shifts)
-            ]
-          },
-          // สำหรับรุ่นเทอร์โบ ถ้ามีใน Mazda 2 Skyactiv-G:
-          // turbo_boost_control: {
-          //   name: "Turbo Boost Control (bar)",
-          //   address: 0x2D00, type: "16-bit unsigned", factor: 0.01, offset: 0,
-          //   axes: { x: "RPM", y: "Load" },
-          //   axisValues: { rpm: [2000, 3000, 4000, 5000], load: [50, 70, 90, 100] },
-          //   defaultData: [
-          //      { rpm: 2000, load: 50, hexValue: "07D0" }, // 2.0 bar
-          //      ...
-          //   ]
-          // },
-
+          }
         }
       },
       "Toyota": {
@@ -1051,3 +658,827 @@
         }
       }
     };
+
+    // --- DOM Elements ---
+    const carBrandSelect = document.getElementById("carBrand");
+    const carModelSelect = document.getElementById("carModel");
+    const mapTypeSelect = document.getElementById("mapType");
+    const tuningTableBody = document.querySelector("#tuningTable tbody");
+    const hexGrid = document.getElementById("hexGrid");
+    const resultArea = document.getElementById("resultArea");
+    const messageArea = document.getElementById("messageArea");
+    const viewModeSelect = document.getElementById("viewMode");
+    const graphCanvas = document.getElementById("graphCanvas");
+    const graphCtx = graphCanvas.getContext('2d');
+    const fileStatus = document.getElementById("fileStatus");
+    const mapStatus = document.getElementById("mapStatus");
+    let chartInstance;
+
+    // --- Utility Functions ---
+    function decToHex(d, padLength = 2) {
+      let hex = Number(d).toString(16).toUpperCase();
+      return hex.padStart(padLength, '0');
+    }
+
+    function hexToDec(h) {
+        if (!h || !/^[0-9A-Fa-f]+$/.test(h)) { // Basic validation
+            // console.warn("Invalid HEX input for hexToDec:", h);
+            return 0; // Return 0 or handle error appropriately
+        }
+        let dec = parseInt(h, 16);
+        if (currentMapDefinition && (currentMapDefinition.type === "8-bit signed" || currentMapDefinition.type === "16-bit signed")) {
+            const bitLength = currentMapDefinition.type.includes("8-bit") ? 8 : 16;
+            const maxVal = Math.pow(2, bitLength);
+            const halfMaxVal = maxVal / 2;
+            if (dec >= halfMaxVal) {
+                dec -= maxVal;
+            }
+        }
+        return dec;
+    }
+
+    function showMessage(msg, isError = false) {
+      messageArea.textContent = msg;
+      messageArea.className = isError ? "error" : "";
+      clearTimeout(messageArea.timer);
+      messageArea.timer = setTimeout(() => {
+        messageArea.textContent = '';
+        messageArea.className = '';
+      }, 5000);
+    }
+
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    // --- Core Logic ---
+
+    // Populates car models based on selected brand
+    function populateCarModels() {
+        const selectedBrand = carBrandSelect.value;
+        const modelsForBrand = ecuDefinitions[selectedBrand];
+        carModelSelect.innerHTML = '';
+
+        if (modelsForBrand) {
+            for (const modelKey in modelsForBrand) {
+                const option = document.createElement("option");
+                option.value = modelKey;
+                option.textContent = modelKey;
+                carModelSelect.appendChild(option);
+            }
+        } else {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No models available";
+            carModelSelect.appendChild(option);
+        }
+        
+        populateMapOptions();
+    }
+
+    // Populates map options based on selected car model
+    function populateMapOptions() {
+        const selectedBrand = carBrandSelect.value;
+        const selectedModelText = carModelSelect.value;
+        const mapsForModel = ecuDefinitions[selectedBrand]?.[selectedModelText];
+        
+        mapTypeSelect.innerHTML = '';
+
+        let hasMaps = false;
+        if (mapsForModel) {
+            for (const mapKey in mapsForModel) {
+                const option = document.createElement("option");
+                option.value = mapKey;
+                option.textContent = mapsForModel[mapKey].name;
+                mapTypeSelect.appendChild(option);
+                hasMaps = true;
+            }
+        }
+        
+        if (!hasMaps) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "No maps available";
+            mapTypeSelect.appendChild(option);
+        }
+
+        if (hasMaps && mapTypeSelect.value && currentECUFile) { // Only load map data if ECU file is loaded
+            loadMapData();
+        } else {
+            tuningTableBody.innerHTML = '<tr><td colspan="3">Please load ECU file and select a map.</td></tr>';
+            hexGrid.innerHTML = '';
+            currentMapData = null;
+            currentMapDefinition = null;
+            renderGraph(); // เรียก renderGraph เพื่อซ่อนกราฟเมื่อไม่มีข้อมูล
+            mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
+        }
+    }
+
+    // Loads and displays the selected map data
+    function loadMapData() {
+        const selectedBrand = carBrandSelect.value;
+        const selectedModelText = carModelSelect.value;
+        const selectedMapType = mapTypeSelect.value;
+
+        if (!currentECUFile) {
+            showMessage("Please simulate loading an ECU file first.", true);
+            mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
+            return;
+        }
+
+        if (!selectedMapType || !ecuDefinitions[selectedBrand] || 
+            !ecuDefinitions[selectedBrand][selectedModelText] || 
+            !ecuDefinitions[selectedBrand][selectedModelText][selectedMapType]) {
+            tuningTableBody.innerHTML = '<tr><td colspan="3">No data available for this map.</td></tr>';
+            hexGrid.innerHTML = '';
+            currentMapData = null;
+            currentMapDefinition = null;
+            renderGraph(); // เรียก renderGraph เพื่อซ่อนกราฟเมื่อไม่มีข้อมูล
+            mapStatus.textContent = "None selected";
+            document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-inactive';
+            return;
+        }
+
+        currentMapDefinition = ecuDefinitions[selectedBrand][selectedModelText][selectedMapType];
+        // Deep copy defaultData to currentMapData for modification
+        currentMapData = JSON.parse(JSON.stringify(currentMapDefinition.defaultData));
+
+        renderTuningTable();
+        renderHexGrid();
+        renderGraph();
+        addToHistory();
+        
+        mapStatus.textContent = currentMapDefinition.name;
+        document.querySelectorAll('.status-indicator')[1].className = 'status-indicator status-active';
+    }
+
+    // Renders the table view of the map
+    function renderTuningTable() {
+      tuningTableBody.innerHTML = '';
+
+      if (!currentMapData || currentMapData.length === 0) {
+          tuningTableBody.innerHTML = '<tr><td colspan="3">No map data to display.</td></tr>';
+          return;
+      }
+
+      // Create header row for axes
+      const headerRow = document.createElement("tr");
+      const axisXKey = currentMapDefinition?.axes?.x?.toLowerCase();
+      const axisYKey = currentMapDefinition?.axes?.y?.toLowerCase();
+
+      if (axisXKey) {
+          const thX = document.createElement("th");
+          thX.textContent = currentMapDefinition.axes.x;
+          headerRow.appendChild(thX);
+      } else {
+          const thIndex = document.createElement("th");
+          thIndex.textContent = "Index";
+          headerRow.appendChild(thIndex);
+      }
+      
+      if (axisYKey) {
+          const thY = document.createElement("th");
+          thY.textContent = currentMapDefinition.axes.y;
+          headerRow.appendChild(thY);
+      }
+      const thValue = document.createElement("th");
+      thValue.textContent = "Value";
+      headerRow.appendChild(thValue);
+      
+      tuningTableBody.parentNode.querySelector('thead').innerHTML = ''; // Clear existing header
+      tuningTableBody.parentNode.querySelector('thead').appendChild(headerRow);
+
+
+      currentMapData.forEach((row, index) => {
+        let displayValue;
+        if (currentMapDefinition.name.includes("DTC Switch")) {
+            displayValue = row.hexValue === "01" ? "Enabled" : "Disabled";
+        } else {
+            let actualValueDec = hexToDec(row.hexValue);
+            // Conversion for signed values happens in hexToDec now
+            
+            if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                displayValue = (actualValueDec * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+            } else {
+                displayValue = actualValueDec;
+            }
+        }
+
+        const tr = document.createElement("tr");
+        const xVal = currentMapDefinition?.axes?.x ? (row[currentMapDefinition.axes.x.toLowerCase()] || '-') : index; // Use index if no x-axis defined
+        const yVal = currentMapDefinition?.axes?.y ? (row[currentMapDefinition.axes.y.toLowerCase()] || '-') : '-';
+
+        let rowHtml = `<td>${xVal}</td>`;
+        if (currentMapDefinition?.axes?.y) { // Only add Y axis column if Y axis is defined
+            rowHtml += `<td>${yVal}</td>`;
+        }
+        
+        rowHtml += `<td>
+            ${currentMapDefinition.name.includes("DTC Switch") ? `
+                <select class="map-value-input" data-index="${index}">
+                    <option value="01" ${row.hexValue === "01" ? 'selected' : ''}>Enabled</option>
+                    <option value="00" ${row.hexValue === "00" ? 'selected' : ''}>Disabled</option>
+                </select>
+            ` : `
+                <input type="number" class="map-value-input" data-index="${index}" value="${displayValue}" step="${currentMapDefinition.factor < 1 ? '0.01' : '1'}">
+            `}
+          </td>`;
+        tr.innerHTML = rowHtml;
+        tuningTableBody.appendChild(tr);
+      });
+
+      document.querySelectorAll(".map-value-input").forEach(input => {
+        input.addEventListener("change", updateFromMapTable);
+      });
+    }
+
+    // Renders the HEX Viewer grid
+    function renderHexGrid() {
+      hexGrid.innerHTML = '';
+      if (!currentMapData || currentMapData.length === 0) {
+          hexGrid.innerHTML = 'No HEX data to display.';
+          return;
+      }
+
+      let maxLength = 2; // Default for 8-bit
+      if (currentMapDefinition && currentMapDefinition.type && currentMapDefinition.type.includes("16-bit")) {
+          maxLength = 4;
+      }
+
+      currentMapData.forEach((row, index) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "hex";
+        input.maxLength = maxLength;
+        input.value = row.hexValue;
+        input.setAttribute("data-index", index);
+        input.addEventListener("input", updateFromHexGrid);
+        hexGrid.appendChild(input);
+      });
+    }
+
+    // Updates map data and HEX viewer from table input
+    function updateFromMapTable(event) {
+      const index = parseInt(event.target.dataset.index);
+      let newValue = event.target.value;
+
+      addToHistory();
+
+      let hexEquivalent;
+      if (currentMapDefinition.name.includes("DTC Switch")) {
+          hexEquivalent = newValue; // "00" or "01"
+      } else {
+          newValue = parseFloat(newValue);
+          if (isNaN(newValue)) {
+             showMessage("Invalid number input.", true);
+             // Revert to original value if invalid input
+             event.target.value = (hexToDec(currentMapData[index].hexValue) * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+             return;
+          }
+          
+          if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+              let calculatedRawValue = Math.round((newValue - currentMapDefinition.offset) / currentMapDefinition.factor);
+              
+              if (currentMapDefinition.type === "8-bit unsigned") {
+                  hexEquivalent = Math.max(0, Math.min(calculatedRawValue, 255));
+              } else if (currentMapDefinition.type === "8-bit signed") {
+                  hexEquivalent = Math.max(-128, Math.min(calculatedRawValue, 127));
+                  if (hexEquivalent < 0) hexEquivalent = 256 + hexEquivalent; // Convert to 8-bit unsigned representation for hex
+              } else if (currentMapDefinition.type === "16-bit unsigned") {
+                  hexEquivalent = Math.max(0, Math.min(calculatedRawValue, 65535));
+              } else if (currentMapDefinition.type === "16-bit signed") {
+                  hexEquivalent = Math.max(-32768, Math.min(calculatedRawValue, 32767));
+                  if (hexEquivalent < 0) hexEquivalent = 65536 + hexEquivalent; // Convert to 16-bit unsigned representation for hex
+              } else {
+                  hexEquivalent = Math.round(newValue); // Fallback if type not specified or handled
+              }
+          }
+          else {
+              hexEquivalent = Math.round(newValue); // Fallback if factor/offset not defined
+          }
+      }
+
+      const hexString = decToHex(hexEquivalent, currentMapDefinition && currentMapDefinition.type.includes("16-bit") ? 4 : 2);
+      currentMapData[index].hexValue = hexString;
+
+      const hexInput = hexGrid.querySelector(`input[data-index="${index}"]`);
+      if (hexInput) {
+        hexInput.value = hexString;
+      }
+      renderGraph();
+      resultArea.innerHTML = '';
+      showMessage("Map value updated.", false);
+    }
+
+    // Updates map data and table from HEX viewer input
+    function updateFromHexGrid(event) {
+      const index = parseInt(event.target.dataset.index);
+      let newHexValue = event.target.value.toUpperCase();
+
+      const is8Bit = currentMapDefinition && (currentMapDefinition.type.includes("8-bit"));
+      const is16Bit = currentMapDefinition && (currentMapDefinition.type.includes("16-bit"));
+      const targetLength = is16Bit ? 4 : 2;
+
+      // Basic validation for HEX format and length
+      if (!/^[0-9A-F]*$/.test(newHexValue) || newHexValue.length > targetLength) {
+        event.target.value = currentMapData[index].hexValue; // Revert if invalid
+        showMessage("Invalid HEX input.", true);
+        return;
+      }
+
+      // Pad with leading zeros if necessary
+      if (newHexValue.length < targetLength) {
+          // Do not pad until user finishes typing if they're still inputting
+          // This allows for typing "F" then "F" for "FF" instead of "0F" then "FF"
+          // We'll update the data only when a valid, full-length hex is entered or when value is already there
+          // For immediate feedback, we can update, but revert if partial/invalid
+      } else {
+          addToHistory(); // Add to history only when a valid, complete change occurs
+      }
+      
+      currentMapData[index].hexValue = newHexValue; // Temporarily update for display
+
+      const mapInput = tuningTableBody.querySelector(`[data-index="${index}"]`);
+      if (mapInput) {
+          if (currentMapDefinition.name.includes("DTC Switch")) {
+              mapInput.value = newHexValue; // "00" or "01"
+          } else {
+              let actualValueDec = hexToDec(newHexValue); // hexToDec now handles signed conversion
+              
+              if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                  const actualValue = (actualValueDec * currentMapDefinition.factor + currentMapDefinition.offset).toFixed(currentMapDefinition.factor < 1 ? 2 : 0);
+                  mapInput.value = actualValue;
+              } else {
+                  mapInput.value = actualValueDec;
+              }
+          }
+      }
+      renderGraph();
+      resultArea.innerHTML = '';
+      showMessage("HEX value updated.", false);
+    }
+
+    // --- Graphing (2D Simulation with Chart.js) ---
+    function renderGraph() {
+        // ทำลาย Chart instance เดิมก่อนสร้างใหม่ เพื่อป้องกันปัญหาข้อมูลซ้อนทับหรือค้าง
+        if (chartInstance) {
+            chartInstance.destroy();
+            chartInstance = null; // ตั้งค่าเป็น null เพื่อให้แน่ใจว่าไม่มี reference ค้างอยู่
+        }
+
+        const viewMode = viewModeSelect.value;
+        // ตรวจสอบว่าเลือกโหมด 2D, มีข้อมูลแผนที่, และไม่ใช่แผนที่ประเภท DTC Switch ที่ไม่เหมาะกับการแสดงผลกราฟ
+        if (viewMode === '2d' && currentMapDefinition && currentMapData && 
+            !currentMapDefinition.name.includes("DTC Switch")) {
+            
+            try {
+                // ตรวจสอบให้แน่ใจว่า Canvas มีขนาดและถูกแสดงผล
+                graphCanvas.style.width = '100%';
+                graphCanvas.style.maxWidth = '500px';
+                graphCanvas.style.height = '250px';
+                graphCanvas.style.display = 'block'; // ให้แน่ใจว่ามันถูกแสดง
+
+                const xAxisLabel = currentMapDefinition?.axes?.x;
+                const yAxisLabel = currentMapDefinition?.axes?.y;
+                
+                let labels = [];
+                let datasets = [];
+                
+                // ตรวจสอบว่ามีแกน X และ Y ที่กำหนดไว้ใน Map Definition และมีค่าสำหรับแกน Y เพื่อแยก series
+                if (xAxisLabel && yAxisLabel && currentMapDefinition.axisValues) {
+                    // ดึงค่าแกน Y ที่ไม่ซ้ำกันทั้งหมดเพื่อสร้างหลาย series (เส้นกราฟ)
+                    const uniqueYValues = [...new Set(currentMapData.map(d => d?.[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+                    
+                    // ดึงค่าแกน X ทั้งหมดเพื่อใช้เป็น labels ของกราฟ
+                    labels = [...new Set(currentMapData.map(d => d?.[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+
+                    uniqueYValues.forEach(yVal => {
+                        const dataForY = [];
+                        labels.forEach((xVal, index) => {
+                            // ค้นหาข้อมูลที่ตรงกับทั้งค่าแกน X และแกน Y
+                            const item = currentMapData.find(d => 
+                                d?.[xAxisLabel.toLowerCase()] === xVal && 
+                                d?.[yAxisLabel.toLowerCase()] === yVal
+                            );
+                            if (item) {
+                                let value = hexToDec(item.hexValue);
+                                // แปลงค่าตาม factor และ offset ถ้ามีการกำหนด
+                                if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                                    value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
+                                }
+                                // ทดลอง: แสดงผลข้อมูลแบบสลับจุด เพื่อให้กราฟดูโปร่งขึ้น (ลดจำนวนจุด)
+                                dataForY.push((index % 2 === 0) ? value : null); 
+                            } else {
+                                dataForY.push(null); 
+                            }
+                        });
+
+                        // เพิ่ม dataset สำหรับแต่ละค่าของแกน Y
+                        datasets.push({
+                            label: `${yAxisLabel}: ${yVal}`, // Label สำหรับ legend (เช่น Load: 10, Load: 30)
+                            data: dataForY,
+                            borderColor: getRandomColor(), // ให้สีแบบสุ่ม
+                            backgroundColor: 'rgba(0, 191, 255, 0.1)', // สีพื้นหลัง (จางๆ)
+                            borderWidth: 1, // ลดความหนาของเส้น
+                            pointRadius: 1, // ลดขนาดจุด
+                            fill: false, // ไม่เติมสีใต้เส้นกราฟ
+                            tension: 0.3 // ความโค้งของเส้น
+                        });
+                    });
+                } else { 
+                    // กรณีเป็นกราฟ 1 มิติ หรือไม่มีแกน Y ที่ชัดเจน
+                    labels = currentMapData.map((d, i) => {
+                        if (xAxisLabel) return d?.[xAxisLabel.toLowerCase()] || `Point ${i + 1}`;
+                        return `Point ${i + 1}`;
+                    });
+                    
+                    const dataValues = currentMapData.map((d, index) => {
+                        let value = hexToDec(d.hexValue);
+                        if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
+                            value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
+                        }
+                        // ทดลอง: แสดงผลข้อมูลแบบสลับจุด เพื่อให้กราฟดูโปร่งขึ้น (ลดจำนวนจุด)
+                        return (index % 2 === 0) ? value : null; 
+                    });
+
+                    datasets.push({
+                        label: `${currentMapDefinition.name} Values`,
+                        data: dataValues,
+                        borderColor: '#00bfff',
+                        backgroundColor: 'rgba(0, 191, 255, 0.2)',
+                        borderWidth: 1,
+                        pointRadius: 1,
+                        fill: true,
+                        tension: 0.3
+                    });
+                }
+
+                // สร้าง Chart.js instance ใหม่
+                chartInstance = new Chart(graphCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true, /* เป็น true เพื่อรักษาอัตราส่วน */
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: xAxisLabel || 'Index', // ใช้ 'Index' หากไม่มีชื่อแกน X
+                                    color: '#ccc',
+                                    font: { size: 10 } // ลดขนาด font
+                                },
+                                ticks: { 
+                                    color: '#eee', 
+                                    maxRotation: 90, 
+                                    minRotation: 0, 
+                                    autoSkip: true, 
+                                    maxTicksLimit: 10, // จำกัดจำนวน tick labels
+                                    font: { size: 8 } // ลดขนาด font ของ tick
+                                },
+                                grid: { color: '#555' }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: currentMapDefinition.name, // ชื่อกราฟบนแกน Y
+                                    color: '#ccc',
+                                    font: { size: 10 } // ลดขนาด font
+                                },
+                                ticks: { color: '#eee', font: { size: 8 } }, // ลดขนาด font ของ tick
+                                grid: { color: '#555' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#eee',
+                                    font: { size: 10 } // ลดขนาด font
+                                },
+                                position: 'bottom' // ย้าย legend ไปด้านล่าง
+                            },
+                            title: { // เพิ่ม title ให้กับกราฟ
+                                display: true,
+                                text: `กราฟ ${currentMapDefinition.name} (2D View)`,
+                                color: '#00bfff',
+                                font: {
+                                    size: 12 // ลดขนาด title
+                                }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.4 // เพิ่มความโค้งเล็กน้อย
+                            }
+                        }
+                    }
+                });
+                console.log('กราฟ 2D ถูกสร้างขึ้นสำเร็จ');
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาดในการแสดงผลกราฟ:", error);
+                showMessage("เกิดข้อผิดพลาดในการแสดงผลกราฟ: " + error.message, true);
+                graphCanvas.style.display = 'none'; // ซ่อน canvas หากเกิดข้อผิดพลาด
+            }
+        } else {
+            // หากไม่ได้เลือกโหมด 2D หรือเป็นแผนที่ DTC Switch ให้ซ่อน canvas
+            graphCanvas.style.display = 'none';
+            if (viewMode === '3d') {
+                showMessage("3D Graph visualization requires advanced libraries. This is a simulated view.", false);
+            }
+        }
+    }
+
+    // --- File Operations Simulation ---
+    function simulateFileLoad() {
+        showMessage("Simulating ECU file load...", false);
+
+        // Simulate a larger ECU file memory (e.g., 64KB = 0x10000 bytes)
+        currentECUFile = Array(0x10000).fill('00');
+        
+        // Populate currentECUFile with default data from all defined maps
+        for (const brandKey in ecuDefinitions) {
+            for (const modelKey in ecuDefinitions[brandKey]) {
+                for (const mapKey in ecuDefinitions[brandKey][modelKey]) {
+                    const mapDef = ecuDefinitions[brandKey][modelKey][mapKey];
+                    let currentAddress = mapDef.address;
+                    mapDef.defaultData.forEach(item => {
+                        let hexBytes = item.hexValue;
+                        const byteLength = mapDef.type.includes("16-bit") ? 4 : 2; // 2 chars per byte, so 4 for 16-bit
+                        
+                        // Ensure hexBytes has correct length (e.g., "A" becomes "0A", "1B" becomes "01B")
+                        hexBytes = hexBytes.padStart(byteLength, '0');
+
+                        for (let i = 0; i < hexBytes.length; i += 2) {
+                            if (currentAddress < currentECUFile.length) {
+                                 currentECUFile[currentAddress++] = hexBytes.substring(i, i + 2);
+                            } else {
+                                console.warn(`Address 0x${(currentAddress-1).toString(16)} out of simulated ECU file bounds for map ${mapDef.name}`);
+                                break;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        history = [];
+        historyPointer = -1;
+
+        populateCarModels(); // This will also call populateMapOptions and loadMapData
+        showMessage("ECU file simulated load complete.", false);
+        fileStatus.textContent = "Loaded (simulated)";
+        document.querySelectorAll('.status-indicator')[0].className = 'status-indicator status-active';
+    }
+
+    function simulateFileSave() {
+        if (!currentECUFile) {
+            showMessage("No ECU file loaded to save.", true);
+            return;
+        }
+        // In a real scenario, this would trigger a download of the modified currentECUFile
+        showMessage("Simulating saving of modified ECU file. (No actual file download in simulator)");
+    }
+
+    // --- Tuning Functions ---
+
+    function confirmTuning() {
+      if (!currentMapData || !currentMapDefinition) {
+          resultArea.innerHTML = "<p style='color: #ffaaaa;'>Please load a map first.</p>";
+          return;
+      }
+      if (!currentECUFile) {
+          resultArea.innerHTML = "<p style='color: #ffaaaa;'>Please simulate loading an ECU file first.</p>";
+          return;
+      }
+
+      const map = mapTypeSelect.options[mapTypeSelect.selectedIndex].text;
+
+      let originalTotalRawValue = 0;
+      let modifiedTotalRawValue = 0;
+
+      // Get original map data from the definition, not history[0] because history[0] might not be the original "stock" map
+      const originalMapDataDef = ecuDefinitions[carBrandSelect.value]
+                                  ?.[carModelSelect.value]
+                                  ?.[mapTypeSelect.value];
+
+      if (originalMapDataDef && originalMapDataDef.defaultData) {
+          originalMapDataDef.defaultData.forEach(item => {
+              originalTotalRawValue += hexToDec(item.hexValue); // Sum raw hex values
+          });
+      }
+      currentMapData.forEach(item => {
+          modifiedTotalRawValue += hexToDec(item.hexValue); // Sum raw hex values
+      });
+
+      let hpChange = 0;
+      let torqueChange = 0;
+      let response = "";
+
+      // Only calculate difference for numerical maps
+      if (!currentMapDefinition.name.includes("DTC Switch")) {
+          const diffRatio = (originalTotalRawValue !== 0) ? (modifiedTotalRawValue - originalTotalRawValue) / originalTotalRawValue : 0;
+
+          if (mapTypeSelect.value.includes("iq_limit") || mapTypeSelect.value.includes("main_injection")) {
+            hpChange = (diffRatio * 30).toFixed(1);
+            torqueChange = (diffRatio * 40).toFixed(1);
+            response = diffRatio > 0 ? "Improved throttle response and power delivery. Expect more aggressive acceleration." : "Smoother power delivery, potentially better fuel economy.";
+          } else if (mapTypeSelect.value.includes("boost_pressure")) {
+            hpChange = (diffRatio * 25).toFixed(1);
+            torqueChange = (diffRatio * 35).toFixed(1);
+            response = diffRatio > 0 ? "Stronger pull throughout the RPM range due to increased boost." : "Reduced turbo lag for better drivability, potentially at lower boost levels.";
+          } else if (mapTypeSelect.value.includes("ignition_timing")) {
+            hpChange = (diffRatio * 20).toFixed(1);
+            torqueChange = (diffRatio * 25).toFixed(1);
+            response = diffRatio > 0 ? "Optimized combustion for increased power and efficiency. Ensure fuel quality." : "Safer operation with reduced risk of knocking, slight power reduction.";
+          } else if (mapTypeSelect.value.includes("vtec_engagement")) {
+              hpChange = (diffRatio * 15).toFixed(1); // Small impact, more about character
+              torqueChange = (diffRatio * 10).toFixed(1);
+              response = diffRatio < 0 ? "Earlier VTEC engagement for a sportier feel and quicker power band access." : "Later VTEC engagement for smoother power transition at higher RPMs.";
+          } else if (mapTypeSelect.value.includes("fuel_pressure_limit") || mapTypeSelect.value.includes("rail_pressure")) {
+              hpChange = (diffRatio * 25).toFixed(1);
+              torqueChange = (diffRatio * 30).toFixed(1);
+              response = diffRatio > 0 ? "Higher fuel pressure for more precise and powerful injection." : "Adjusted fuel pressure for efficiency or engine protection.";
+          } else if (mapTypeSelect.value.includes("egr_duty_cycle")) {
+              hpChange = (diffRatio * -5).toFixed(1); // Lower EGR duty cycle usually means more power, so inverse
+              torqueChange = (diffRatio * -5).toFixed(1);
+              response = diffRatio < 0 ? "Reduced EGR for cleaner combustion and more power. May affect emissions." : "Increased EGR for better emissions control.";
+          } else if (mapTypeSelect.value.includes("torque_limiter")) {
+              hpChange = (diffRatio * 20).toFixed(1); // Direct increase in torque limit implies more power
+              torqueChange = (diffRatio * 30).toFixed(1);
+              response = diffRatio > 0 ? "Increased torque limits allowing the engine to produce more power." : "Reduced torque limits for engine protection or smoother delivery.";
+          } else if (mapTypeSelect.value.includes("exhaust_temp_limit")) {
+              hpChange = (diffRatio * -10).toFixed(1); // Higher temp limit allows more aggressive tune, so inverse diff
+              torqueChange = (diffRatio * -10).toFixed(1);
+              response = diffRatio > 0 ? "Increased exhaust gas temperature limits, allowing for more aggressive tuning. Monitor EGTs!" : "Reduced exhaust gas temperature limits for engine and turbo longevity.";
+          }
+          else {
+              hpChange = (diffRatio * 10).toFixed(1);
+              torqueChange = (diffRatio * 10).toFixed(1);
+              response = "General performance adjustment based on raw value change.";
+          }
+      } else { // DTC Switch map
+          const disabledDTCs = currentMapData.filter(d => d.hexValue === "00");
+          if (disabledDTCs.length > 0) {
+              response = `<span style="color: #ffcc00;">Warning: ${disabledDTCs.length} Diagnostic Trouble Codes (DTCs) are currently disabled.</span> This may prevent error detection.`;
+          } else {
+              response = "All Diagnostic Trouble Codes (DTCs) are enabled as per standard operation. No DTCs have been removed.";
+          }
+          hpChange = "N/A";
+          torqueChange = "N/A";
+      }
+
+      resultArea.innerHTML = `
+        <p>✅ Tuning of "<strong>${map}</strong>" confirmed!</p>
+        <p>Simulated Performance Impact: Horsepower Change: <strong>~${hpChange} HP</strong>, Torque Change: <strong>~${torqueChange}%</strong></p>
+        <p>${response}</p>
+      `;
+    }
+
+    function compareMaps() {
+        if (!currentMapData || history.length < 1 || !currentMapDefinition || !currentECUFile) {
+            showMessage("Please load an ECU file and make changes to compare.", true);
+            return;
+        }
+
+        // The "original" map data is always the first state in history (after initial load)
+        const originalMapState = history[0];
+        let changes = 0;
+        let comparisonDetails = '<p>Differences Found:</p><ul>';
+
+        currentMapData.forEach((modifiedItem, index) => {
+            const originalItem = originalMapState.currentMapData[index];
+            if (originalItem && modifiedItem.hexValue !== originalItem.hexValue) {
+                changes++;
+                
+                // Get axis labels for better readability
+                const xLabel = currentMapDefinition?.axes?.x?.toLowerCase();
+                const yLabel = currentMapDefinition?.axes?.y?.toLowerCase();
+                
+                let locationString = '';
+                if (xLabel && modifiedItem[xLabel] !== undefined) {
+                    locationString += `${currentMapDefinition.axes.x}: ${modifiedItem[xLabel]}`;
+                }
+                if (yLabel && modifiedItem[yLabel] !== undefined) {
+                    locationString += (locationString ? ', ' : '') + `${currentMapDefinition.axes.y}: ${modifiedItem[yLabel]}`;
+                }
+                if (!locationString) {
+                    locationString = `Index: ${index}`;
+                }
+
+                comparisonDetails += `<li><strong>${locationString}</strong>: Original HEX: <code>${originalItem.hexValue}</code>, Modified HEX: <code>${modifiedItem.hexValue}</code></li>`;
+            }
+        });
+        comparisonDetails += '</ul>';
+
+        if (changes === 0) {
+            showMessage("No changes detected between current map and the initial loaded state.", false);
+            resultArea.innerHTML = '';
+        } else {
+            resultArea.innerHTML = `
+                <p>📊 Map Comparison Complete: Found <strong>${changes}</strong> differences in "${currentMapDefinition.name}".</p>
+                ${comparisonDetails}
+            `;
+        }
+    }
+
+    function calculateChecksum() {
+        if (!currentECUFile) {
+            showMessage("No ECU file loaded to calculate checksum.", true);
+            return;
+        }
+
+        let sum = 0;
+        currentECUFile.forEach(hexByte => {
+            sum += parseInt(hexByte, 16); // Parse hex string to integer
+        });
+
+        // Common checksum calculations involve summing bytes and then often taking modulo of a specific value
+        // For simplicity, let's use a 16-bit checksum (sum modulo 65536)
+        const simulatedChecksum = decToHex(sum % 65536, 4); // Pad to 4 hex characters for 16-bit
+
+        resultArea.innerHTML = `
+            <p>➕ Simulated Checksum Calculation Complete.</p>
+            <p>Calculated Checksum: <strong>0x${simulatedChecksum}</strong></p>
+            <p style="font-size: 0.9em; color: #88bbff;">(This is a simple sum-based simulation. Real checksum algorithms are more complex.)</p>
+        `;
+    }
+
+    // --- Undo/Redo Functionality ---
+    function addToHistory() {
+        if (!currentMapData || !currentMapDefinition) return;
+
+        // Create a deep copy of the current map data and definition
+        const currentState = {
+            currentMapData: JSON.parse(JSON.stringify(currentMapData)),
+            currentMapDefinition: JSON.parse(JSON.stringify(currentMapDefinition))
+        };
+        
+        // Prevent adding identical consecutive states
+        if (historyPointer >= 0 && JSON.stringify(history[historyPointer]) === JSON.stringify(currentState)) {
+            return;
+        }
+
+        // If we are not at the end of history (i.e., we've undone some changes),
+        // any new change should truncate the redo history.
+        if (historyPointer < history.length - 1) {
+            history = history.slice(0, historyPointer + 1);
+        }
+        history.push(currentState);
+        historyPointer++;
+    }
+
+    function applyHistoryState(state) {
+        currentMapData = JSON.parse(JSON.stringify(state.currentMapData));
+        currentMapDefinition = JSON.parse(JSON.stringify(state.currentMapDefinition));
+        
+        // Re-render UI based on the restored state
+        populateMapOptions(); // Call this to ensure map data is re-evaluated and table is rebuilt correctly
+        renderGraph();
+    }
+
+    function undoLastChange() {
+        if (historyPointer > 0) {
+            historyPointer--;
+            const prevState = history[historyPointer];
+            applyHistoryState(prevState);
+            showMessage("Undo successful.", false);
+        } else {
+            showMessage("No more changes to undo.", true);
+        }
+    }
+    
+    function redoChange() {
+        if (historyPointer < history.length - 1) {
+            historyPointer++;
+            const nextState = history[historyPointer];
+            applyHistoryState(nextState);
+            showMessage("Redo successful.", false);
+        } else {
+            showMessage("No more changes to redo.", true);
+        }
+    }
+
+    // --- Event Listeners and Initial Load ---
+    document.addEventListener("DOMContentLoaded", () => {
+      carBrandSelect.addEventListener("change", populateCarModels);
+      carModelSelect.addEventListener("change", populateMapOptions);
+      mapTypeSelect.addEventListener("change", loadMapData);
+      viewModeSelect.addEventListener("change", renderGraph);
+      
+      // Initialize models
+      populateCarModels();
+      showMessage("Welcome to WinOLS Simulator. Please 'Simulate Load' an ECU file to begin.", false);
+    });
+  </script>
+</body>
+</html>
