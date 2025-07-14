@@ -2,7 +2,8 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>WinOLS ECU Tuning Simulator (Advanced)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WinOLS ECU Tuning Simulator (Advanced)</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -1021,23 +1022,23 @@
 
     // --- Graphing (2D Simulation with Chart.js) ---
     function renderGraph() {
-        try {
-            const viewMode = viewModeSelect.value;
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
+        // ซ่อน canvas ไว้ก่อนเสมอ เพื่อจัดการการแสดงผลใหม่
+        graphCanvas.style.display = 'none';
 
-            if (viewMode === '2d' && currentMapDefinition && currentMapData && 
-                !currentMapDefinition.name.includes("DTC Switch")) { // DTC Switch maps don't graph well
+        // ทำลาย Chart instance เดิมก่อนสร้างใหม่ เพื่อป้องกันปัญหาข้อมูลซ้อนทับหรือค้าง
+        if (chartInstance) {
+            chartInstance.destroy();
+            chartInstance = null; // ตั้งค่าเป็น null เพื่อให้แน่ใจว่าไม่มี reference ค้างอยู่
+        }
+
+        const viewMode = viewModeSelect.value;
+        // ตรวจสอบว่าเลือกโหมด 2D, มีข้อมูลแผนที่, และไม่ใช่แผนที่ประเภท DTC Switch ที่ไม่เหมาะกับการแสดงผลกราฟ
+        if (viewMode === '2d' && currentMapDefinition && currentMapData && 
+            !currentMapDefinition.name.includes("DTC Switch")) {
+            
+            try {
+                // แสดง canvas
                 graphCanvas.style.display = 'block';
-                
-                // Ensure canvas size is appropriate before rendering
-                // You already have max-width: 900px and height: 400px in CSS
-                // For responsive charts, it's generally best to let Chart.js handle it with CSS
-                // and potentially set a fixed aspect ratio or height here if issues persist.
-                // Forcing specific dimensions via JS can sometimes cause issues with responsiveness.
-                // graphCanvas.width = graphCanvas.offsetWidth; // This might be too large on mobile
-                // graphCanvas.height = graphCanvas.offsetHeight; // This might be too large on mobile
 
                 const xAxisLabel = currentMapDefinition?.axes?.x;
                 const yAxisLabel = currentMapDefinition?.axes?.y;
@@ -1045,40 +1046,48 @@
                 let labels = [];
                 let datasets = [];
                 
+                // ตรวจสอบว่ามีแกน X และ Y ที่กำหนดไว้ใน Map Definition และมีค่าสำหรับแกน Y เพื่อแยก series
                 if (xAxisLabel && yAxisLabel && currentMapDefinition.axisValues) {
-                    // Determine if we have multiple series based on Y-axis values
+                    // ดึงค่าแกน Y ที่ไม่ซ้ำกันทั้งหมดเพื่อสร้างหลาย series (เส้นกราฟ)
                     const uniqueYValues = [...new Set(currentMapData.map(d => d[yAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
+                    
+                    // ดึงค่าแกน X ทั้งหมดเพื่อใช้เป็น labels ของกราฟ
                     labels = [...new Set(currentMapData.map(d => d[xAxisLabel.toLowerCase()]))].sort((a,b) => a - b);
 
                     uniqueYValues.forEach(yVal => {
                         const dataForY = [];
                         labels.forEach(xVal => {
+                            // ค้นหาข้อมูลที่ตรงกับทั้งค่าแกน X และแกน Y
                             const item = currentMapData.find(d => 
                                 d[xAxisLabel.toLowerCase()] === xVal && 
                                 d[yAxisLabel.toLowerCase()] === yVal
                             );
                             if (item) {
                                 let value = hexToDec(item.hexValue);
+                                // แปลงค่าตาม factor และ offset ถ้ามีการกำหนด
                                 if (currentMapDefinition && typeof currentMapDefinition.factor !== 'undefined' && typeof currentMapDefinition.offset !== 'undefined') {
                                     value = (value * currentMapDefinition.factor + currentMapDefinition.offset);
                                 }
                                 dataForY.push(value);
                             } else {
-                                dataForY.push(null); // Add null for missing points to break line
+                                // หากไม่มีข้อมูลสำหรับจุดนั้น ให้ใส่ null เพื่อให้เส้นกราฟไม่เชื่อมต่อกัน
+                                dataForY.push(null); 
                             }
                         });
 
+                        // เพิ่ม dataset สำหรับแต่ละค่าของแกน Y
                         datasets.push({
-                            label: `${yAxisLabel}: ${yVal}`,
+                            label: `${yAxisLabel}: ${yVal}`, // Label สำหรับ legend (เช่น Load: 10, Load: 30)
                             data: dataForY,
-                            borderColor: getRandomColor(),
-                            backgroundColor: 'rgba(0, 191, 255, 0.2)', // Example background
+                            borderColor: getRandomColor(), // ให้สีแบบสุ่ม
+                            backgroundColor: 'rgba(0, 191, 255, 0.1)', // สีพื้นหลัง (จางๆ)
                             borderWidth: 2,
-                            fill: false,
-                            tension: 0.3 // Smooth lines
+                            fill: false, // ไม่เติมสีใต้เส้นกราฟ
+                            tension: 0.3 // ความโค้งของเส้น
                         });
                     });
-                } else { // Single dimension map or fallback
+                } else { 
+                    // กรณีเป็นกราฟ 1 มิติ หรือไม่มีแกน Y ที่ชัดเจน
                     labels = currentMapData.map((d, i) => {
                         if (xAxisLabel) return d[xAxisLabel.toLowerCase()] || `Point ${i + 1}`;
                         return `Point ${i + 1}`;
@@ -1103,6 +1112,7 @@
                     });
                 }
 
+                // สร้าง Chart.js instance ใหม่
                 chartInstance = new Chart(graphCtx, {
                     type: 'line',
                     data: {
@@ -1111,12 +1121,12 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false, // Keep this for flexible height/width control via CSS
+                        maintainAspectRatio: false, // สำคัญ: ปล่อยให้ CSS จัดการความสูง/กว้าง
                         scales: {
                             x: {
                                 title: {
                                     display: true,
-                                    text: xAxisLabel || 'Index',
+                                    text: xAxisLabel || 'Index', // ใช้ 'Index' หากไม่มีชื่อแกน X
                                     color: '#ccc'
                                 },
                                 ticks: { color: '#eee' },
@@ -1125,7 +1135,7 @@
                             y: {
                                 title: {
                                     display: true,
-                                    text: currentMapDefinition.name,
+                                    text: currentMapDefinition.name, // ชื่อกราฟบนแกน Y
                                     color: '#ccc'
                                 },
                                 ticks: { color: '#eee' },
@@ -1137,20 +1147,30 @@
                                 labels: {
                                     color: '#eee'
                                 }
+                            },
+                            title: { // เพิ่ม title ให้กับกราฟ
+                                display: true,
+                                text: `กราฟ ${currentMapDefinition.name} (2D View)`,
+                                color: '#00bfff',
+                                font: {
+                                    size: 16
+                                }
                             }
                         }
                     }
                 });
-            } else {
-                graphCanvas.style.display = 'none';
-                if (viewMode === '3d') {
-                    showMessage("3D Graph visualization requires advanced libraries. This is a simulated view.", false);
-                }
+                console.log('กราฟ 2D ถูกสร้างขึ้นสำเร็จ');
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาดในการแสดงผลกราฟ:", error);
+                showMessage("เกิดข้อผิดพลาดในการแสดงผลกราฟ: " + error.message, true);
+                graphCanvas.style.display = 'none'; // ซ่อน canvas หากเกิดข้อผิดพลาด
             }
-        } catch (error) {
-            console.error("Error rendering graph:", error);
-            showMessage("Error displaying graph: " + error.message, true);
-            graphCanvas.style.display = 'none'; // Hide canvas if error occurs
+        } else {
+            // หากไม่ได้เลือกโหมด 2D หรือเป็นแผนที่ DTC Switch ให้ซ่อน canvas
+            graphCanvas.style.display = 'none';
+            if (viewMode === '3d') {
+                showMessage("3D Graph visualization requires advanced libraries. This is a simulated view.", false);
+            }
         }
     }
 
